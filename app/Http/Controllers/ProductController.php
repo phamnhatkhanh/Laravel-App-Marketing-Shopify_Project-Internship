@@ -31,14 +31,14 @@ class ProductController extends Controller
         return $products;
     }
     public function show(Product $product){
-        $product = $this->productRepository->find($product);
+        // $product = $this->productRepository->find($product);
         return $product;
     }
      public function store(ProductRequest $request)
     {
-        $product = $this->productRepository->store($request);
+        // $product = $this->productRepository->store($request);
         return response([
-            'data' => new ProductResource($product)
+            // 'data' => new ProductResource($product)
         ],201);
     }
     public function update(ProductRequest $request, Product $product)
@@ -46,7 +46,7 @@ class ProductController extends Controller
 
         // try{
 
-            $product = $this->productRepository->update($request, $product);
+            // $product = $this->productRepository->update($request, $product);
         // }catch{
         //     throw nghia("vfbsjnfsjfdngf");
         // }
@@ -62,7 +62,7 @@ class ProductController extends Controller
     public function destroy(Product $product)
     {
 
-        $product = $this->productRepository->destroy( $product);
+        // $product = $this->productRepository->destroy( $product);
         return response("delete product sucess",213);
     }
 }
