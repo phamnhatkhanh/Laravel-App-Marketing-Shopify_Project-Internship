@@ -3,8 +3,8 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\Review;
-class ReviewSeeder extends Seeder
+
+class CampaignSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -13,6 +13,6 @@ class ReviewSeeder extends Seeder
      */
     public function run()
     {
-        Review::factory()->times(100)->create();
+        //
     }
 }
