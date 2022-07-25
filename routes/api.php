@@ -3,9 +3,11 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Helpers\Routes\RouteHelper;
+use App\Http\Controllers\JwtAuthController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ReviewController;
-
+use App\Http\Requests\LoginRequest;
+use App\Http\Requests\ProductRequest;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,11 +25,9 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::apiResource('products',ProductController::class);
-Route::prefix('v1')->group(function (){
-        RouteHelper::includeRouteFiles(__DIR__ . '/api');
-
-    //    require __DIR__ . '/api/users.php';
-    //    require __DIR__ . '/api/posts.php';
-    //    require __DIR__ . '/api/comments.php';
+Route::prefix('auth')->group(function (){
+        RouteHelper::includeRouteFiles(__DIR__ . '/api/jwt');
 
 });
+
+RouteHelper::includeRouteFiles(__DIR__ . '/api/v1');
