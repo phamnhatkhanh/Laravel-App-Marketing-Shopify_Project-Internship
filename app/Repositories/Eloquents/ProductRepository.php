@@ -28,7 +28,6 @@ class ProductRepository implements ProductRepositoryInterface
     }
 
     public function store($request){
-
         $product = new Product;
         $product->user_id = 2;
         $product->title = $request->title;
