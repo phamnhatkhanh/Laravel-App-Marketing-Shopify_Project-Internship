@@ -14,7 +14,7 @@ class CreateStoresTable extends Migration
     public function up()
     {
         Schema::create('stores', function (Blueprint $table) {
-            $table->id();
+            $table->bigInteger('id')->unsigned()->primary();
             $table->string("name_merchant",);
             $table->string("email",);
             $table->string("phone");
@@ -26,7 +26,9 @@ class CreateStoresTable extends Migration
             $table->string("city");
             $table->string("zip");
             $table->string("country_name");
-            $table->timestamps();
+            // $table->timestamps();
+            $table->dateTime('created_at')->nullable();
+            $table->dateTime('updated_at')->nullable();
         });
     }
 
