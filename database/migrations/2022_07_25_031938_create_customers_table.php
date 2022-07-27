@@ -14,20 +14,22 @@ class CreateCustomersTable extends Migration
     public function up()
     {
         Schema::create('customers', function (Blueprint $table) {
-            $table->id();
+            $table->bigInteger('id')->unsigned()->primary();
             $table->string("first_name");
             $table->string("last_name");
             $table->string("email");
             $table->string("phone");
-            $table->string("country");
+            $table->string("country")->nullable();
             $table->string("orders_count");
             $table->string("total_spent");
-            $table->timestamps();
+            // $table->timestamps();
             $table->unsignedBigInteger('store_id');
             $table->foreign('store_id')
                 ->references('id')
                 ->on('stores')
                 ->onDelete('cascade');
+            $table->dateTime('created_at')->nullable();
+            $table->dateTime('updated_at')->nullable();
         });
     }
 
