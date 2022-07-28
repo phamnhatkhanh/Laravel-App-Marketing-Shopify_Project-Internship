@@ -22,7 +22,6 @@ class CreateStoresTable extends Migration
             $table->string("domain");
             $table->string("access_token");
             $table->string("address");
-            $table->string("province");
             $table->string("city");
             $table->string("zip");
             $table->string("country_name");

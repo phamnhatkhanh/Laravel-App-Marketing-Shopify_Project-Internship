@@ -12,7 +12,6 @@ class CustomerController extends Controller
     public function showCustomer()
     {
         $customers = Customer::get();
-
         return response([
             'data' => $customers,
             'status' => 201
@@ -56,7 +55,6 @@ class CustomerController extends Controller
             'data' => $totalSpent,
             'status' => 201
         ], 201);
-
     }
 
     public function totalOrder(Request $request)
@@ -70,5 +68,4 @@ class CustomerController extends Controller
             'status' => 201
         ], 201);
     }
-
 }

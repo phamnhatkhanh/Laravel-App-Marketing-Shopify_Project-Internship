@@ -11,7 +11,7 @@ class WebhookController extends Controller
     {
         $topic = $request->header('X-Shopify-Topic');
         $payload = $request->all();
-
+        
         switch ($topic) {
             case 'customers/update':
                 //Update data Product
@@ -26,8 +26,6 @@ class WebhookController extends Controller
             case 'customers/delete':
                 //Delete data Product
                 ShopifyController::deleteFromShopify($payload);
-                break;
         }
-
     }
 }

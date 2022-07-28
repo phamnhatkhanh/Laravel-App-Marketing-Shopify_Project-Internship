@@ -3,8 +3,8 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Helpers\Routes\RouteHelper;
+use App\Http\Controllers\ExportController;
 use App\Http\Controllers\JwtAuthController;
-use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\ProductRequest;
@@ -24,7 +24,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::apiResource('products',ProductController::class);
+// Route::apiResource('products',ProductController::class);
 Route::prefix('auth')->group(function (){
         RouteHelper::includeRouteFiles(__DIR__ . '/api/jwt');
 
@@ -32,17 +32,13 @@ Route::prefix('auth')->group(function (){
 
 RouteHelper::includeRouteFiles(__DIR__ . '/api/v1');
 
-//Trang chủ
-Route::post('/index', [\App\Http\Controllers\Shopify\ShopifyController::class, 'index'])
-    ->name('index');
+//Input Name Shop
+Route::any('/login', [\App\Http\Controllers\Shopify\ShopifyController::class, 'login'])->name('login');
 
-//Nhận thông tin access_token và bắt đầu xử lí các bước tiếp theo
+//Get Acess_Token and handle next
 Route::any('/authen', [\App\Http\Controllers\Shopify\ShopifyController::class, 'authen'])->name('authen');
 
-//Trang chủ cũng là trang nhập tên shopify
-Route::any('/huskadian', [\App\Http\Controllers\Shopify\ShopifyController::class, 'testShopify'])->name('huskadian');
-
-//Route Đăng kí CustomerWebhook thêm, xóa sửa
+//Register link Create,Update,Delete Webhook
 Route::post('/shopify/webhook', [\App\Http\Controllers\Shopify\WebHookController::class , 'webhook'] )
     ->name('shopify.webhook');
 
@@ -51,3 +47,6 @@ Route::post('/searchCustomer', [\App\Http\Controllers\Shopify\CustomerController
 Route::post('/createDate', [\App\Http\Controllers\Shopify\CustomerController::class, 'createDate']);
 Route::post('/totalSpent', [\App\Http\Controllers\Shopify\CustomerController::class, 'totalSpent']);
 Route::post('/totalOrder', [\App\Http\Controllers\Shopify\CustomerController::class, 'totalOrder']);
+
+//Export CSV
+Route::get('/export', [ExportController::class, 'export']);

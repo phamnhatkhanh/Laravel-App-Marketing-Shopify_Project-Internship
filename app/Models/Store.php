@@ -18,13 +18,13 @@ class Store extends Model
         'domain',
         'myshopify_domain',
         'access_token',
-        'plan_name',
+        // 'plan_name',
         'address',
         'zip',
         'city',
         'country_name',
-        'created_at',
-        'updated_at',
+        // 'created_at',
+        // 'updated_at',
     ];
 
     public $timestamps = false;
