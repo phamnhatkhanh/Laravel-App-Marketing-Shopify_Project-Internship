@@ -14,7 +14,7 @@ class CustomerController extends Controller
         $customers = Customer::get();
         return response([
             'data' => $customers,
-            'status' => 201
+            'status' => true,
         ], 201);
     }
 
@@ -29,7 +29,7 @@ class CustomerController extends Controller
 
         return response([
             'data' => $search,
-            'status' => 201,
+            'status' => true,
         ], 201);
     }
 
@@ -41,7 +41,7 @@ class CustomerController extends Controller
 
         return response([
             'data' => $createdDate,
-            'status' => 201
+            'status' => true,
         ], 201);
     }
 
@@ -53,7 +53,7 @@ class CustomerController extends Controller
 
         return response([
             'data' => $totalSpent,
-            'status' => 201
+            'status' => true,
         ], 201);
     }
 
@@ -65,7 +65,7 @@ class CustomerController extends Controller
 
         return response([
             'data' => $totalOrder,
-            'status' => 201
+            'status' => true,
         ], 201);
     }
 }

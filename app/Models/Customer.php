@@ -28,7 +28,7 @@ class Customer extends Model
     public function scopeFirstName($query, $request)
     {
         if ($request->has('first_name')) {
-            $query->where('first_name', 'LIKE', '%' . $request->first_name . '%');
+            $query->where('first_name', 'LIKE', '%' .$request->first_name. '%');
         }
 
         return $query;
