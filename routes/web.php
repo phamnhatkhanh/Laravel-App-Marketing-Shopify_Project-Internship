@@ -25,7 +25,3 @@ Route::get('/pusher', function(Illuminate\Http\Request $request) {
     event(new App\Events\HelloPusherEvent($request));
     return redirect('getPusher');
 });
-
-// Route::get('/', function () {
-//     return view('welcome');
-// });

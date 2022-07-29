@@ -3,6 +3,7 @@
 namespace App\Repositories\Eloquents;
 
 use App\Models\Shopify;
+use App\Models\Store;
 
 class WebhookRepository
 {
@@ -27,7 +28,7 @@ class WebhookRepository
             'email' => $saveData->email,
             'phone' => $saveData->phone,
             'access_token' => $access_token,
-            'plan_name' => $saveData->plan_name,
+            // 'plan_name' => $saveData->plan_name,
             'address' => $saveData->address1,
             'zip' => $saveData->zip,
             'city' => $saveData->city,
@@ -35,7 +36,7 @@ class WebhookRepository
             'created_at' => $created_at,
             'updated_at' => $updated_at,
         ];
-        Shopify::create($dataPost);
+        Store::create($dataPost);
 
         return $dataPost;
     }

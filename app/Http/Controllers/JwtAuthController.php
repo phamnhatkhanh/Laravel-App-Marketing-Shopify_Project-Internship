@@ -2,13 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use Illuminate\Http\Request;
+use App\Http\Requests;
+use JWTAuth;
+use JWT;
+use Tymon\JWTAuthExceptions\JWTException;
+use Tymon\JWTAuth\Contracts\JWTSubject as JWTSubject;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Requests\LoginRequest;
+use App\Models\Store;
+use App\Models\User;
 use Symfony\Component\HttpFoundation\Response;
+use Tymon\JWTAuth\Facades\JWTAuth as FacadesJWTAuth;
 
 class JwtAuthController extends Controller
 {
@@ -19,36 +27,51 @@ class JwtAuthController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login','user']]);
+        $this->middleware('auth:api', ['except' => ['login', 'register', 'user']]);
     }
-
     /**
      * Get a JWT via given credentials.
      *
      * @return \Illuminate\Http\JsonResponse
      */
 
-    public function login(LoginRequest $request)
+    public function login(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'email' => 'required|email',
-            'password' => 'required',
+
+            'myshopify_domain' => 'required',
+            'password' => 'required'
         ]);
+
+        $ip = $request->ip();
+
+        $num_count = Redis::get($ip);
+        if (!$num_count) {
+            Redis::set($ip, 1, 'EX', 50);
+        } else {
+            Redis::incr($ip);
+        }
+        $num_count = Redis::get($ip);
+        $ttl = Redis::ttl($ip);
+
+        //Check resquest
+        if ($num_count > 3) {
+            return response()->json([
+                'status' => false,
+                'num_count' => $num_count,
+                'ttl' => $ttl,
+                'message' => 'server is busy!'
+            ]);
+        }
 
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
-
         if (!$token = auth()->attempt($validator->validated())) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
-
-        return response()->json([
-            'access_token' =>$token,
-            'message' => 'Authenticate successfully'
-        ],Response::HTTP_CREATED);
+        return $this->createNewToken($token);
     }
-
     /**
      * Register a User.
      *
@@ -56,9 +79,7 @@ class JwtAuthController extends Controller
      */
     public function register(Request $request)
     {
-       
     }
-
 
     /**
      * Log the user out (Invalidate the token).
@@ -68,10 +89,8 @@ class JwtAuthController extends Controller
     public function logout()
     {
         auth()->logout();
-
         return response()->json(['message' => 'User successfully signed out']);
     }
-
     /**
      * Refresh a token.
      *
@@ -79,9 +98,7 @@ class JwtAuthController extends Controller
      */
     public function refresh()
     {
-        // return $this->createNewToken(auth()->refresh());
     }
-
     /**
      * Get the authenticated User.
      *
@@ -89,9 +106,7 @@ class JwtAuthController extends Controller
      */
     public function userProfile()
     {
-        return response()->json(auth()->user());
     }
-
     /**
      * Get the token array structure.
      *
@@ -101,29 +116,12 @@ class JwtAuthController extends Controller
      */
     protected function createNewToken($token)
     {
-        //
-    }
-
-    public function changePassWord(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'old_password' => 'required|string|min:6',
-            'new_password' => 'required|string|confirmed|min:6',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json($validator->errors()->toJson(), 400);
-        }
-        $userId = auth()->user()->id;
-
-        $user = User::where('id', $userId)->update(
-            ['password' => bcrypt($request->new_password)]
-        );
-
         return response()->json([
-            'message' => 'User successfully changed password',
-            'user' => $user,
-        ], 201);
+            'access_token' => $token,
+            'token_type' => 'bearer',
+            'expires_in' => auth()->factory()->getTTL() * 30,
+            'user' => auth()->user()
+        ]);
     }
 
     public function user(Request $request)

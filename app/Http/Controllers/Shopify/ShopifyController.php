@@ -8,6 +8,7 @@ use App\Jobs\DeleteCustomer;
 use App\Jobs\UpdateCustomer;
 use App\Models\Customer;
 use App\Models\Shopify;
+use App\Models\Store;
 use App\Repositories\Eloquents\CustomerWebhookRepository;
 use App\Repositories\Eloquents\WebhookRepository;
 use App\Repositories\Webhooks\RegisterCustomerWebhookService;
@@ -33,17 +34,17 @@ class ShopifyController extends Controller
     }
 
     // Lấy link Shopify
-    public function testShopify(Request $request)
+    public function login(Request $request)
     {
         $apiKey = config('shopify.shopify_api_key');
         $scope = 'read_customers,write_customers';
         $shop = $request->shop;
-        $redirect_uri = config('shopify.ngrok') . '/authen';
-        $url = 'https://' . $shop . '.myshopify.com/admin/oauth/authorize?client_id=' . $apiKey . '&scope=' . $scope . '&redirect_uri=' . $redirect_uri;
+        $redirect_uri = config('shopify.ngrok') . '/api/authen';
+        $url = 'https://' . $shop . '/admin/oauth/authorize?client_id=' . $apiKey . '&scope=' . $scope . '&redirect_uri=' . $redirect_uri;
         return redirect($url);
     }
 
-    //Lấy Access_token và đăng nhập vào shop
+    //Get access_token and Login Shop
     public function authen(Request $request)
     {
         $code = $request->code;
@@ -57,7 +58,7 @@ class ShopifyController extends Controller
         $getDataLogin = WebhookService::getDataLogin($shopName, $access_token);
 
         //Lưu thông tin Shopify vào DB
-        if (!Shopify::find($getDataLogin['shop']->id)) {
+        if (!Store::find($getDataLogin['shop']->id)) {
             WebhookRepository::saveDataLogin($getDataLogin, $access_token);
         }
 
@@ -74,7 +75,7 @@ class ShopifyController extends Controller
         //Đăng kí CustomerWebhooks thêm, xóa, sửa
         $this->registerProductWebhook($shopName, $access_token);
 
-        return redirect()->route('huskadian');
+        return redirect()->route('login');
     }
 
     //Đăng kí ProductWebhooks thêm, xóa, sửa
@@ -86,24 +87,33 @@ class ShopifyController extends Controller
     //Đưa vào Queue để lưu những khách hàng đã được tạo trên Shopify vào DB
     public static function createFromShopify($payload)
     {
-        dispatch(new CreateCustomer($payload));
+        $data =  dispatch(new CreateCustomer($payload));
 
-        return;
+        return response([
+            'data' => $data,
+            'status' => 201
+        ], 201);
     }
 
     //Đưa vào Queue để tự động lưu những khách hàng đã được sửa trên Shopify vào DB
     public static function updateFromShopify($payload)
     {
-        dispatch(new UpdateCustomer($payload));
+       $data =  dispatch(new UpdateCustomer($payload));
 
-        return;
+       return response([
+        'data' => $data,
+        'status' => 201
+    ], 201);
     }
 
     //Đưa vào Queue để tự động xóa khách hàng đã xóa trên Shopify trong DB
     public static function deleteFromShopify($payload)
     {
-        dispatch(new DeleteCustomer($payload));
+        $data = dispatch(new DeleteCustomer($payload));
 
-        return;
+        return response([
+            'data' => $data,
+            'status' => 201
+        ], 201);
     }
 }

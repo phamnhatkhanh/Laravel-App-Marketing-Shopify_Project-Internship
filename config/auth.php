@@ -43,7 +43,7 @@ return [
 
         'api' => [
             'driver' => 'jwt',
-            'provider' => 'users',
+            'provider' => 'stores',
             'hash' => false,
         ],
     ],
@@ -66,9 +66,9 @@ return [
     */
 
     'providers' => [
-        'users' => [
+        'stores' => [
             'driver' => 'eloquent',
-            'model' => App\Models\User::class,
+            'model' => App\Models\Store::class,
         ],
 
         // 'users' => [
@@ -95,6 +95,15 @@ return [
     'passwords' => [
         'users' => [
             'provider' => 'users',
+            'table' => 'password_resets',
+            'expire' => 60,
+            'throttle' => 60,
+        ],
+    ],
+
+    'passwords' => [
+        'stores' => [
+            'provider' => 'stores',
             'table' => 'password_resets',
             'expire' => 60,
             'throttle' => 60,
