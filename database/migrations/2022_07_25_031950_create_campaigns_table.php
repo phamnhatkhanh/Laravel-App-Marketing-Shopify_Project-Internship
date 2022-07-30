@@ -15,13 +15,13 @@ class CreateCampaignsTable extends Migration
     {
         Schema::create('campaigns', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('store_id');
             $table->string('name');
             $table->string('subject');
             $table->string('content');
             $table->string('footer');
             $table->timestamps();
-            
-            $table->unsignedBigInteger('store_id');
+
             $table->foreign('store_id')
                 ->references('id')
                 ->on('stores')

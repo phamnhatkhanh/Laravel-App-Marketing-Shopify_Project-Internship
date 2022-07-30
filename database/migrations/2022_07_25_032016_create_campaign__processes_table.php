@@ -15,14 +15,15 @@ class CreateCampaignProcessesTable extends Migration
     {
         Schema::create('campaign_processes', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('campaign_id');
             $table->string('name');
             $table->string('status');
             $table->string('process');
             $table->string('send_email_done');
             $table->string('send_email_fail');
-            $table->string('customers');
+            $table->string('total_customers');
             $table->timestamps();
-            $table->unsignedBigInteger('campaign_id');
+
             $table->foreign('campaign_id')
                 ->references('id')
                 ->on('campaigns')

@@ -26,10 +26,9 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 // Route::apiResource('products',ProductController::class);
 Route::prefix('auth')->group(function (){
         RouteHelper::includeRouteFiles(__DIR__ . '/api/jwt');
-
 });
 
-RouteHelper::includeRouteFiles(__DIR__ . '/api/v1');
+
 
 //Input Name Shop
 Route::any('/login', [\App\Http\Controllers\Shopify\ShopifyController::class, 'login'])->name('login');

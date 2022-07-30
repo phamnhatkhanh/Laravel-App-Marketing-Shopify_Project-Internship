@@ -1,0 +1,55 @@
+<div class="task">
+Tạo các api cho FE ở 2 page: customer, campaign.
+    -> test ở postmain ổn -> đưa FE dùng.
+
+Improve code:
+    - Clean code: cách đặt tên
+    - Tổ chức: file, comment cho rõ ràng.
+
+1.Send email và realtime:
+    -> test FE xem có listen khi serve mình gửi event ko.
+
+
+
+
+
+g/s xog hết task project thì.
+Đào sâu về server:
+Optimize:
+    DB:query -- Eloquent -- Class.
+        Class: chỉ cần new 1 lần sử dụng lại thay vì new nhiều lần
+        Eloquent: lazy load.
+        Query: paganina và chunk.
+
+1.Shopify:
+    - làm với nhiều customer >1000.
+
+<!-- Export với dữ liệu lớn. -->
+1.Redis: Cache, queue kết nối với redis để chạy cho nó nhanh.
+    Cache: Thay vì truy xuất dữ liệu trên DB -> lưu Data trên Cache truy xuất nhanh hơn.
+        - FE: Customer,Campaign show list lưu Redis -> truy xuất cho nhanh.
+        - Shopify cập nhật customer: chỉ cập nhật khi email, phone,  orders_count, total_spent thay đổi.
+            - Cập nhật ở Redis sau đó vào DB cập nhật.
+    Queue: xử lý job failed.
+
+DB:
+    set condition for field in tabel DB.
+    backup data.
+
+
+
+</div>
+
+<div class="open_problem">
+project: code lum hết ko theo chuẩn của form -> đưa code mình ko hiểu -> tổ chức lại chỗ shopify  ntn
+Hướng làm project && yêu cầu của từng phần mĩnh phải rõ ràng hơn cho mn cùng làm.
+Sau khi done hết task thì đào sâu vào nào( chiều rộng ổn).
+
+
+Nghĩ task nào ứng dụng được Facade.
+
+</div>
+
+<div class="result">
+1. Setup xong project(DB,JWT, Shopify)
+</div>

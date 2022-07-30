@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-
+use App\Models\Campaign_Process;
 class CampaignProcessSeeder extends Seeder
 {
     /**
@@ -13,6 +13,7 @@ class CampaignProcessSeeder extends Seeder
      */
     public function run()
     {
-        //
+        Campaign_Process::factory()->times(10)->create();
     }
 }
+// Database\Factories\

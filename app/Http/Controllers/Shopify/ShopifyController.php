@@ -30,7 +30,7 @@ class ShopifyController extends Controller
         else{
             return response();
         }
-    
+
     }
 
     // Lấy link Shopify
@@ -38,9 +38,12 @@ class ShopifyController extends Controller
     {
         $apiKey = config('shopify.shopify_api_key');
         $scope = 'read_customers,write_customers';
-        $shop = $request->shop;
-        $redirect_uri = config('shopify.ngrok') . '/api/authen';
+        // $shop = $request->shop;
+        $shop = env('SHOPIFY_DOMAIN');
+        $redirect_uri =  'http://localhost:8000/api/authen';
+        // $redirect_uri = config('shopify.ngrok') . '/api/authen';
         $url = 'https://' . $shop . '/admin/oauth/authorize?client_id=' . $apiKey . '&scope=' . $scope . '&redirect_uri=' . $redirect_uri;
+        dd($url);
         return redirect($url);
     }
 

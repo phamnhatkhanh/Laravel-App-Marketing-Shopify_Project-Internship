@@ -15,6 +15,7 @@ class CreateCustomersTable extends Migration
     {
         Schema::create('customers', function (Blueprint $table) {
             $table->bigInteger('id')->unsigned()->primary();
+            $table->unsignedBigInteger('store_id');
             $table->string("first_name");
             $table->string("last_name");
             $table->string("email");
@@ -22,14 +23,13 @@ class CreateCustomersTable extends Migration
             $table->string("country")->nullable();
             $table->string("orders_count");
             $table->string("total_spent");
-            // $table->timestamps();
-            $table->unsignedBigInteger('store_id');
+            $table->dateTime('created_at')->nullable();
+            $table->dateTime('updated_at')->nullable();
+
             $table->foreign('store_id')
                 ->references('id')
                 ->on('stores')
                 ->onDelete('cascade');
-            $table->dateTime('created_at')->nullable();
-            $table->dateTime('updated_at')->nullable();
         });
     }
 

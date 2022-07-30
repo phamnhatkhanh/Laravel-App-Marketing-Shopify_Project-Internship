@@ -17,15 +17,16 @@ class CreateStoresTable extends Migration
             $table->bigInteger('id')->unsigned()->primary();
             $table->string("name_merchant",);
             $table->string("email",);
+            $table->string("password",);
             $table->string("phone");
             $table->string("myshopify_domain");
             $table->string("domain");
             $table->string("access_token");
             $table->string("address");
+            $table->string("province");
             $table->string("city");
             $table->string("zip");
             $table->string("country_name");
-            // $table->timestamps();
             $table->dateTime('created_at')->nullable();
             $table->dateTime('updated_at')->nullable();
         });

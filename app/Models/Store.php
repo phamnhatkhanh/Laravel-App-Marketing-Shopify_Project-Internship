@@ -20,16 +20,19 @@ class Store extends Authenticatable  implements JWTSubject
         'name_merchant',
         'email',
         'password',
-        'domain',
+        'phone',
+        'password',
         'myshopify_domain',
+        'domain',
         'access_token',
-        // 'plan_name',
         'address',
-        'zip',
+        'province',
         'city',
+        'zip',
         'country_name',
-        // 'created_at',
-        // 'updated_at',
+        'created_at',
+        'updated_at',
+
     ];
 
     public $timestamps = false;

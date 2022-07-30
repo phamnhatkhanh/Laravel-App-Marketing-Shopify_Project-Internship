@@ -7,6 +7,7 @@ use App\Models\Shopify;
 
 class CustomerWebhookRepository
 {
+    
     //Lưu khách hàng vào DB
     public static function saveDataCustomer($getCustomer)
     {
