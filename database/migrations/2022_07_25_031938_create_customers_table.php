@@ -20,7 +20,7 @@ class CreateCustomersTable extends Migration
             $table->string("last_name",20);
             $table->string("email",50);
             $table->string("phone",20);
-            $table->string("country",20)->nullable();
+            $table->string("country",50)->nullable();
             $table->string("orders_count");
             $table->string("total_spent");
             $table->dateTime('created_at')->nullable();
