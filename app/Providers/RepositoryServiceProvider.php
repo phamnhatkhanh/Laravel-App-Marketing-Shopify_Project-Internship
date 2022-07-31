@@ -13,12 +13,6 @@ class RepositoryServiceProvider extends ServiceProvider {
             'App\Repositories\Contracts\ProductRepositoryInterface',
             'App\Repositories\Eloquents\ProductRepository',
 
-            'App\Repositories\Contracts\ReviewRepositoryInterface',
-            'App\Repositories\Eloquents\ReviewRepository',
-
-            'App\Repositories\Contracts\CapaignProcessesepositoryInterface',
-            'App\Repositories\Eloquents\CapaignProcessesepository',
-
             'App\Repositories\Contracts\CampaignRepositoryInterface',
             'App\Repositories\Eloquents\CampaignRepository',
 

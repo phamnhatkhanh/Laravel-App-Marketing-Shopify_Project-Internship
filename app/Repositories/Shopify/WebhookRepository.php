@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Repositories\Eloquents;
+namespace App\Repositories\Shopify;
 
 use App\Models\Shopify;
 use App\Models\Store;

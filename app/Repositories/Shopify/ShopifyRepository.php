@@ -1,7 +1,7 @@
 <?php
 // app/Repositories/Eloquents/ProductRepository.php
 
-namespace App\Repositories\Eloquents;
+namespace App\Repositories\Shopify;
 
 use App\Repositories\Contracts\ShopifyRepositoryInterface;
 use Illuminate\Http\Request;
