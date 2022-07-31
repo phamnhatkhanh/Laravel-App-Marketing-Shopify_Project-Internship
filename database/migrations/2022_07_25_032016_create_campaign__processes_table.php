@@ -3,6 +3,8 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Query\Expression;
+use Illuminate\Support\Facades\DB;
 
 class CreateCampaignProcessesTable extends Migration
 {
@@ -13,7 +15,9 @@ class CreateCampaignProcessesTable extends Migration
      */
     public function up()
     {
-        Schema::create('campaign_processes', function (Blueprint $table) {
+        Schema::connection('mysql_campaigns_processes')->create('campaign_processes', function (Blueprint $table) {
+            $databaseName = DB::connection('mysql_campaigns')->getDatabaseName();
+            
             $table->id();
             $table->unsignedBigInteger('campaign_id');
             $table->string('name');
@@ -26,7 +30,8 @@ class CreateCampaignProcessesTable extends Migration
 
             $table->foreign('campaign_id')
                 ->references('id')
-                ->on('campaigns')
+                ->on(new Expression($databaseName . '.campaigns'))
+                // ->on('campaigns')
                 ->onDelete('cascade');
         });
     }
@@ -38,9 +43,14 @@ class CreateCampaignProcessesTable extends Migration
      */
     public function down()
     {
-        Schema::table('campaign_processes', function (Blueprint $table) {
+        if(Schema::connection('mysql_campaigns_processes')->hasTable('campaign_processes')){
+
+            Schema::connection('mysql_campaigns_processes')->table('campaign_processes', function (Blueprint $table) {
                 $table->dropForeign(['campaign_id']);
-        });
-        Schema::dropIfExists('campaign_processes');
+                $table->dropColumn('campaign_id');
+            });
+            Schema::connection('mysql_campaigns_processes')->dropIfExists('campaign_processes');
+        }
+
     }
 }
