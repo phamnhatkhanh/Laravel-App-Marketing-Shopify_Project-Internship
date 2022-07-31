@@ -16,11 +16,11 @@ class CreateCustomersTable extends Migration
         Schema::create('customers', function (Blueprint $table) {
             $table->bigInteger('id')->unsigned()->primary();
             $table->unsignedBigInteger('store_id');
-            $table->string("first_name");
-            $table->string("last_name");
-            $table->string("email");
-            $table->string("phone");
-            $table->string("country")->nullable();
+            $table->string("first_name",20);
+            $table->string("last_name",20);
+            $table->string("email",50);
+            $table->string("phone",20);
+            $table->string("country",20)->nullable();
             $table->string("orders_count");
             $table->string("total_spent");
             $table->dateTime('created_at')->nullable();

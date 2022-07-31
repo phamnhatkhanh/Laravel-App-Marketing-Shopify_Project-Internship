@@ -15,13 +15,13 @@ class CampaignEmailCustomizeBackgroud extends Migration
     public function up()
     {
         Schema::create('campaign_email_customize_background', function (Blueprint $table) {
-            $table->string('banner');
-            $table->string('color');
-            $table->string('radius');
+            $table->unsignedBigInteger('campaign_id');
+            $table->string('banner')->nullable();
+            $table->string('color')->default('#fff');
+            $table->string('radius')->nullable();
             $table->timestamp('created_at')->default(\DB::raw('CURRENT_TIMESTAMP'));
             $table->timestamp('updated_at')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
-            
-            $table->unsignedBigInteger('campaign_id');
+
             $table->foreign('campaign_id')
                 ->references('id')
                 ->on('campaigns')

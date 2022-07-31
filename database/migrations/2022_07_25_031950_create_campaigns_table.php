@@ -16,10 +16,10 @@ class CreateCampaignsTable extends Migration
         Schema::create('campaigns', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('store_id');
-            $table->string('name');
-            $table->string('subject');
-            $table->string('content');
-            $table->string('footer');
+            $table->string('name',50);
+            $table->string('subject',200);
+            $table->longText('content');
+            $table->string('footer',200);
             $table->timestamps();
 
             $table->foreign('store_id')

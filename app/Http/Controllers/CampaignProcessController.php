@@ -2,12 +2,38 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Bus;
+use Illuminate\Bus\Batch;
 use App\Http\Requests\StoreCampaign_ProcessRequest;
 use App\Http\Requests\UpdateCampaign_ProcessRequest;
 use App\Models\Campaign_Process;
-
+use App\Jobs\SendMail;
+use App\Events\MailSent;
 class CampaignProcessController extends Controller
 {
+
+     // nhan list user va gui sau hien tai fix cung.
+
+    public function sendEmailCampaign(){
+        // dd("sfknskf");
+        $batch = Bus::batch([])
+        ->then(function (Batch $batch) {
+            event(new MailSent($batch->id));
+        })->dispatch();
+
+        $batch_id = $batch->id;
+        info($batch_id);
+        $users = [
+            'khanhhcm4@gmail.com'
+            // 'khanhhcm4@gmail.com','nguyenducmanh123@gmail.com','phamgiakinh345@gmail.com','tranvangnhia57@gmail.com','khanhpham5301@gmail.com',
+            // 'khanhhcm4@gmail.com','nguyenducmanh123@gmail.com','phamgiakinh345@gmail.com','tranvangnhia57@gmail.com','khanhpham5301@gmail.com',
+        ];
+        // dd("sfknskf");
+        foreach ($users as  $user) {
+            $batch->add(new SendMail($batch_id, $user));
+        }
+        return $batch;
+    }
     /**
      * Display a listing of the resource.
      *
@@ -83,4 +109,5 @@ class CampaignProcessController extends Controller
     {
         //
     }
+
 }

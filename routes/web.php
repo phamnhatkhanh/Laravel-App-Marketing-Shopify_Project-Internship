@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\CampaignProcessController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -13,13 +13,13 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::get('/mail', [CampaignProcessController::class, 'sendEmailCampaign']);
+
 Route::get('/', function () {
-    return view('welcome');
+    return view('showNotification');
+    // return view('welcome');
 });
 
-// Route::get('/', function () {
-//     return view('showNotification');
-// });
 
 Route::get('getPusher', function (){
    return view('form_pusher');

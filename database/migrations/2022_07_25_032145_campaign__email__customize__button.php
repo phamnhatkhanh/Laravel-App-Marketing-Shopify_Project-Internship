@@ -14,15 +14,14 @@ class CampaignEmailCustomizeButton extends Migration
     public function up()
     {
         Schema::create('campaign_email_customize_button', function (Blueprint $table) {
-            // $table->id('campaign_email_customize_id');
-            $table->string('label');
-            $table->string('radius');
-            $table->string('background_color');
-            $table->string('text_color');
+            $table->unsignedBigInteger('campaign_id');
+            $table->string('label')->nullable();
+            $table->string('radius')->nullable();
+            $table->string('background_color')->default('#fff');;
+            $table->string('text_color')->default('#fff');;
             $table->timestamp('created_at')->default(\DB::raw('CURRENT_TIMESTAMP'));
             $table->timestamp('updated_at')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
-            
-            $table->unsignedBigInteger('campaign_id');
+
             $table->foreign('campaign_id')
                 ->references('id')
                 ->on('campaigns')

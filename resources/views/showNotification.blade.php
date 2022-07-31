@@ -32,7 +32,8 @@
                         <i data-count="0" class="glyphicon glyphicon-bell notification-icon"></i>
                     </a>
 
-                    <div class="dropdown-container">
+                    <div style="width: 1050px;
+    max-width: 1050px;" class="dropdown-container">
                         <div class="dropdown-toolbar">
                             <div class="dropdown-toolbar-actions">
                                 <a href="#">Mark all as read</a>
@@ -69,16 +70,79 @@
     }
 
     //Thay giá trị PUSHER_APP_KEY vào chỗ xxx này nhé
-    var pusher = new Pusher('366f15db393fba6b1add', {
+    var pusher = new Pusher('2fa54eacf3ffb2274748', {
         encrypted: true,
         cluster: "ap1"
     });
 
     // Subscribe to the channel we specified in our Laravel Event
-    var channel = pusher.subscribe('development');
+    var channel = pusher.subscribe('MailSent');
 
     // Bind a function to a Event (the full Laravel class)
-    channel.bind('App\\Events\\HelloPusherEvent', function(data) {
+    channel.bind('send-done', function(data) {
+        var existingNotifications = notifications.html();
+        var avatar = Math.floor(Math.random() * (71 - 20 + 1)) + 20;
+        var newNotificationHtml = `
+          <li class="notification active">
+              <div class="media">
+                <div class="media-left">
+                  <div class="media-object">
+                    <img src="https://api.adorable.io/avatars/71/`+avatar+`.png" class="img-circle" alt="50x50" style="width: 50px; height: 50px;">
+                  </div>
+                </div>
+                <div class="media-body">
+                  <strong class="notification-title">`+data.message+`</strong>
+                  <!--p class="notification-desc">Extra description can go here</p-->
+                  <div class="notification-meta">
+                    <small class="timestamp">about a minute ago</small>
+                  </div>
+                </div>
+              </div>
+          </li>
+        `;
+        notifications.html(newNotificationHtml + existingNotifications);
+
+        notificationsCount += 1;
+        notificationsCountElem.attr('data-count', notificationsCount);
+        notificationsWrapper.find('.notif-count').text(notificationsCount);
+        notificationsWrapper.show();
+    });
+
+     var channel_1 = pusher.subscribe('SendingMail');
+
+    // Bind a function to a Event (the full Laravel class)
+    channel_1.bind('send-processing', function(data) {
+        var existingNotifications = notifications.html();
+        var avatar = Math.floor(Math.random() * (71 - 20 + 1)) + 20;
+        var newNotificationHtml = `
+          <li class="notification active">
+              <div class="media">
+                <div class="media-left">
+                  <div class="media-object">
+                    <img src="https://api.adorable.io/avatars/71/`+avatar+`.png" class="img-circle" alt="50x50" style="width: 50px; height: 50px;">
+                  </div>
+                </div>
+                <div class="media-body">
+                  <strong class="notification-title">`+data.message+`</strong>
+                  <!--p class="notification-desc">Extra description can go here</p-->
+                  <div class="notification-meta">
+                    <small class="timestamp">about a minute ago</small>
+                  </div>
+                </div>
+              </div>
+          </li>
+        `;
+        notifications.html(newNotificationHtml + existingNotifications);
+
+        notificationsCount += 1;
+        notificationsCountElem.attr('data-count', notificationsCount);
+        notificationsWrapper.find('.notif-count').text(notificationsCount);
+        notificationsWrapper.show();
+    });
+     var channel_2 = pusher.subscribe('helloPusherEvent');
+
+    // Bind a function to a Event (the full Laravel class)
+    channel_2.bind('send-mess-hello-word', function(data) {
         var existingNotifications = notifications.html();
         var avatar = Math.floor(Math.random() * (71 - 20 + 1)) + 20;
         var newNotificationHtml = `
@@ -109,3 +173,5 @@
 </script>
 </body>
 </html>
+
+
