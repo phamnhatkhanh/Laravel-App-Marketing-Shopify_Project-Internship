@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\CampaignProcessController;
+use App\Http\Controllers\Client\CampaignProcessesController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -13,7 +13,7 @@ use App\Http\Controllers\CampaignProcessController;
 |
 */
 
-Route::get('/mail', [CampaignProcessController::class, 'sendEmailCampaign']);
+Route::get('/mail', [CampaignProcessesController::class, 'sendEmailCampaign']);
 
 Route::get('/', function () {
     return view('showNotification');
@@ -29,6 +29,7 @@ Route::get('/pusher', function(Illuminate\Http\Request $request) {
     event(new App\Events\HelloPusherEvent($request));
     return redirect('getPusher');
 });
+
 Auth::routes();
 
 Route::get('/home', [\App\Http\Controllers\HomeController::class, 'index'])->name('home');

@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Client;
 
+use App\Http\Controllers\Controller;
 use App\Repositories\Eloquents\CampaignProcessesRepository;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Bus\Batch;
@@ -20,9 +21,7 @@ class CampaignProcessesController extends Controller
     }
 
      // nhan list user va gui sau hien tai fix cung.
-
     public function sendEmailCampaign(){
-        // dd("sfknskf");
         $batch = Bus::batch([])
         ->then(function (Batch $batch) {
             event(new MailSent($batch->id));
@@ -35,7 +34,6 @@ class CampaignProcessesController extends Controller
             // 'khanhhcm4@gmail.com','nguyenducmanh123@gmail.com','phamgiakinh345@gmail.com','tranvangnhia57@gmail.com','khanhpham5301@gmail.com',
             // 'khanhhcm4@gmail.com','nguyenducmanh123@gmail.com','phamgiakinh345@gmail.com','tranvangnhia57@gmail.com','khanhpham5301@gmail.com',
         ];
-        // dd("sfknskf");
         foreach ($users as  $user) {
             $batch->add(new SendMail($batch_id, $user));
         }

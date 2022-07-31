@@ -32,9 +32,9 @@ class MailSent implements ShouldBroadcast
         info('comleted send mail');
          $batches =  JobBatch::find($this->batch_id);
          return 'Finish: '.$batches->finished_at.
-            'Processing: '.$batches->progress().'%'.
-            'Send: '. $batches->processedJobs().
-            'Fail: '.$batches->failed_jobs;
+            ' - Processing: '.$batches->progress().'%'.
+            ' - Send: '. $batches->processedJobs().
+            ' - Fail: '.$batches->failed_jobs;
 
     }
 
