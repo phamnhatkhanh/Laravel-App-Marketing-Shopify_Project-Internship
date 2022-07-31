@@ -17,6 +17,7 @@ use Illuminate\Http\Request;
 
 class ShopifyController extends Controller
 {
+    
     // Truyền ra ngoài view để nhập tên Shopify
     public function index(Request $request)
     {

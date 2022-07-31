@@ -10,13 +10,13 @@ use App\Http\Resources\Product\ProductCollection ;
 use App\Http\Requests\ProductRequest;
 use Illuminate\Database\Connection;
 use DB;
-use Exception;
 use Throwable;
 use Illuminate\Support\ServiceProvider;
 use PDOException;
 use Illuminate\Database\QueryException;
 use App\Helpers\JsonRespone\formatJson;
 use Symfony\Component\HttpFoundation\Response;
+
 class ProductController extends Controller
 {
 
@@ -56,5 +56,5 @@ class ProductController extends Controller
         $product = $this->productRepository->destroy( $product_id);
         return response("delete product sucess",Response::HTTP_OK);
     }
-    
+
 }

@@ -2,12 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Repositories\Eloquents\CampaignRepository;
 use App\Http\Requests\StoreCampaignRequest;
 use App\Http\Requests\UpdateCampaignRequest;
 use App\Models\Campaign;
 
 class CampaignController extends Controller
 {
+    protected $campaignRepository;
+    protected $campaign;
+
+    public function __construct(CampaignRepository $campaignRepository){
+        $this->campaignRepository= $campaignRepository;
+    }
     /**
      * Display a listing of the resource.
      *

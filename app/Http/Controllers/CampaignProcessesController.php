@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Repositories\Eloquents\CampaignProcessesRepository;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Bus\Batch;
 use App\Http\Requests\StoreCampaign_ProcessRequest;
@@ -9,8 +10,14 @@ use App\Http\Requests\UpdateCampaign_ProcessRequest;
 use App\Models\Campaign_Process;
 use App\Jobs\SendMail;
 use App\Events\MailSent;
-class CampaignProcessController extends Controller
+class CampaignProcessesController extends Controller
 {
+    protected $campaignProcessesRepository;
+    protected $campaignProcesses;
+
+    public function __construct(CampaignProcessesRepository $campaignProcessesRepository){
+        $this->campaignProcessesRepository= $campaignProcessesRepository;
+    }
 
      // nhan list user va gui sau hien tai fix cung.
 
