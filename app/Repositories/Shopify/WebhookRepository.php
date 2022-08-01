@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Repositories\Eloquents;
+namespace App\Repositories\Shopify;
 
 use App\Models\Shopify;
 use App\Models\Store;
-
+use Session;
 class WebhookRepository
 {
     //Lưu thông tin Shopify
@@ -19,19 +19,20 @@ class WebhookRepository
 
         $created_at = str_replace($findCreateAT, $replaceCreateAT, $saveData->created_at);
         $updated_at = str_replace($findUpdateAT, $replaceUpdateAT, $saveData->updated_at);
-
+        Session::put('store_id',$saveData->id);
         $dataPost = [
             'id' => $saveData->id,
             'name_merchant' => $saveData->name,
-            'domain' => $saveData->domain,
-            'myshopify_domain' => $saveData->domain,
             'email' => $saveData->email,
+            'password' => '123qwe',
             'phone' => $saveData->phone,
+            'myshopify_domain' => $saveData->domain,
+            'domain' => $saveData->domain,
             'access_token' => $access_token,
-            // 'plan_name' => $saveData->plan_name,
             'address' => $saveData->address1,
-            'zip' => $saveData->zip,
+            'province' => 'New York',
             'city' => $saveData->city,
+            'zip' => $saveData->zip,
             'country_name' => $saveData->country_name,
             'created_at' => $created_at,
             'updated_at' => $updated_at,

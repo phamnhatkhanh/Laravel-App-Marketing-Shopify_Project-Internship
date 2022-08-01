@@ -9,28 +9,41 @@ use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Bus;
+use App\Models\JobBatch;
 
-class SendingMail
+class SendingMail implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
+    public $message;
+    public $batch_id;
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($batch_id)
     {
-        //
+        $this->batch_id = $batch_id;
+        $this->message  = $this->sendProcess();
     }
 
-    /**
-     * Get the channels the event should broadcast on.
-     *
-     * @return \Illuminate\Broadcasting\Channel|array
-     */
+    public function sendProcess(){
+        info("sedding mail ". $this->batch_id);
+        $batches =  JobBatch::find($this->batch_id);
+        return 'Finish: '.$batches->finished_at.
+            ' - Processing: '.$batches->progress().'%'.
+            ' - Send: '. $batches->processedJobs().
+            ' - Fail: '.$batches->failed_jobs;
+    }
+
+
     public function broadcastOn()
     {
-        return new PrivateChannel('channel-name');
+        return ['SendingMail'];
+    }
+    public function broadcastAs(){
+        return 'send-processing';
     }
 }

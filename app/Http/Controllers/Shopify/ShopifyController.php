@@ -17,6 +17,7 @@ use Illuminate\Http\Request;
 
 class ShopifyController extends Controller
 {
+    
     // Truyền ra ngoài view để nhập tên Shopify
     public function index(Request $request)
     {
@@ -43,7 +44,7 @@ class ShopifyController extends Controller
         $redirect_uri =  'http://localhost:8000/api/authen';
         // $redirect_uri = config('shopify.ngrok') . '/api/authen';
         $url = 'https://' . $shop . '/admin/oauth/authorize?client_id=' . $apiKey . '&scope=' . $scope . '&redirect_uri=' . $redirect_uri;
-        dd($url);
+        // dd($url);
         return redirect($url);
     }
 
@@ -64,8 +65,6 @@ class ShopifyController extends Controller
         if (!Store::find($getDataLogin['shop']->id)) {
             WebhookRepository::saveDataLogin($getDataLogin, $access_token);
         }
-
-
         //Lưu thông tin khách hàng ở Shopify lấy về từ SaveDataWebhookService vào DB
         $createCustomer = WebhookService::createDataCustomer($shopName, $access_token);
 
@@ -77,8 +76,8 @@ class ShopifyController extends Controller
 
         //Đăng kí CustomerWebhooks thêm, xóa, sửa
         $this->registerProductWebhook($shopName, $access_token);
-
-        return redirect()->route('login');
+        // return redirect()->route('login');
+        return redirect('http://127.0.0.1:8000/api/dashboard');
     }
 
     //Đăng kí ProductWebhooks thêm, xóa, sửa
@@ -119,4 +118,5 @@ class ShopifyController extends Controller
             'status' => 201
         ], 201);
     }
+
 }

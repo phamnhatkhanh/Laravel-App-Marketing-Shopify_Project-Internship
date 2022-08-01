@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Query\Expression;
 use Illuminate\Support\Facades\DB;
 
 class CampaignEmailCustomizeBackgroud extends Migration
@@ -14,17 +15,29 @@ class CampaignEmailCustomizeBackgroud extends Migration
      */
     public function up()
     {
+<<<<<<< HEAD
         Schema::create('campaign_email_customize_background', function (Blueprint $table) {
+            $table->unsignedBigInteger('campaign_id');
+            $table->string('banner')->nullable();
+            $table->string('color')->default('#fff');
+            $table->string('radius')->nullable();
+=======
+
+        Schema::connection('mysql_campaigns')->create('campaign_email_customize_background', function (Blueprint $table) {
+            $databaseName = DB::connection('mysql_campaigns')->getDatabaseName();
+            
+            $table->unsignedBigInteger('campaign_id');
             $table->string('banner');
             $table->string('color');
             $table->string('radius');
+>>>>>>> m_db_dev
             $table->timestamp('created_at')->default(\DB::raw('CURRENT_TIMESTAMP'));
             $table->timestamp('updated_at')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
-            
-            $table->unsignedBigInteger('campaign_id');
+
             $table->foreign('campaign_id')
                 ->references('id')
-                ->on('campaigns')
+                // ->on('campaigns')
+                ->on(new Expression($databaseName . '.campaigns'))
                 ->onDelete('cascade');
         });
     }
@@ -36,9 +49,14 @@ class CampaignEmailCustomizeBackgroud extends Migration
      */
     public function down()
     {
-        Schema::table('campaign_email_customize_background', function (Blueprint $table) {
+        if(Schema::connection('mysql_campaigns')->hasTable('campaign_email_customize_background')){
+
+            Schema::connection('mysql_campaigns')->table('campaign_email_customize_background', function (Blueprint $table) {
                 $table->dropForeign(['campaign_id']);
-        });
-        Schema::dropIfExists('campaign_email_customize_background');
+                $table->dropColumn('campaign_id');
+            });
+            Schema::connection('mysql_campaigns')->dropIfExists('campaign_email_customize_background');
+        }
+
     }
 }

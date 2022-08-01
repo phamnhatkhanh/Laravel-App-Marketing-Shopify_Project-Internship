@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Query\Expression;
 use Illuminate\Support\Facades\DB;
 
-class CreateCampaignsTable extends Migration
+class CreateCampaignsBackupTable extends Migration
 {
     /**
      * Run the migrations.
@@ -15,14 +15,14 @@ class CreateCampaignsTable extends Migration
      */
     public function up()
     {
-        Schema::connection('mysql_campaigns')->create('campaigns', function (Blueprint $table) {
+        Schema::connection('mysql_campaigns_backup')->create('campaigns', function (Blueprint $table) {
             $databaseName = DB::connection('mysql_stores')->getDatabaseName();
             $table->id();
             $table->unsignedBigInteger('store_id');
-            $table->string('name',50);
-            $table->string('subject',200);
-            $table->longText('content');
-            $table->string('footer',200);
+            $table->string('name');
+            $table->string('subject');
+            $table->string('content');
+            $table->string('footer');
             $table->timestamps();
 
             $table->foreign('store_id')
@@ -40,14 +40,13 @@ class CreateCampaignsTable extends Migration
      */
     public function down()
     {
-        if(Schema::connection('mysql_campaigns')->hasTable('campaigns')){
+        if(Schema::connection('mysql_campaigns_backup')->hasTable('campaigns')){
 
-            Schema::connection('mysql_campaigns')->table('campaigns', function (Blueprint $table) {
+            Schema::connection('mysql_campaigns_backup')->table('campaigns', function (Blueprint $table) {
                 $table->dropForeign(['store_id']);
                 $table->dropColumn('store_id');
             });
-            Schema::connection('mysql_campaigns')->dropIfExists('campaigns');
+            Schema::connection('mysql_campaigns_backup')->dropIfExists('campaigns');
         }
-
     }
 }

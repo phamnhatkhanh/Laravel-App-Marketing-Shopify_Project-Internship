@@ -29,7 +29,9 @@ Route::prefix('auth')->group(function (){
 });
 
 
-
+Route::any('dashboard',function (){
+    return 'done get data from shopify';
+});
 //Input Name Shop
 Route::any('/login', [\App\Http\Controllers\Shopify\ShopifyController::class, 'login'])->name('login');
 

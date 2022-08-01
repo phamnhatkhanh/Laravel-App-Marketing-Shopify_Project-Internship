@@ -4,12 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Store;
 
 class Customer extends Model
 {
     use HasFactory;
-
+    protected $connection = 'mysql_customers';
     protected $table = 'customers';
+
     protected $fillable = [
         'id',
         'store_id',
@@ -24,6 +26,11 @@ class Customer extends Model
         'updated_at',
     ];
 
+
+    public function store()
+    {
+    	return $this->belongsTo(Store::class);
+    }
     public $timestamps = false;
 
     public function scopeFirstName($query, $request)

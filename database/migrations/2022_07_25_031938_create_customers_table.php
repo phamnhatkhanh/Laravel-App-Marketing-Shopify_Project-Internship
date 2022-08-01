@@ -3,6 +3,8 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Query\Expression;
+use Illuminate\Support\Facades\DB;
 
 class CreateCustomersTable extends Migration
 {
@@ -13,14 +15,16 @@ class CreateCustomersTable extends Migration
      */
     public function up()
     {
-        Schema::create('customers', function (Blueprint $table) {
+        Schema::connection('mysql_customers')->create('customers', function (Blueprint $table) {
+
+            $databaseName = DB::connection('mysql_stores')->getDatabaseName();
             $table->bigInteger('id')->unsigned()->primary();
             $table->unsignedBigInteger('store_id');
-            $table->string("first_name");
-            $table->string("last_name");
-            $table->string("email");
-            $table->string("phone");
-            $table->string("country")->nullable();
+            $table->string("first_name",20);
+            $table->string("last_name",20);
+            $table->string("email",50);
+            $table->string("phone",20);
+            $table->string("country",50)->nullable();
             $table->string("orders_count");
             $table->string("total_spent");
             $table->dateTime('created_at')->nullable();
@@ -28,7 +32,8 @@ class CreateCustomersTable extends Migration
 
             $table->foreign('store_id')
                 ->references('id')
-                ->on('stores')
+                ->on(new Expression($databaseName . '.stores'))
+                // ->on('stores')
                 ->onDelete('cascade');
         });
     }
@@ -40,9 +45,14 @@ class CreateCustomersTable extends Migration
      */
     public function down()
     {
-        Schema::table('customers', function (Blueprint $table) {
+        if(Schema::connection('mysql_customers')->hasTable('customers')){
+
+            Schema::connection('mysql_customers')->table('customers', function (Blueprint $table) {
                 $table->dropForeign(['store_id']);
+                $table->dropColumn('store_id');
             });
-        Schema::dropIfExists('customers');
+            Schema::connection('mysql_customers')->dropIfExists('customers');
+        }
+
     }
 }

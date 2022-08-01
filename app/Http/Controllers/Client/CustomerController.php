@@ -1,13 +1,22 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Client;
 
+use App\Http\Controllers\Controller;
+use App\Repositories\Eloquents\CustomerRepository;
 use App\Http\Requests\StoreCustomerRequest;
 use App\Http\Requests\UpdateCustomerRequest;
 use App\Models\Customer;
 
 class CustomerController extends Controller
 {
+    protected $customerRepository;
+    protected $customer;
+
+    public function __construct(CustomerRepository $customerRepository){
+        $this->customerRepository= $customerRepository;
+    }
+
     /**
      * Display a listing of the resource.
      *
