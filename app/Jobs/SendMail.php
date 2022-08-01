@@ -53,3 +53,7 @@ class SendMail implements ShouldQueue
         info("job failed: ");
     }
 }
+
+
+
+

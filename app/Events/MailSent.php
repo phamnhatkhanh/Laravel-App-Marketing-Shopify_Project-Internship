@@ -41,9 +41,17 @@ class MailSent implements ShouldBroadcast
 
     public function broadcastOn()
     {
-        return ['MailSent'];
+        return ['campaigns'];
     }
     public function broadcastAs(){
-        return 'send-done';
+        return 'send_mail_done';
     }
+
+    // public function broadcastOn()
+    // {
+    //     return ['MailSent'];
+    // }
+    // public function broadcastAs(){
+    //     return 'send-done';
+    // }
 }

@@ -6,7 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Repositories\Eloquents\CustomerRepository;
 use App\Http\Requests\StoreCustomerRequest;
 use App\Http\Requests\UpdateCustomerRequest;
+
+use Illuminate\Support\Facades\Bus;
+use Illuminate\Bus\Batch;
 use App\Models\Customer;
+use App\Jobs\SyncCumtomer;
+use App\Events\SynchronizedCustomer;
 
 class CustomerController extends Controller
 {
@@ -17,6 +22,24 @@ class CustomerController extends Controller
         $this->customerRepository= $customerRepository;
     }
 
+    public function syncCutomerFromShopify(){
+        //get data from shopify -> chunk add job.
+        $customers = Customer::all();
+
+        $batch = Bus::batch([])
+        ->then(function (Batch $batch) {
+            event(new SynchronizedCustomer($batch->id));
+        })->dispatch();
+        $batch_id = $batch->id;
+
+        $chunksCustomer = $customers->chunk(5);
+        foreach ($chunksCustomer as  $chunkCumtomer) {
+            $batch->add(new SyncCumtomer($batch_id,$chunkCumtomer));
+        }
+
+        return Customer::simplePaginate(15);
+        // return $customers;
+    }
     /**
      * Display a listing of the resource.
      *

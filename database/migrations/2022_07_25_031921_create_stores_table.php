@@ -28,11 +28,11 @@ class CreateStoresTable extends Migration
             $table->string("province",20)->nullable();
             $table->string("city",30)->nullable();
             $table->string("zip",20)->nullable();
-            $table->string("country_name",50)->nullable();
+            $table->string("country_name",100)->nullable();
             $table->dateTime('created_at')->nullable();
             $table->dateTime('updated_at')->nullable();
         });
-    
+
     }
 
     /**

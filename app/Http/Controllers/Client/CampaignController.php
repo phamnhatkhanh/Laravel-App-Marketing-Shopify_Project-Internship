@@ -27,7 +27,7 @@ class CampaignController extends Controller
         })->dispatch();
 
         $batch_id = $batch->id;
-        info($batch_id);
+       
         $users = [
             'khanhhcm4@gmail.com'
             // 'khanhhcm4@gmail.com','nguyenducmanh123@gmail.com','phamgiakinh345@gmail.com','tranvangnhia57@gmail.com','khanhpham5301@gmail.com',
