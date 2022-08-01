@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Repositories\Contracts\ProductRepositoryInterface;
 use App\Http\Resources\Product\ProductResource;
 use App\Http\Resources\Product\ProductCollectionResource;
+use App\Models\Store;
 use \Illuminate\Http\Request;
 
 use Symfony\Component\HttpFoundation\Response;
@@ -18,17 +19,17 @@ class ProductRepository implements ProductRepositoryInterface
 
     public function all()
     {
-        return ProductCollectionResource::collection(Product::paginate(20));
+        return ProductCollectionResource::collection(Store::paginate(20));
     }
 
     public function find( $id)
     {
-        $product =Product::find($id);
+        $product =Store::find($id);
         return new ProductResource($product);
     }
 
     public function store($request){
-        $product = new Product;
+        $product = new Store;
         $product->user_id = 2;
         $product->title = $request->title;
         $product->desc = $request->desc;
