@@ -8,11 +8,13 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-
+use App\Models\Customer;
+use App\Models\Campaign;
 class Store extends Authenticatable  implements JWTSubject
 {
     use HasFactory;
 
+    protected $connection = 'mysql_stores';
     protected $table = 'stores';
 
     protected $fillable = [
@@ -37,6 +39,15 @@ class Store extends Authenticatable  implements JWTSubject
 
     public $timestamps = false;
     protected $guarded = [];
+
+    public function customers()
+    {
+    	return $this->hasMany(Customer::class);
+    }
+    public function campaigns()
+    {
+    	return $this->hasMany(Campaign::class);
+    }
 
     public function getJWTIdentifier()
     {        return $this->getKey();

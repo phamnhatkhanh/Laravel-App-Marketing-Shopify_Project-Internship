@@ -3,6 +3,8 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Query\Expression;
+
 
 class CreateStoresTable extends Migration
 {
@@ -13,7 +15,7 @@ class CreateStoresTable extends Migration
      */
     public function up()
     {
-        Schema::create('stores', function (Blueprint $table) {
+        Schema::connection('mysql_stores')->create('stores', function (Blueprint $table) {
             $table->bigInteger('id')->unsigned()->primary();
             $table->string("name_merchant",50);
             $table->string("email",50);
@@ -30,6 +32,7 @@ class CreateStoresTable extends Migration
             $table->dateTime('created_at')->nullable();
             $table->dateTime('updated_at')->nullable();
         });
+    
     }
 
     /**
@@ -39,6 +42,9 @@ class CreateStoresTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('stores');
+        if(Schema::connection('mysql_stores')->hasTable('stores')){
+           Schema::connection('mysql_stores')->dropIfExists('stores');
+        }
+
     }
 }

@@ -4,11 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
+use App\Models\Campaign;
 class Campaign_Process extends Model
 {
     use HasFactory;
+    protected $connection = 'mysql_campaigns_processes';
     protected $table = 'campaign_processes';
+
     protected $fillable = [
         'id',
         'campaign_id',
@@ -18,4 +20,8 @@ class Campaign_Process extends Model
         'send_email_fail',
         'total_customers',
     ];
+    public function campaigns()
+    {
+    	return $this->belongsTo(Campaign::class);
+    }
 }
