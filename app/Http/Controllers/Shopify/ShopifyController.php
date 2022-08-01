@@ -40,7 +40,8 @@ class ShopifyController extends Controller
         $scope = 'read_customers,write_customers';
         $shop = $request->shop;
         $redirect_uri = config('shopify.ngrok') . '/api/authen';
-        $url = 'https://' . $shop . '/admin/oauth/authorize?client_id=' . $apiKey . '&scope=' . $scope . '&redirect_uri=' . $redirect_uri;
+        $url = 'https://'.$shop.'.myshopify.com/admin/oauth/authorize?client_id=' . $apiKey . '&scope=' . $scope . '&redirect_uri=' . $redirect_uri;
+     
         return redirect($url);
     }
 
