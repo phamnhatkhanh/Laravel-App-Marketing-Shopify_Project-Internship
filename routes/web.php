@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Client\CampaignProcessesController;
+use App\Http\Controllers\Client\CampaignController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -13,7 +13,7 @@ use App\Http\Controllers\Client\CampaignProcessesController;
 |
 */
 
-Route::get('/mail', [CampaignProcessesController::class, 'sendEmailCampaign']);
+Route::get('/mail', [CampaignController::class, 'sendEmailCampaign']);
 
 Route::get('/', function () {
     return view('showNotification');

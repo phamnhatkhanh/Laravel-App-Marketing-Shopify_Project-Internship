@@ -13,7 +13,7 @@ class ExportController extends Controller
         $headers = [
             'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0',
             'Content-type'        => 'text/csv',
-            'Content-Disposition' => 'attachment; filename=Store.csv',
+            'Content-Disposition' => 'attachment; filename=Customers.csv',
             'Expires'             => '0',
             'Pragma'              => 'public'
         ];

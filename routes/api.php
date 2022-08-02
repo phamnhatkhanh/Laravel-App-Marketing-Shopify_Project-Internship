@@ -26,6 +26,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 // Route::apiResource('products',ProductController::class);
 Route::prefix('auth')->group(function (){
         RouteHelper::includeRouteFiles(__DIR__ . '/api/jwt');
+        RouteHelper::includeRouteFiles(__DIR__ . '/api/client');
 });
 
 
@@ -41,12 +42,6 @@ Route::any('/authen', [\App\Http\Controllers\Shopify\ShopifyController::class, '
 //Register link Create,Update,Delete Webhook
 Route::post('/shopify/webhook', [\App\Http\Controllers\Shopify\WebHookController::class , 'webhook'] )
     ->name('shopify.webhook');
-
-Route::get('/showCustomer', [\App\Http\Controllers\Shopify\CustomerController::class, 'showCustomer']);
-Route::post('/searchCustomer', [\App\Http\Controllers\Shopify\CustomerController::class, 'searchCustomer']);
-Route::post('/createDate', [\App\Http\Controllers\Shopify\CustomerController::class, 'createDate']);
-Route::post('/totalSpent', [\App\Http\Controllers\Shopify\CustomerController::class, 'totalSpent']);
-Route::post('/totalOrder', [\App\Http\Controllers\Shopify\CustomerController::class, 'totalOrder']);
 
 //Export CSV
 Route::get('/export', [ExportController::class, 'export']);

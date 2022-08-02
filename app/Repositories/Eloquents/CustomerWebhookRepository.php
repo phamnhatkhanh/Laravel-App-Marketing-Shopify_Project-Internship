@@ -6,6 +6,7 @@ use App\Models\Customer;
 use App\Models\Shopify;
 use Session;
 use Illuminate\Support\Str;
+
 class CustomerWebhookRepository
 {
 
@@ -13,7 +14,7 @@ class CustomerWebhookRepository
     public static function saveDataCustomer($getCustomer)
     {
         $saveCustomers = $getCustomer['customers'];
-info($saveCustomers);
+        info($saveCustomers);
         $findCreateAT = array('T', '+07:00');
         $replaceCreateAT = array(' ', '');
 
@@ -26,7 +27,7 @@ info($saveCustomers);
 
             Customer::create([
                 'id' => $customer->id,
-                'store_id'  => 2471,
+                'store_id'  => 65147142383,
                 'email' => $customer->email,
                 'first_name' => $customer->first_name,
                 'last_name' => $customer->last_name,

@@ -15,13 +15,6 @@ class CampaignEmailCustomizeBackgroud extends Migration
      */
     public function up()
     {
-<<<<<<< HEAD
-        Schema::create('campaign_email_customize_background', function (Blueprint $table) {
-            $table->unsignedBigInteger('campaign_id');
-            $table->string('banner')->nullable();
-            $table->string('color')->default('#fff');
-            $table->string('radius')->nullable();
-=======
 
         Schema::connection('mysql_campaigns')->create('campaign_email_customize_background', function (Blueprint $table) {
             $databaseName = DB::connection('mysql_campaigns')->getDatabaseName();
@@ -30,7 +23,6 @@ class CampaignEmailCustomizeBackgroud extends Migration
             $table->string('banner');
             $table->string('color');
             $table->string('radius');
->>>>>>> m_db_dev
             $table->timestamp('created_at')->default(\DB::raw('CURRENT_TIMESTAMP'));
             $table->timestamp('updated_at')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
 

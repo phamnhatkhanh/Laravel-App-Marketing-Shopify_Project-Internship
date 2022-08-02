@@ -7,14 +7,18 @@ use App\Repositories\Eloquents\CustomerRepository;
 use App\Http\Requests\StoreCustomerRequest;
 use App\Http\Requests\UpdateCustomerRequest;
 use App\Models\Customer;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Tymon\JWTAuth\Claims\Custom;
 
 class CustomerController extends Controller
 {
     protected $customerRepository;
     protected $customer;
 
-    public function __construct(CustomerRepository $customerRepository){
-        $this->customerRepository= $customerRepository;
+    public function __construct(CustomerRepository $customerRepository)
+    {
+        $this->customerRepository = $customerRepository;
     }
 
     /**
@@ -24,72 +28,72 @@ class CustomerController extends Controller
      */
     public function index()
     {
-        //
+        $customers = Customer::simplePaginate(15);
+        return response([
+            'data' => $customers,
+            'status' => true,
+        ], 201);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    public function searchCustomer(Request $request)
     {
-        //
+        $search = Customer::query()
+            ->firstName($request)
+            ->lastName($request)
+            ->email($request)
+            ->phone($request)
+            ->get();
+
+        return response([
+            'data' => $search,
+            'status' => true,
+        ], 200);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \App\Http\Requests\StoreCustomerRequest  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(StoreCustomerRequest $request)
+    public function createDate(Request $request)
     {
-        //
+        $createdDate = Customer::query()
+            ->createAt($request)
+            ->get();
+
+        return response([
+            'data' => $createdDate,
+            'status' => true,
+        ], 201);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Customer  $customer
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Customer $customer)
+    public function totalSpent(Request $request)
     {
-        //
+        $totalSpent = Customer::query()
+            ->totalspent($request)
+            ->get();
+        return response([
+            'data' => $totalSpent,
+            'status' => true,
+        ], 201);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Customer  $customer
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Customer $customer)
+    public function totalOrder(Request $request)
     {
-        //
+        $totalOrder = Customer::query()
+            ->totalOrder($request)
+            ->get();
+
+        return response([
+            'data' => $totalOrder,
+            'status' => true,
+        ], 201);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \App\Http\Requests\UpdateCustomerRequest  $request
-     * @param  \App\Models\Customer  $customer
-     * @return \Illuminate\Http\Response
-     */
-    public function update(UpdateCustomerRequest $request, Customer $customer)
+    public function sortCustomer(Request $request)
     {
-        //
-    }
+        $sortCreated_at = Customer::query()
+            ->Sort($request)
+            ->get();
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Customer  $customer
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Customer $customer)
-    {
-        //
+        return response([
+            'data' => $sortCreated_at,
+            'status' => true,
+        ], 201);
     }
 }

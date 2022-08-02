@@ -23,7 +23,7 @@ class CustomerFactory extends Factory
             'phone'=>$this->faker->phoneNumber,
             'country'=>$this->faker->country,
             'orders_count'=>'https://khanhpham530112313.myshopify.com',
-            'total_spent'=>$this->faker->domainName,
+            'total_spent'=>$this->faker->numberBetween(1000, 7000),
             'created_at'=>$this->faker->dateTime(),
             'updated_at'=>$this->faker->dateTime(),
         ];
