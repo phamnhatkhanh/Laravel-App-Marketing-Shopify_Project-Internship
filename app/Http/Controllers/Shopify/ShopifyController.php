@@ -14,6 +14,7 @@ use App\Repositories\Eloquents\WebhookRepository;
 use App\Repositories\Webhooks\RegisterCustomerWebhookService;
 use App\Repositories\Webhooks\WebhookService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 
 class ShopifyController extends Controller
 {
@@ -22,16 +23,14 @@ class ShopifyController extends Controller
     public function index(Request $request)
     {
         $name = $request->get('name');
-        if(!empty($name)){
+        if (!empty($name)) {
             return response([
-                'data'=> $name,
+                'data' => $name,
                 'status' => 201,
-            ],201);
-        }
-        else{
+            ], 201);
+        } else {
             return response();
         }
-
     }
 
     // Lấy link Shopify
@@ -39,6 +38,7 @@ class ShopifyController extends Controller
     {
         $apiKey = config('shopify.shopify_api_key');
         $scope = 'read_customers,write_customers';
+<<<<<<< HEAD
 <<<<<<< HEAD
         $shop = $request->shop;
         $redirect_uri = config('shopify.ngrok') . '/api/authen';
@@ -52,6 +52,12 @@ class ShopifyController extends Controller
         $url = 'https://' . $shop . '/admin/oauth/authorize?client_id=' . $apiKey . '&scope=' . $scope . '&redirect_uri=' . $redirect_uri;
         // dd($url);
 >>>>>>> db_backup_dev
+=======
+        $shop = $request->shop;
+
+        $redirect_uri = config('shopify.ngrok') . '/api/authen';
+        $url = 'https://' . $shop . '/admin/oauth/authorize?client_id=' . $apiKey . '&scope=' . $scope . '&redirect_uri=' . $redirect_uri;
+>>>>>>> 63dd166df9a3d4298aa3036daa2dc9661568b46b
         return redirect($url);
     }
 
@@ -68,10 +74,30 @@ class ShopifyController extends Controller
         //Lấy thông tin đăng nhập
         $getDataLogin = WebhookService::getDataLogin($shopName, $access_token);
 
-        //Lưu thông tin Shopify vào DB
+        $password = $this->generatePasswordFromEmail($getDataLogin['shop']->email);
+
+
+
+
+        if ($password == "") {
+            //return redirect.........
+            return redirect('http://127.0.0.1:8000/api/dashboard');
+        }
+
+
+        $storeData = array(
+            // "id" => $getDataLogin['shop']->id,
+            "password" => bcrypt($password),
+        );
+        Session::put('password', $storeData);
+
+        // Lưu thông tin Shopify vào DB
         if (!Store::find($getDataLogin['shop']->id)) {
             WebhookRepository::saveDataLogin($getDataLogin, $access_token);
         }
+
+
+
         //Lưu thông tin khách hàng ở Shopify lấy về từ SaveDataWebhookService vào DB
         $createCustomer = WebhookService::createDataCustomer($shopName, $access_token);
 
@@ -107,12 +133,12 @@ class ShopifyController extends Controller
     //Đưa vào Queue để tự động lưu những khách hàng đã được sửa trên Shopify vào DB
     public static function updateFromShopify($payload)
     {
-       $data =  dispatch(new UpdateCustomer($payload));
+        $data =  dispatch(new UpdateCustomer($payload));
 
-       return response([
-        'data' => $data,
-        'status' => 201
-    ], 201);
+        return response([
+            'data' => $data,
+            'status' => 201
+        ], 201);
     }
 
     //Đưa vào Queue để tự động xóa khách hàng đã xóa trên Shopify trong DB
@@ -126,4 +152,12 @@ class ShopifyController extends Controller
         ], 201);
     }
 
+    private function generatePasswordFromEmail($email)
+    {
+        $parsedEmail = explode("@", $email);
+        if (count($parsedEmail) > 1) {
+            return $parsedEmail[0];
+        }
+        return "";
+    }
 }
