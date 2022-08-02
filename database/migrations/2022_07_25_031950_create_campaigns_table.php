@@ -48,6 +48,5 @@ class CreateCampaignsTable extends Migration
             });
             Schema::connection('mysql_campaigns')->dropIfExists('campaigns');
         }
-
     }
 }

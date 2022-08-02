@@ -33,7 +33,6 @@ class CreateCustomersBackup extends Migration
             $table->foreign('store_id')
                 ->references('id')
                 ->on(new Expression($databaseName . '.stores'))
-                // ->on('stores')
                 ->onDelete('cascade');
         });
     }
@@ -45,6 +44,13 @@ class CreateCustomersBackup extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('customers_backup');
+        if(Schema::connection('mysql_customers_backup')->hasTable('customers')){
+            Schema::connection('mysql_customers_backup')->table('customers', function (Blueprint $table) {
+                $table->dropForeign(['store_id']);
+                $table->dropColumn('store_id');
+            });
+            Schema::connection('mysql_customers_backup')->dropIfExists('customers');
+        }
+
     }
 }

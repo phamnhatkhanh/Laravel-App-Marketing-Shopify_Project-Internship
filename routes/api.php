@@ -40,10 +40,8 @@ Route::get('/export', [ExportController::class, 'export']);
 Route::any('dashboard',function (){
     return 'done get data from shopify';
 
-<<<<<<< HEAD
 });
 
-=======
 //Get Acess_Token and handle next
 Route::any('/authen', [\App\Http\Controllers\Shopify\ShopifyController::class, 'authen'])->name('authen');
 
@@ -53,4 +51,3 @@ Route::post('/shopify/webhook', [\App\Http\Controllers\Shopify\WebHookController
 
 //Export CSV
 Route::get('/export', [ExportController::class, 'export']);
->>>>>>> 63dd166df9a3d4298aa3036daa2dc9661568b46b

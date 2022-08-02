@@ -25,13 +25,8 @@ class CustomerFactory extends Factory
             'email'=> $this->faker->email,
             'phone'=>$this->faker->phoneNumber,
             'country'=>$this->faker->country,
-<<<<<<< HEAD
             'orders_count'=>$this->faker->numberBetween(0,500),
             'total_spent'=>$this->faker->numberBetween(500,4000),
-=======
-            'orders_count'=>'https://khanhpham530112313.myshopify.com',
-            'total_spent'=>$this->faker->numberBetween(1000, 7000),
->>>>>>> 63dd166df9a3d4298aa3036daa2dc9661568b46b
             'created_at'=>$this->faker->dateTime(),
             'updated_at'=>$this->faker->dateTime(),
         ];

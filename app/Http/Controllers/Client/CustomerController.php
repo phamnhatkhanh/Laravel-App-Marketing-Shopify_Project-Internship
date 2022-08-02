@@ -10,14 +10,8 @@ use App\Http\Requests\UpdateCustomerRequest;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Bus\Batch;
 use App\Models\Customer;
-<<<<<<< HEAD
 use App\Jobs\SyncCumtomer;
 use App\Events\SynchronizedCustomer;
-=======
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Tymon\JWTAuth\Claims\Custom;
->>>>>>> 63dd166df9a3d4298aa3036daa2dc9661568b46b
 
 class CustomerController extends Controller
 {
