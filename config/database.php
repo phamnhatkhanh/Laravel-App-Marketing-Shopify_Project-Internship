@@ -176,7 +176,25 @@ return [
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
         ],
-
+        'mysql_customers_backup' => [
+            'driver' => 'mysql',
+            'url' => env('DATABASE_URL'),
+            'host' => env('CUSTOMER_BACKUP_DB_HOST', '127.0.0.1'),
+            'port' => env('CUSTOMER_BACKUP_DB_PORT', '3306'),
+            'database' => env('CUSTOMER_BACKUP_DB_DATABASE', 'forge'),
+            'username' => env('CUSTOMER_BACKUP_DB_USERNAME', 'forge'),
+            'password' => env('CUSTOMER_BACKUP_DB_PASSWORD', ''),
+            'unix_socket' => env('CUSTOMER_BACKUP_DB_SOCKET', ''),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'strict' => true,
+            'engine' => null,
+            'options' => extension_loaded('pdo_mysql') ? array_filter([
+                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+            ]) : [],
+        ],
         'pgsql' => [
             'driver' => 'pgsql',
             'url' => env('DATABASE_URL'),
