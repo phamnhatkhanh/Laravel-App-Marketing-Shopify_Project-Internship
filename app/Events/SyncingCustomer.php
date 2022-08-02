@@ -11,7 +11,7 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 use App\Models\JobBatch;
 
-class SendingMail implements ShouldBroadcast
+class SyncingCustomer implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -29,23 +29,23 @@ class SendingMail implements ShouldBroadcast
     }
 
     public function sendProcess(){
-        info("sedding mail ". $this->batch_id);
+        info("sycn cutomer ". $this->batch_id);
         $batches =  JobBatch::find($this->batch_id);
-        return 'Finish: '.$batches->finished_at.
-            ' - Processing: '.$batches->progress().'%'.
-            ' - Send: '. $batches->processedJobs().
-            ' - Fail: '.$batches->failed_jobs;
+        return $batches->progress();
+        // return 'Finish: '.$batches->finished_at.
+        //     ' - Processing: '.$batches->progress().'%'.
+        //     ' - Send: '. $batches->processedJobs().
+        //     ' - Fail: '.$batches->failed_jobs;
     }
 
 
     public function broadcastOn()
     {
-        return ['campaigns'];
+        return ['customers_syncing'];
     }
     public function broadcastAs(){
-        return 'sending_email';
+        return 'syncing_customer';
     }
-
     // public function broadcastOn()
     // {
     //     return ['SendingMail'];

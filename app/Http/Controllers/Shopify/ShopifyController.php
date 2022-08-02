@@ -39,10 +39,19 @@ class ShopifyController extends Controller
     {
         $apiKey = config('shopify.shopify_api_key');
         $scope = 'read_customers,write_customers';
+<<<<<<< HEAD
         $shop = $request->shop;
         $redirect_uri = config('shopify.ngrok') . '/api/authen';
         $url = 'https://'.$shop.'.myshopify.com/admin/oauth/authorize?client_id=' . $apiKey . '&scope=' . $scope . '&redirect_uri=' . $redirect_uri;
 
+=======
+        // $shop = $request->shop;
+        $shop = env('SHOPIFY_DOMAIN');
+        $redirect_uri =  'http://localhost:8000/api/authen';
+        // $redirect_uri = config('shopify.ngrok') . '/api/authen';
+        $url = 'https://' . $shop . '/admin/oauth/authorize?client_id=' . $apiKey . '&scope=' . $scope . '&redirect_uri=' . $redirect_uri;
+        // dd($url);
+>>>>>>> db_backup_dev
         return redirect($url);
     }
 

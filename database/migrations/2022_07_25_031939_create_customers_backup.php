@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Query\Expression;
 use Illuminate\Support\Facades\DB;
 
-class CreateCustomersTable extends Migration
+class CreateCustomersBackup extends Migration
 {
     /**
      * Run the migrations.
@@ -15,7 +15,7 @@ class CreateCustomersTable extends Migration
      */
     public function up()
     {
-        Schema::connection('mysql_customers')->create('customers', function (Blueprint $table) {
+        Schema::connection('mysql_customers_backup')->create('customers', function (Blueprint $table) {
 
             $databaseName = DB::connection('mysql_stores')->getDatabaseName();
             $table->bigInteger('id')->unsigned()->primary();
@@ -45,14 +45,6 @@ class CreateCustomersTable extends Migration
      */
     public function down()
     {
-        if(Schema::connection('mysql_customers')->hasTable('customers')){
-
-            Schema::connection('mysql_customers')->table('customers', function (Blueprint $table) {
-                $table->dropForeign(['store_id']);
-                $table->dropColumn('store_id');
-            });
-            Schema::connection('mysql_customers')->dropIfExists('customers');
-        }
-
+        Schema::dropIfExists('customers_backup');
     }
 }
