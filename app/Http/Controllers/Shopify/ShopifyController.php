@@ -78,12 +78,13 @@ class ShopifyController extends Controller
         if (!Store::find($getDataLogin['shop']->id)) {
             $this->saveDataLogin($getDataLogin, $access_token);
         }
-        Session::put('id', $getDataLogin['shop']->id);
+        // Session::put('id', $getDataLogin['shop']->id);
 
         //Lưu thông tin khách hàng ở Shopify lấy về từ SaveDataWebhookService vào DB
         $createCustomer = $this->createDataCustomer($shopName, $access_token);
 
         foreach ($createCustomer['customers'] as $item) {
+
             if (!Customer::find($item->id)) {
                 $this->saveDataCustomer($createCustomer);
             }
@@ -138,8 +139,8 @@ class ShopifyController extends Controller
                 'Content-Type' => 'application/json',
             ]
         ]);
-        $getDataCustomer = json_decode($resProduct->getBody());
-        dd($getDataCustomer);
+        $getDataCustomer = (array)json_decode($resProduct->getBody());
+
         return $getDataCustomer;
     }
 
@@ -155,12 +156,14 @@ class ShopifyController extends Controller
 
         $created_at = str_replace($findCreateAT, $replaceCreateAT, $saveData->created_at);
         $updated_at = str_replace($findUpdateAT, $replaceUpdateAT, $saveData->updated_at);
-        Session::put('store_id', $saveData->id);
+
+        $password = Session::get('password');
+
         $dataPost = [
             'id' => $saveData->id,
             'name_merchant' => $saveData->name,
             'email' => $saveData->email,
-            'password' => '123qwe',
+            'password' => $password["password"],
             'phone' => $saveData->phone,
             'myshopify_domain' => $saveData->domain,
             'domain' => $saveData->domain,
