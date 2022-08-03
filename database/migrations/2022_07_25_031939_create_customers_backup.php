@@ -20,8 +20,8 @@ class CreateCustomersBackup extends Migration
             $databaseName = DB::connection('mysql_stores')->getDatabaseName();
             $table->bigInteger('id')->unsigned()->primary();
             $table->unsignedBigInteger('store_id');
-            $table->string("first_name",20);
-            $table->string("last_name",20);
+            $table->string("first_name",50);
+            $table->string("last_name",50);
             $table->string("email",50);
             $table->string("phone",20);
             $table->string("country",100)->nullable();

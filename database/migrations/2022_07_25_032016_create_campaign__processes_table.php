@@ -22,7 +22,7 @@ class CreateCampaignProcessesTable extends Migration
             $table->unsignedBigInteger('campaign_id');
             $table->string('name',50);
             $table->string('status')->nullable()->default(null);
-            $table->string('process')->unsigned()->default(0);
+            $table->string('process')->default(0);
             $table->integer('send_email_done')->unsigned()->default(0);
             $table->integer('send_email_fail')->unsigned()->default(0);
             $table->integer('total_customers')->unsigned()->default(0);
