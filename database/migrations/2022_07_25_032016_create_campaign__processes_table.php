@@ -13,7 +13,7 @@ class CreateCampaignProcessesTable extends Migration
      *
      * @return void
      */
-    
+
     public function up()
     {
         Schema::connection('mysql_campaigns_processes')->create('campaign_processes', function (Blueprint $table) {

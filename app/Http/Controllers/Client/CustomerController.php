@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Repositories\Eloquents\CustomerRepository;
 use App\Http\Requests\StoreCustomerRequest;
 use App\Http\Requests\UpdateCustomerRequest;
-
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Bus\Batch;
 use App\Models\Customer;
