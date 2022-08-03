@@ -29,7 +29,7 @@ class SyncingCustomer implements ShouldBroadcast
     }
 
     public function sendProcess(){
-        info("sycn cutomer ". $this->batch_id);
+        // info("sycn cutomer ". $this->batch_id);
         $batches =  JobBatch::find($this->batch_id);
         return $batches->progress();
         // return 'Finish: '.$batches->finished_at.

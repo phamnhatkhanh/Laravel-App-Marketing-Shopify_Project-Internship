@@ -108,9 +108,9 @@
     });
 
     // Subscribe to the channel we specified in our Laravel Event
-    var channel = pusher.subscribe('customers_synchronized');
+    var channel = pusher.subscribe('campaigns');
     // Bind a function to a Event (the full Laravel class)
-    channel.bind('synchronized_customer', function(data) {
+    channel.bind('send_mail', function(data) {
         var existingNotifications = notifications.html();
         var avatar = Math.floor(Math.random() * (71 - 20 + 1)) + 20;
         var newNotificationHtml = `

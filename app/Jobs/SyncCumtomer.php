@@ -40,7 +40,7 @@ class SyncCumtomer implements ShouldQueue
         foreach ($this->customers as $customer) {
             // info(gettype($customer));
             $customer->first_name="phamj";
-            info($customer->id);
+            // info($customer->id);
             // $customer->update([
             //     $customer->first_name,
             //     $customer->last_name,

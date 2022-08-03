@@ -17,12 +17,12 @@ class CreateCampaignProcessesTable extends Migration
     {
         Schema::connection('mysql_campaigns_processes')->create('campaign_processes', function (Blueprint $table) {
             $databaseName = DB::connection('mysql_campaigns')->getDatabaseName();
-            
+
             $table->id();
             $table->unsignedBigInteger('campaign_id');
             $table->string('name',50);
-            $table->string('status');
-            $table->integer('process')->unsigned()->default(0);
+            $table->string('status')->nullable()->default(null);
+            $table->string('process')->unsigned()->default(0);
             $table->integer('send_email_done')->unsigned()->default(0);
             $table->integer('send_email_fail')->unsigned()->default(0);
             $table->integer('total_customers')->unsigned()->default(0);

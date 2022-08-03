@@ -16,25 +16,29 @@ class SendingMail implements ShouldBroadcast
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $message;
-    public $batch_id;
+    public $batchId;
+    public $campaignProcessId;
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct($batch_id)
+    public function __construct($batchId,$campaignProcessId)
     {
-        $this->batch_id = $batch_id;
-        $this->message  = $this->sendProcess();
+        $this->batchId = $batchId;
+        $this->campaignProcessId = $campaignProcessId;
+        $this->message  = $this->sendProcess($this->campaignProcessId);
     }
 
-    public function sendProcess(){
-        info("sedding mail ". $this->batch_id);
-        $batches =  JobBatch::find($this->batch_id);
+    public function sendProcess($campaignProcessId){
+        info("event campaignProcessId: ".$campaignProcessId);
+        info("sedding mail ". $this->batchId);
+        $batches =  JobBatch::find($this->batchId);
         return 'Finish: '.$batches->finished_at.
             ' - Processing: '.$batches->progress().'%'.
             ' - Send: '. $batches->processedJobs().
-            ' - Fail: '.$batches->failed_jobs;
+            ' - Fail: '.$batches->failed_jobs.
+            'OF: '.$campaignProcessId;
     }
 
 
@@ -43,7 +47,7 @@ class SendingMail implements ShouldBroadcast
         return ['campaigns'];
     }
     public function broadcastAs(){
-        return 'sending_email';
+        return 'send_mail';
     }
 
     // public function broadcastOn()

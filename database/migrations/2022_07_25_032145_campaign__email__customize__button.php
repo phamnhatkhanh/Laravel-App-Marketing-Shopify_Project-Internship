@@ -20,10 +20,10 @@ class CampaignEmailCustomizeButton extends Migration
             $databaseName = DB::connection('mysql_campaigns')->getDatabaseName();
 
             $table->unsignedBigInteger('campaign_id');
-            $table->string('label');
-            $table->string('radius');
-            $table->string('background_color');
-            $table->string('text_color');
+            $table->string('button_label');
+            $table->string('button_radius');
+            $table->string('button_background_color');
+            $table->string('button_text_color');
             $table->timestamp('created_at')->default(\DB::raw('CURRENT_TIMESTAMP'));
             $table->timestamp('updated_at')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
 

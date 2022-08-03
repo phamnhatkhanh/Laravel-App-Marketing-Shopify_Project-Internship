@@ -20,7 +20,7 @@ class CampaignEmailContentVariant extends Migration
             $databaseName = DB::connection('mysql_campaigns')->getDatabaseName();
 
             $table->unsignedBigInteger('campaign_id');
-            $table->string(' name');
+            $table->string('name');
             $table->timestamp('created_at')->default(\DB::raw('CURRENT_TIMESTAMP'));
             $table->timestamp('updated_at')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
 
