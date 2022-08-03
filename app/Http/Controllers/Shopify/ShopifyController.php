@@ -210,13 +210,13 @@ class ShopifyController extends Controller
         }
     }
 
-    //Hash password
-    private function generatePasswordFromEmail($email)
-    {
-        $parsedEmail = explode("@", $email);
-        if (count($parsedEmail) > 1) {
-            return $parsedEmail[0];
-        }
-        return "";
-    }
+
+    // private function generatePasswordFromEmail($email)
+    // {
+    //     $parsedEmail = explode("@", $email);
+    //     if (count($parsedEmail) > 1) {
+    //         return $parsedEmail[0];
+    //     }
+    //     retu
+
 }
