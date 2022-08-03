@@ -20,6 +20,8 @@ use App\Http\Requests\ProductRequest;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+Route::get('/get-campaigns-process',[CampaignController::class, 'getCampaignProceess']);
+
 Route::post('/save-campaign', [CampaignController::class, 'saveCampaign']);
 
 Route::prefix('customer')->group(function() {

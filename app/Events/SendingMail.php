@@ -31,7 +31,7 @@ class SendingMail implements ShouldBroadcast
     }
 
     public function sendProcess($campaignProcessId){
-        info("event campaignProcessId: ".$campaignProcessId);
+        
         info("sedding mail ". $this->batchId);
         $batches =  JobBatch::find($this->batchId);
         return 'Finish: '.$batches->finished_at.
