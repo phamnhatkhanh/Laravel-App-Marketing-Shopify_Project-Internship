@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Campaign;
-class Campaign_Process extends Model
+class CampaignProcess extends Model
 {
     use HasFactory;
     protected $connection = 'mysql_campaigns_processes';
@@ -20,7 +20,7 @@ class Campaign_Process extends Model
         'send_email_fail',
         'total_customers',
     ];
-    public function campaigns()
+    public function campaign()
     {
     	return $this->belongsTo(Campaign::class);
     }

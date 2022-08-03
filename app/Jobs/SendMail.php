@@ -20,26 +20,28 @@ class SendMail implements ShouldQueue
     // use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public $user;
-    public $batch_id;
+    public $MailCustomer;
+    public $batchId;
+    public $campaignProcessId;
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($batch_id,$user)
+    public function __construct($batchId,$MailCustomer,$campaignProcessId)
     {
-        $this->user   = $user;
-        $this->batch_id = $batch_id;
+        $this->MailCustomer   = $MailCustomer;
+        $this->batchId = $batchId;
+        $this->campaignProcessId = $campaignProcessId;
     }
 
     public function handle()
     {
-        info('Excuting mail: '.$this->user .'  ' . $this->batch_id);
+        info('Excuting mail: '.$this->MailCustomer .' batch ' . $this->batchId. ' campaign_id ' .$this->campaignProcessId);
 
-        Mail::to($this->user)->send(new WelcomeMail());
+        Mail::to($this->MailCustomer)->send(new WelcomeMail());
+        event(new SendingMail($this->batchId,$this->campaignProcessId));
         if (Mail::failures() != 0) {
-            event(new SendingMail($this->batch_id));
             // return "Email has been sent successfully.";
         }
         // info ('please check server');
@@ -53,3 +55,7 @@ class SendMail implements ShouldQueue
         info("job failed: ");
     }
 }
+
+
+
+

@@ -13,7 +13,7 @@ class CampaignProcessSeeder extends Seeder
      */
     public function run()
     {
-        Campaign_Process::factory()->times(10)->create();
+        Campaign_Process::factory()->times(5)->create();
     }
 }
 // Database\Factories\

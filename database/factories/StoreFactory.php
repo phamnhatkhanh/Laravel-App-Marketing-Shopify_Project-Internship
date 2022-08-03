@@ -11,11 +11,14 @@ class StoreFactory extends Factory
      *
      * @return array
      */
+    private static $id = 1;
     public function definition()
     {
 
+
         return [
-            'id' => $this->faker->numberBetween(1000, 7000),
+            'id' => self::$id++,
+            // 'id' => $this->faker->numberBetween(1000, 7000),
             'name_merchant'=>$this->faker->username,
             'email'=> $this->faker->email,
             'phone'=>$this->faker->phoneNumber,

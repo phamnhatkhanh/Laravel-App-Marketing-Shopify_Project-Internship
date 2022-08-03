@@ -10,5 +10,5 @@ use Throwable;
 
 class CampaignRepository implements CampaignRepositoryInterface
 {
-    
+
 }

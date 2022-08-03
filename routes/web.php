@@ -34,6 +34,14 @@ Auth::routes();
 
 Route::get('/home', [\App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
+<<<<<<< HEAD
 Route::get('/install', function (){
     return redirect('api/login');
  });
+=======
+//Get Acess_Token and handle next
+Route::any('/authen', [\App\Http\Controllers\Shopify\ShopifyController::class, 'authen'])->name('authen');
+
+
+
+>>>>>>> shopify
