@@ -57,7 +57,7 @@ class CustomerController extends Controller
 
     public function searchCustomer(Request $request)
     {
-        $search = Customer::query()
+        $result = Customer::query()
             ->firstName($request)
             ->lastName($request)
             ->email($request)
@@ -65,9 +65,21 @@ class CustomerController extends Controller
             ->get();
 
         return response([
-            'data' => $search,
+            'data' => $result,
             'status' => true,
         ], 200);
+    }
+
+    public function sortCustomer(Request $request)
+    {
+        $sortCreated_at = Customer::query()
+            ->Sort($request)
+            ->get();
+
+        return response([
+            'data' => $sortCreated_at,
+            'status' => true,
+        ], 201);
     }
 
     public function createDate(Request $request)
@@ -105,15 +117,5 @@ class CustomerController extends Controller
         ], 201);
     }
 
-    public function sortCustomer(Request $request)
-    {
-        $sortCreated_at = Customer::query()
-            ->Sort($request)
-            ->get();
-
-        return response([
-            'data' => $sortCreated_at,
-            'status' => true,
-        ], 201);
-    }
+   
 }

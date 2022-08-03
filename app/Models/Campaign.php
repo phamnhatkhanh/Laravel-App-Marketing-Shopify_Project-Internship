@@ -38,4 +38,21 @@ class Campaign extends Model
     {
     	return $this->belongsTo(Store::class);
     }
+
+    public function scopeCampaign($query, $request)
+    {
+        if ($request->has('name')) {
+            $query->where('name', 'LIKE', '%' . $request->name . '%');
+        }
+
+        return $query;
+    }
+
+    public function scopeSortCampaingnDate($query, $request)
+    {
+        $sortCreated_at = $request->created_at;
+        $queryCustomer = Campaign::orderBy('created_at', $sortCreated_at ? $sortCreated_at : 'ASC');
+
+        return  $queryCustomer;
+    }
 }

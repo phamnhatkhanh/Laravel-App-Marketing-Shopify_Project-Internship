@@ -44,12 +44,12 @@ Route::any('dashboard',function (){
 
 });
 
-//Get Acess_Token and handle next
-Route::any('/authen', [\App\Http\Controllers\Shopify\ShopifyController::class, 'authen'])->name('authen');
-
 //Register link Create,Update,Delete Webhook
 Route::post('/shopify/webhook', [\App\Http\Controllers\Shopify\WebHookController::class , 'webhook'] )
     ->name('shopify.webhook');
+
+//Send mail
+Route::get('/email', [\App\Http\Controllers\SendMailController::class,'email']);
 
 //Export CSV
 Route::get('/export', [ExportController::class, 'export']);

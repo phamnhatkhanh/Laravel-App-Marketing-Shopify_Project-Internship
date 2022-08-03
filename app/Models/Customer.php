@@ -40,7 +40,6 @@ class Customer extends Model
         if ($request->has('first_name')) {
             $query->where('first_name', 'LIKE', '%' . $request->first_name . '%');
         }
-
         return $query;
     }
 

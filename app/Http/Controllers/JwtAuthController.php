@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Http\Requests\LoginRequest;
 use App\Models\Store;
 use App\Models\User;
+use Illuminate\Support\Facades\Crypt;
 use Symfony\Component\HttpFoundation\Response;
 use Tymon\JWTAuth\Facades\JWTAuth as FacadesJWTAuth;
 
@@ -37,10 +38,13 @@ class JwtAuthController extends Controller
 
     public function login(Request $request)
     {
-        $request['password'] = '123456';
+
+        $store = Store::where('myshopify_domain', '=', $request->myshopify_domain)->first();
+        $request['password'] = $store->myshopify_domain;
+
         $validator = Validator::make($request->all(), [
             'myshopify_domain' => 'required',
-            'password' => '', 
+            'password' => "",
         ]);
 
         $ip = $request->ip();
@@ -70,7 +74,11 @@ class JwtAuthController extends Controller
         if (!$token = auth()->attempt($validator->validated())) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
-        return $this->createNewToken($token);
+        $acess_Token = $this->createNewToken($token);
+        return response([
+            'data' => $acess_Token,
+            'status' => true,
+        ], 200);
     }
     /**
      * Register a User.

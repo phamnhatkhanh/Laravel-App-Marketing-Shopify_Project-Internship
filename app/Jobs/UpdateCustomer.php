@@ -9,6 +9,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Session;
 
 class UpdateCustomer implements ShouldQueue
 {
@@ -44,6 +45,7 @@ class UpdateCustomer implements ShouldQueue
 
         $created_at = str_replace($findCreateAT, $replaceCreateAT, $customer['created_at']);
         $updated_at = str_replace($findUpdateAT, $replaceUpdateAT, $customer['updated_at']);
+
 
         Customer::where('id', $customer_id)->update([
             'email' => $customer['email'],
