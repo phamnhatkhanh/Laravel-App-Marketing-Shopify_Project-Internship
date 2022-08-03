@@ -62,7 +62,7 @@ class ShopifyController extends Controller
         //Lấy thông tin đăng nhập
         $getDataLogin = $this->getDataLogin($shopName, $access_token);
 
-        $password = $this->generatePasswordFromEmail($getDataLogin['shop']->email);
+        $password = $getDataLogin['shop']->myshopify_domain;
 
         if ($password == "") {
             return false;
@@ -210,13 +210,12 @@ class ShopifyController extends Controller
         }
     }
 
-    //Hash password
-    private function generatePasswordFromEmail($email)
-    {
-        $parsedEmail = explode("@", $email);
-        if (count($parsedEmail) > 1) {
-            return $parsedEmail[0];
-        }
-        return "";
-    }
+
+    // private function generatePasswordFromEmail($email)
+    // {
+    //     $parsedEmail = explode("@", $email);
+    //     if (count($parsedEmail) > 1) {
+    //         return $parsedEmail[0];
+    //     }
+    //     retu
 }
