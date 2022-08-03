@@ -144,6 +144,5 @@ class ShopifyController extends Controller
     //     if (count($parsedEmail) > 1) {
     //         return $parsedEmail[0];
     //     }
-    //     return "";
-    // }
+    //     retu
 }
