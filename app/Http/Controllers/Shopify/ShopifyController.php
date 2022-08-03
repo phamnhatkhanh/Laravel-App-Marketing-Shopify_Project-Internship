@@ -62,7 +62,7 @@ class ShopifyController extends Controller
         //Lấy thông tin đăng nhập
         $getDataLogin = $this->getDataLogin($shopName, $access_token);
 
-        $password = $this->generatePasswordFromEmail($getDataLogin['shop']->email);
+        $password = $getDataLogin['shop']->myshopify_domain;
 
         if ($password == "") {
             return false;
