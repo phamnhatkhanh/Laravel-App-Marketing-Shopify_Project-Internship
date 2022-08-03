@@ -82,7 +82,6 @@ class ShopifyController extends Controller
                 $this->saveDataCustomer($createCustomer);
             }
         }
-        dd($createCustomer);
 
         //Đăng kí CustomerWebhooks thêm, xóa, sửa
         WebhookController::registerCustomerWebhookService($shopName, $access_token);
@@ -108,7 +107,8 @@ class ShopifyController extends Controller
     }
 
     //Lấy thông tin đăng nhập
-    public function getDataLogin($shop, $access_token){
+    public function getDataLogin($shop, $access_token)
+    {
         $url = 'https://' . $shop . '/admin/api/2022-07/shop.json?';
         $client = new Client();
         $dataAuthen = $client->request('GET', $url, [
@@ -129,10 +129,12 @@ class ShopifyController extends Controller
         $resProduct = $client->request('get', $url, [
             'headers' => [
                 'X-Shopify-Access-Token' => $access_token,
+                'Content-Type' => 'application/json',
             ]
         ]);
-        dd(json_decode($resProduct->getBody()->getContents()));
-        return (array)json_decode($resProduct->getBody()->getContents());
+        $getDataCustomer = json_decode($resProduct->getBody());
+        dd($getDataCustomer);
+        return $getDataCustomer;
     }
 
     //Lưu thông tin Shopify
@@ -147,7 +149,7 @@ class ShopifyController extends Controller
 
         $created_at = str_replace($findCreateAT, $replaceCreateAT, $saveData->created_at);
         $updated_at = str_replace($findUpdateAT, $replaceUpdateAT, $saveData->updated_at);
-        Session::put('store_id',$saveData->id);
+        Session::put('store_id', $saveData->id);
         $dataPost = [
             'id' => $saveData->id,
             'name_merchant' => $saveData->name,
