@@ -139,7 +139,7 @@ class ShopifyController extends Controller
             ]
         ]);
         $getDataCustomer = json_decode($resProduct->getBody());
-        dd($getDataCustomer);
+        
         return $getDataCustomer;
     }
 
@@ -166,7 +166,7 @@ class ShopifyController extends Controller
             'domain' => $saveData->domain,
             'access_token' => $access_token,
             'address' => $saveData->address1,
-            'province' => 'New York',
+            'province' => $saveData->province,
             'city' => $saveData->city,
             'zip' => $saveData->zip,
             'country_name' => $saveData->country_name,
