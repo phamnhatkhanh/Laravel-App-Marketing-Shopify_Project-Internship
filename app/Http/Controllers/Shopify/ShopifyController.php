@@ -4,14 +4,23 @@ namespace App\Http\Controllers\Shopify;
 
 use App\Http\Controllers\Controller;
 use App\Models\Customer;
-use App\Models\Shopify;
 use App\Models\Store;
+use App\Repositories\Shopify\ShopifyRepository;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
+use phpDocumentor\Reflection\Types\This;
 
 class ShopifyController extends Controller
 {
+    protected $productRepository;
+
+//     protected $product;
+
+    public function __construct(ShopifyRepository $shopifyRepository)
+    {
+        $this->shopifyRepository = $shopifyRepository;
+    }
 
     // Truyền ra ngoài view để nhập tên Shopify
     public function index(Request $request)
@@ -75,7 +84,7 @@ class ShopifyController extends Controller
         if (!Store::find($getDataLogin['shop']->id)) {
             $this->saveDataLogin($getDataLogin, $access_token);
         }
-        // Session::put('id', $getDataLogin['shop']->id);
+        Session::put('id', $getDataLogin['shop']->id);
 
         //Lưu thông tin khách hàng ở Shopify lấy về từ SaveDataWebhookService vào DB
         $createCustomer = $this->createDataCustomer($shopName, $access_token);
@@ -88,56 +97,31 @@ class ShopifyController extends Controller
         }
 
         //Đăng kí CustomerWebhooks thêm, xóa, sửa
-        WebhookController::registerCustomerWebhookService($shopName, $access_token);
+        $this->registerCustomerWebhookService($shopName, $access_token);
 
         return redirect('http://127.0.0.1:8000/api/dashboard');
     }
 
     public function getAccessToken(string $code, string $domain)
     {
-        $client2 = new Client();
-        $response = $client2->post(
-            "https://" . $domain . "/admin/oauth/access_token",
-            [
-                'form_params' => [
-                    'client_id' => env('SHOPIFY_API_KEY'),
-                    'client_secret' => env('SHOPIFY_SECRET_KEY'),
-                    'code' => $code,
-                ]
-            ]
-        );
+       return $this->shopifyRepository->getAccessToken($code, $domain);
+    }
 
-        return json_decode($response->getBody()->getContents());
+    //Register Webhook Add, Edit, Delete, Uninstall
+    public function registerCustomerWebhookService($shop, $access_token){
+        $this->shopifyRepository->registerCustomerWebhookService($shop, $access_token);
     }
 
     //Lấy thông tin đăng nhập
     public function getDataLogin($shop, $access_token)
     {
-        $url = 'https://' . $shop . '/admin/api/2022-07/shop.json?';
-        $client = new Client();
-        $dataAuthen = $client->request('GET', $url, [
-            'headers' => [
-                'X-Shopify-Access-Token' => $access_token,
-            ]
-        ]);
-        $getDataStore = (array)json_decode($dataAuthen->getBody());
-
-        return $getDataStore;
+        return $this->shopifyRepository->getDataLogin($shop, $access_token);
     }
 
     //Đếm số khách hàng lấy về
     public function countDataCustomer($shop, $access_token)
     {
-        $client = new Client();
-        $url = 'https://' . $shop . '/admin/api/2022-07/customers/count.json';
-        $resCustomer = $client->request('get', $url, [
-            'headers' => [
-                'X-Shopify-Access-Token' => $access_token,
-            ]
-        ]);
-        $countCustomer = (array)json_decode($resCustomer->getBody());
-
-        return $countCustomer;
+        return $this->shopifyRepository->countDataCustomer($shop, $access_token);
     }
 
     //Lấy thông tin khách hàng từ Shopify về
@@ -149,34 +133,12 @@ class ShopifyController extends Controller
         $numberRequest = $countCustomer > $limit ? $ceilRequest : 1;
 
         $param = [
-//            'id' => 'id',
-//            'first_name' => 'first_name',
-//            'last_name' => 'last_name',
-//            'email' => 'email',
-//            'phone' => 'phone',
-//            'country' => 'country',
-//            'order_count' => 'order_count',
-//            'total_spent' => 'total_spent',
-//            'created_at' => 'created_at',
-//            'updated_at' => 'updated_at',
-            'fields' => [
-                'id',
-                'first_name',
-                'last_name',
-                'email',
-                'phone',
-                'country',
-                'order_count',
-                'total_spent',
-                'created_at',
-                'updated_at'
-            ],
+            'fields' => 'id, first_name, last_name, email, phone, country, order_count, total_spent, created_at, updated_at',
             'limit' => $limit,
         ];
-
         for ($i = 0; $i < $numberRequest; $i++) {
             $client = new Client();
-            $url = 'https://' . $shop . '/admin/api/2022-07/customers.json';
+            $url = 'https://' . $shop . '/admin/api/2022-07/customers.json?limit='.$param['limit'];
             $resCustomer = $client->request('get', $url, [
                 'headers' => [
                     'X-Shopify-Access-Token' => $access_token,
@@ -185,7 +147,7 @@ class ShopifyController extends Controller
             ]);
 
             $headers = $resCustomer->getHeaders();
-            $params = $this->setParam($headers, $limit);
+            $params = $this->setParam($headers, $param);
 
             $getDataCustomer = (array)json_decode($resCustomer->getBody());
         }
@@ -230,70 +192,14 @@ class ShopifyController extends Controller
     //Lưu thông tin Shopify
     public function saveDataLogin($res, $access_token)
     {
-        $saveData = $res['shop'];
-
-        $findCreateAT = array('T', '+07:00');
-        $replaceCreateAT = array(' ', '');
-        $findUpdateAT = array('T', '+07:00');
-        $replaceUpdateAT = array(' ', '');
-
-        $created_at = str_replace($findCreateAT, $replaceCreateAT, $saveData->created_at);
-        $updated_at = str_replace($findUpdateAT, $replaceUpdateAT, $saveData->updated_at);
-
-        $password = Session::get('password');
-
-        $dataPost = [
-            'id' => $saveData->id,
-            'name_merchant' => $saveData->name,
-            'email' => $saveData->email,
-            'password' => $password["password"],
-            'phone' => $saveData->phone,
-            'myshopify_domain' => $saveData->domain,
-            'domain' => $saveData->domain,
-            'access_token' => $access_token,
-            'address' => $saveData->address1,
-            'province' => $saveData->province,
-            'city' => $saveData->city,
-            'zip' => $saveData->zip,
-            'country_name' => $saveData->country_name,
-            'created_at' => $created_at,
-            'updated_at' => $updated_at,
-        ];
-        Store::create($dataPost);
-
-        return $dataPost;
+        return $this->shopifyRepository->saveDataLogin($res, $access_token);
     }
 
     //Lưu khách hàng vào DB
     public function saveDataCustomer($getCustomer)
     {
-        $saveCustomers = $getCustomer['customers'];
+        return $this->shopifyRepository->saveDataCustomer($getCustomer);
 
-        $findCreateAT = array('T', '+07:00');
-        $replaceCreateAT = array(' ', '');
-
-        $findUpdateAT = array('T', '+07:00');
-        $replaceUpdateAT = array(' ', '');
-
-        $store_id = Session::get('id');
-
-        foreach ($saveCustomers as $customer) {
-            $created_at = str_replace($findCreateAT, $replaceCreateAT, $customer->created_at);
-            $updated_at = str_replace($findUpdateAT, $replaceUpdateAT, $customer->updated_at);
-
-            Customer::create([
-                'id' => $customer->id,
-                'store_id' => $store_id,
-                'email' => $customer->email,
-                'first_name' => $customer->first_name,
-                'last_name' => $customer->last_name,
-                'orders_count' => $customer->orders_count,
-                'total_spent' => $customer->total_spent,
-                'phone' => $customer->phone,
-                'created_at' => $created_at,
-                'updated_at' => $updated_at,
-            ]);
-        }
     }
 
 

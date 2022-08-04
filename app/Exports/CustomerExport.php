@@ -17,6 +17,6 @@ class CustomerExport implements FromCollection, WithHeadings
     }
 
     public function headings() :array{
-        return ['ID', 'First_Name', 'Last_Name'];
+        return ['ID', 'Store_ID', 'First_Name', 'Last_Name', 'Email', 'Phone', 'Country', 'Orders_count', 'Total_Spent', 'Created_At', 'Updated_At'];
     }
 }

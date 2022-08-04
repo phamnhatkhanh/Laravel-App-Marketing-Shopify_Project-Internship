@@ -10,12 +10,13 @@ interface ShopifyRepositoryInterface
     public function login(Request $request);
     public function authen(Request $request);
     public function getAccessToken(string $code, string $domain);
+    public static function registerCustomerWebhookService($shop, $access_token);
     public function getDataLogin($shop, $access_token);
-    public function countDataCustomer($shop, $access_token);
-    public function createDataCustomer($shop, $access_token);
-//    public function setParam(array $headers, $params);
-    public function saveDataLogin($res, $access_token);
-    public function saveDataCustomer($getCustomer);
+     public function countDataCustomer($shop, $access_token);
+     public function createDataCustomer($shop, $access_token);
+ //    public function setParam(array $headers, $params);
+     public function saveDataLogin($res, $access_token);
+     public function saveDataCustomer($getCustomer);
 }
 
 
