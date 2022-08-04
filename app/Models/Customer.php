@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Mail;
 use App\Models\Store;
 use Illuminate\Support\Facades\DB;
 use Tymon\JWTAuth\Claims\Custom;

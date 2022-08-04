@@ -6,9 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Customer;
 use App\Models\Shopify;
 use App\Models\Store;
-use App\Repositories\Eloquents\CustomerWebhookRepository;
-use App\Repositories\Webhooks\RegisterCustomerWebhookService;
-use App\Repositories\Webhooks\WebhookService;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
@@ -44,7 +41,7 @@ class ShopifyController extends Controller
         $scope = 'read_customers,write_customers';
         $shop = $request->shop;
 
-        $redirect_uri = config('shopify.ngrok') . '/authen';
+        $redirect_uri = config('shopify.ngrok') . '/api/authen';
         $url = 'https://' . $shop . '/admin/oauth/authorize?client_id=' . $apiKey . '&scope=' . $scope . '&redirect_uri=' . $redirect_uri;
         return redirect($url);
     }
@@ -127,20 +124,106 @@ class ShopifyController extends Controller
         return $getDataStore;
     }
 
+    //Đếm số khách hàng lấy về
+    public function countDataCustomer($shop, $access_token)
+    {
+        $client = new Client();
+        $url = 'https://' . $shop . '/admin/api/2022-07/customers/count.json';
+        $resCustomer = $client->request('get', $url, [
+            'headers' => [
+                'X-Shopify-Access-Token' => $access_token,
+            ]
+        ]);
+        $countCustomer = (array)json_decode($resCustomer->getBody());
+
+        return $countCustomer;
+    }
+
     //Lấy thông tin khách hàng từ Shopify về
     public function createDataCustomer($shop, $access_token)
     {
-        $client = new Client();
-        $url = 'https://' . $shop . '/admin/api/2022-07/customers.json';
-        $resProduct = $client->request('get', $url, [
-            'headers' => [
-                'X-Shopify-Access-Token' => $access_token,
-                'Content-Type' => 'application/json',
-            ]
-        ]);
-        $getDataCustomer = json_decode($resProduct->getBody());
-        
+        $limit = 250;
+        $countCustomer = $this->countDataCustomer($shop, $access_token);
+        $ceilRequest = (int)ceil($countCustomer['count'] / $limit);
+        $numberRequest = $countCustomer > $limit ? $ceilRequest : 1;
+
+        $param = [
+//            'id' => 'id',
+//            'first_name' => 'first_name',
+//            'last_name' => 'last_name',
+//            'email' => 'email',
+//            'phone' => 'phone',
+//            'country' => 'country',
+//            'order_count' => 'order_count',
+//            'total_spent' => 'total_spent',
+//            'created_at' => 'created_at',
+//            'updated_at' => 'updated_at',
+            'fields' => [
+                'id',
+                'first_name',
+                'last_name',
+                'email',
+                'phone',
+                'country',
+                'order_count',
+                'total_spent',
+                'created_at',
+                'updated_at'
+            ],
+            'limit' => $limit,
+        ];
+
+        for ($i = 0; $i < $numberRequest; $i++) {
+            $client = new Client();
+            $url = 'https://' . $shop . '/admin/api/2022-07/customers.json';
+            $resCustomer = $client->request('get', $url, [
+                'headers' => [
+                    'X-Shopify-Access-Token' => $access_token,
+                    'Content-Type' => 'application/json',
+                ],
+            ]);
+
+            $headers = $resCustomer->getHeaders();
+            $params = $this->setParam($headers, $limit);
+
+            $getDataCustomer = (array)json_decode($resCustomer->getBody());
+        }
+
         return $getDataCustomer;
+    }
+
+    public function setParam(array $headers, $params)
+    {
+        $links = explode(',', @$headers['Link'][0]);
+        $nextPage = $prevPage = null;
+        foreach ($links as $link) {
+            if (strpos($link, 'rel="next"')) {
+                $nextPage = $link;
+            }
+            if (strpos($link, 'rel="previous"')) {
+                $prevPage = $link;
+            }
+        }
+
+        $params = [];
+
+        if ($nextPage) {
+            preg_match('~<(.*?)>~', $nextPage, $next);
+            $url_components = parse_url($next[1]);
+            parse_str($url_components['query'], $parseStr);
+            $params = $parseStr;
+            $params['next_cursor'] = $parseStr['page_info'];
+        }
+
+        if ($prevPage) {
+            preg_match('~<(.*?)>~', $prevPage, $next);
+            $url_components = parse_url($next[1]);
+            parse_str($url_components['query'], $parseStr);
+            $params = !empty($params) ? $params : $parseStr;
+            $params['prev_cursor'] = $parseStr['page_info'];
+        }
+
+        return $params;
     }
 
     //Lưu thông tin Shopify
@@ -155,7 +238,7 @@ class ShopifyController extends Controller
 
         $created_at = str_replace($findCreateAT, $replaceCreateAT, $saveData->created_at);
         $updated_at = str_replace($findUpdateAT, $replaceUpdateAT, $saveData->updated_at);
-        Session::put('store_id', $saveData->id);
+
         $dataPost = [
             'id' => $saveData->id,
             'name_merchant' => $saveData->name,
@@ -182,7 +265,7 @@ class ShopifyController extends Controller
     public function saveDataCustomer($getCustomer)
     {
         $saveCustomers = $getCustomer['customers'];
-        info($saveCustomers);
+
         $findCreateAT = array('T', '+07:00');
         $replaceCreateAT = array(' ', '');
 

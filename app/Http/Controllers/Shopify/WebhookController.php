@@ -32,8 +32,8 @@ class WebhookController extends Controller
                 //Delete data Product
                 $this->deleteFromShopify($payload);
 
-            case 'app/uninstalled':
-                //Unistall App
+//            case 'app/uninstalled':
+//                //Unistall App
         }
     }
 
