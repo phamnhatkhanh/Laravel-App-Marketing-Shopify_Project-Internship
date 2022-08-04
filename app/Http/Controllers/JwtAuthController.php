@@ -37,12 +37,15 @@ class JwtAuthController extends Controller
      */
 
     public function login(Request $request)
-    {
+    {   
+        $getStore = $request->toArray();
 
-        $store = Store::where('myshopify_domain', '=', $request->myshopify_domain)->first();
-        $request['password'] = $store->myshopify_domain;
+        $data = ([
+            "password"=> $getStore['shop'],
+            "myshopify_domain"=>$getStore['shop']
+        ]);
 
-        $validator = Validator::make($request->all(), [
+        $validator = Validator::make($data, [
             'myshopify_domain' => 'required',
             'password' => "",
         ]);
@@ -74,12 +77,13 @@ class JwtAuthController extends Controller
         if (!$token = auth()->attempt($validator->validated())) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
-        $acess_Token = $this->createNewToken($token);
+        $access_Token = $this->createNewToken($token);
         return response([
-            'data' => $acess_Token,
+            'data' => $access_Token,
             'status' => true,
         ], 200);
     }
+    
     /**
      * Register a User.
      *
@@ -128,7 +132,7 @@ class JwtAuthController extends Controller
             'access_token' => $token,
             'token_type' => 'bearer',
             'expires_in' => auth()->factory()->getTTL() * 30,
-            'user' => auth()->user()
+            // 'user' => auth()->user()
         ]);
     }
 
