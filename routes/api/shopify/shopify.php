@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Client\CustomerController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -12,10 +13,10 @@ Route::any('/login', [\App\Http\Controllers\Shopify\ShopifyController::class, 'l
 Route::post('/shopify/webhook', [\App\Http\Controllers\Shopify\WebHookController::class , 'webhook'] )
     ->name('shopify.webhook');
 
-Route::get('/showCustomer', [\App\Http\Controllers\Shopify\CustomerController::class, 'showCustomer']);
-Route::post('/searchCustomer', [\App\Http\Controllers\Shopify\CustomerController::class, 'searchCustomer']);
-Route::post('/createDate', [\App\Http\Controllers\Shopify\CustomerController::class, 'createDate']);
-Route::post('/totalSpent', [\App\Http\Controllers\Shopify\CustomerController::class, 'totalSpent']);
-Route::post('/totalOrder', [\App\Http\Controllers\Shopify\CustomerController::class, 'totalOrder']);
+Route::get('/showCustomer', [CustomerController::class, 'showCustomer']);
+Route::post('/searchCustomer', [CustomerController::class, 'searchCustomer']);
+Route::post('/createDate', [CustomerController::class, 'createDate']);
+Route::post('/totalSpent', [CustomerController::class, 'totalSpent']);
+Route::post('/totalOrder', [CustomerController::class, 'totalOrder']);
 
 
