@@ -2,6 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Client\CampaignController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\Shopify\ShopifyController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -32,10 +35,10 @@ Route::get('/pusher', function(Illuminate\Http\Request $request) {
 
 Auth::routes();
 
-Route::get('/home', [\App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/home', [HomeController::class, 'index'])->name('home');
 
 //Get Acess_Token and handle next
-Route::any('/authen', [\App\Http\Controllers\Shopify\ShopifyController::class, 'authen'])->name('authen');
+
 
 
 
