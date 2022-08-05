@@ -28,6 +28,8 @@ class WelcomeMail extends Mailable
      */
     public function build()
     {
-        return $this->markdown('mail.welcome-mail');
+        
+        return $this->view('mail.testmail');
+        // return $this->markdown('mail.welcome-mail');
     }
 }

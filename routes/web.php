@@ -14,6 +14,7 @@ use App\Http\Controllers\Client\CampaignController;
 */
 
 Route::get('/mail', [CampaignController::class, 'sendEmailCampaign']);
+Route::get('/test-mail', [CampaignController::class, 'sendEmailCampaign']);
 
 Route::get('/', function () {
     return view('showNotification');

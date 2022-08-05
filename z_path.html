@@ -6,18 +6,24 @@ Improve code:
     - Clean code: cách đặt tên
     - Tổ chức: file, comment cho rõ ràng.
 
-1.Send email và realtime:
-    -> test FE xem có listen khi serve mình gửi event ko.
+DB: build template event.
 
-DB: add connect in Eloquent
-
-
+Viết function format respone:
+Repo
+Exception
+Clean code.
 
 
 g/s xog hết task project thì.
 Inprove code:
     1. Test code: xem chạy ổn + có lỗi nào không.
     2. Customer err,EX respone về FE.
+    3. Viết doc api.
+    4. Run tests.
+    5. Send-test: thay data vào biến variant.
+    6. Task scheduling:
+        upload file.
+        send mail bill.
 
 Đào sâu về server:
 Optimize:
@@ -36,16 +42,19 @@ Optimize:
         - FE: Customer,Campaign show list lưu Redis -> truy xuất cho nhanh.
         - Shopify cập nhật customer: chỉ cập nhật khi email, phone,  orders_count, total_spent thay đổi.
             - Cập nhật ở Redis sau đó vào DB cập nhật.
-            
+
     Queue: xử lý job failed.
+
+Docker
 
 DB:
     set condition for field in tabel DB.
     backup data.
 
 
-Pusher not actual realtime.
-DB.
+Pusher not actual realtime: slip event and job 2 queue.
+
+
 </div>
 
 <div class="open_problem">

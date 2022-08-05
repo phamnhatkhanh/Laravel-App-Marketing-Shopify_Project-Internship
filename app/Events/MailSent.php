@@ -32,11 +32,21 @@ class MailSent implements ShouldBroadcast
     public function sendProcess($campaignProcessId){
         info('comleted send mail');
          $batches =  JobBatch::find($this->batchId);
-         return 'Finish: '.$batches->finished_at.
-            ' - Processing: '.$batches->progress().'%'.
-            ' - Send: '. $batches->processedJobs().
-            ' - Fail: '.$batches->failed_jobs.
-            'OF: '.$campaignProcessId;
+
+
+         return response()->json([
+            'campaignId' => $campaignProcessId,
+            'processing'=>$batches->progress(),
+            'mail_send_done'=> $batches->processedJobs(),
+            'mail_send_failed'=>$batches->failed_jobs,
+            'finished_at' =>$batches->finished_at
+         ]);
+
+        //  'Finish: '.$batches->finished_at.
+        //     ' - Processing: '.$batches->progress().'%'.
+        //     ' - Send: '. $batches->processedJobs().
+        //     ' - Fail: '.$batches->failed_jobs.
+        //     ' OF: '.$campaignProcessId;
 
     }
 
