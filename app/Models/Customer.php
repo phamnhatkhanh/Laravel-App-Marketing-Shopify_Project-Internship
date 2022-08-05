@@ -36,77 +36,47 @@ class Customer extends Model
     }
     public $timestamps = false;
 
-    public function scopeFirstName($query, $request)
+    public function scopeFilter($query, $params)
     {
-        if ($request->has('first_name')) {
-            $query->where('first_name', 'LIKE', '%' . $request->first_name . '%');
-        }
-        return $query;
-    }
-
-    public function scopeLastName($query, $request)
-    {
-        if ($request->has('last_name')) {
-            $query->where('last_name', 'LIKE', '%' . $request->last_name . '%');
+        if (isset($params['keywords']) && trim($params['keywords'] !== '')) {
+            $query->where('first_name', 'LIKE', trim($params['keywords']) . '%')
+            ->Orwhere('last_name', 'LIKE', trim($params['keywords']) . '%')
+            ->Orwhere('email', 'LIKE', trim($params['keywords']) . '%')
+            ->Orwhere('phone', 'LIKE', trim($params['keywords']) . '%');
         }
 
-        return $query;
-    }
-
-    public function scopeEmail($query, $request)
-    {
-        if ($request->has('email')) {
-            $query->where('email', $request->email);
+        if (isset($params['total_spent']) && trim($params['total_spent'] !== '')) {
+            $arr = explode('-', $params['total_spent']);
+            if (count($arr) > 1) {
+                $query
+                    ->where("total_spent", ">", $arr[0])
+                    ->where("total_spent", "<=", $arr[1]);
+            }
         }
 
-        return $query;
-    }
-
-    public function scopePhone($query, $request)
-    {
-        if ($request->has('phone')) {
-            $query->where('phone', $request->phone);
+        if (isset($params['orders_count']) && trim($params['orders_count'] !== '')) {
+            $arr = explode('-', $params['orders_count']);
+            if (count($arr) > 1) {
+                $query
+                    ->where("orders_count", ">", $arr[0])
+                    ->where("orders_count", "<=", $arr[1]);
+            }
         }
 
-        return $query;
-    }
+        if (isset($params['created_at']) && trim($params['created_at'] !== '')) {
+            $arr = explode('/', $params['created_at']);
 
-    public function scopeCreateAt($query, $request)
-    {
-        if ($request->has('created_at')) {
-            $query->whereDate('created_at', $request->created_at);
+            if (count($arr) > 1) {
+                $query
+                    ->whereDate("created_at", ">=", $arr[0])
+                    ->whereDate("created_at", "<=", $arr[1]);
+            }
         }
 
-        return $query;
-    }
-
-    public function scopeTotalSpent($query, $request)
-    {
-        $from_total_spent = $request->from_total_spent;
-        $to_total_spent = $request->to_total_spent;
-        if ($request->has('total_spent')) {
-            $query->whereBetween('total_spent', [$from_total_spent, $to_total_spent]);
+        if (isset($params['sort']) && trim($params['sort'] !== '')) {
+            $query->orderBy('created_at', $params['sort']);
         }
 
         return $query;
-    }
-
-    public function scopeTotalOrder($query, $request)
-    {
-        $from_orders_count = $request->from_orders_count;
-        $to_orders_count =  $request->to_orders_count;
-        if ($request->has('orders_count')) {
-            $query->whereBetween('orders_count', [$from_orders_count, $to_orders_count]);
-        }
-
-        return $query;
-    }
-
-    public function scopeSort($query, $request)
-    {
-        $sortCreated_at = $request->created_at;
-        $queryCustomer = Customer::orderBy('created_at', $sortCreated_at ? $sortCreated_at : 'ASC');
-
-        return  $queryCustomer;
     }
 }

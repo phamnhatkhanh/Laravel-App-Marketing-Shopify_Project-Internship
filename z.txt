@@ -1,0 +1,26 @@
+[2022-08-04 06:38:40] local.INFO: array (
+'store_id' => 1,
+  'name' => 'faceboook',
+  'subject' => '<p>faceboook<span style="background:#003084;padding:2px;border-radius:4px;color: #ffffff" id="Customer_First_name">Customer_First_name</span></p>',
+  'content' => '<p>hello<span style="background:#003084;padding:2px;border-radius:4px;color: #ffffff" id="Shop_name">Shop_name</span></p>',
+  'footer' => '<p style="text-align: center">Copyright 2010-2022 Firegroup, all rights reserved.</p>',
+  'variant_name' =>
+
+  array (
+    0 => 'Customer_First_name',
+    1 => 'Shop_name',
+  ),
+  'color_content' => '#ffffff',
+  'background_banner' => 'blob:http://localhost:8080/170706eb-5377-4288-bc74-24bd121f16ba',
+  'background_color' => '#bc2929',
+  'background_radius' => '3px',
+  'button_label' => 'TRY FREE NOW',
+  'button_radius' => '4px',
+  'button_background_color' => '#003084',
+  'button_text_color' => '#ffffff',
+  'list_mail_customers' =>
+  array (
+    0 => 'nguyendat@gmail.com',
+  ),
+  'preview_email' => '<div data-v-5a45470d="" class="sticky top-5" style="display: flex; flex-direction: column; gap: 20px;"><div data-v-5a45470d="" class="preview-content" style="border-radius: 3px;"><img data-v-5a45470d="" src="blob:http://localhost:8080/170706eb-5377-4288-bc74-24bd121f16ba" alt="" style="width: 100%; object-fit: cover;"><div data-v-5a45470d="" class="preview-email-content" style="background: rgb(188, 41, 41); padding: 28px 30px 36px; display: flex; flex-direction: column; gap: 30px; border-radius: 3px; color: rgb(255, 255, 255);"><div data-v-5a45470d="" class="email--content" style="line-break: anywhere;"><p>hello<span style="background:#003084;padding:2px;border-radius:4px;color: #ffffff" id="Shop_name">Shop_name</span></p></div><button data-v-5a45470d="" style="width: 100%; line-height: 18px; font-size: 14px; font-weight: bold; padding: 9px 0px; background: rgb(0, 48, 132); color: rgb(255, 255, 255); border-radius: 4px;"> TRY FREE NOW </button></div></div><div data-v-5a45470d="" class="preview--footer" style="font-size: 14px; font-weight: 400; line-height: 18px; color: rgb(85, 87, 112);"><div data-v-5a45470d=""><p style="text-align: center">Copyright 2010-2022 Firegroup, all rights reserved.</p></div><a data-v-5a45470d="" href="#" style="display: block; text-align: center; text-decoration: underline;">Unsubscribe here</a></div></div>',
+)

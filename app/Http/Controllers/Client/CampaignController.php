@@ -12,9 +12,11 @@ use App\Models\CampaignProcess;
 use App\Models\CampaignBackgroud;
 use App\Models\CampaignButton;
 use App\Models\CampaignVariant;
-
+use App\Models\Customer;
 use App\Jobs\SendMail;
 use App\Events\MailSent;
+use App\Helpers\JsonRespone\formatJson;
+use Symfony\Component\HttpFoundation\Response;
 
 class CampaignController extends Controller
 {
@@ -25,31 +27,43 @@ class CampaignController extends Controller
         $this->campaignRepository= $campaignRepository;
     }
 
+    public function getCampaignProceess(){
+        $campaignProcess = CampaignProcess::all();
+        return response(formatJson::format(Response::HTTP_OK,"mess",$campaignProcess,"err"),
+            Response::HTTP_OK);
+    }
+
     public function saveCampaign(Request $request){
+        // info($request);
         //save campaign
         $campaign = Campaign::create($request->all());
         $request['campaign_id']=$campaign->id;
-        $campaign_backgroud = CampaignBackgroud::create($request->all());
-        $campaign_button = CampaignButton::create($request->all());
-        foreach ($request->variant_name as $name) {
-            $campaign_variant = CampaignVariant::create([
-                "campaign_id" => $request->campaign_id,
-                "name" => $name
-            ]);
-        }
+
+        info(json_encode($request->all()));
+
+        // dd($request->all());
+        // $campaign_backgroud = CampaignBackgroud::create($request->all());
+        // $campaign_button = CampaignButton::create($request->all());
+        // foreach ($request->variant_name as $name) {
+        //     $campaign_variant = CampaignVariant::create([
+        //         "campaign_id" => $request->campaign_id,
+        //         "name" => $name
+        //     ]);
+        // }
 
         //create campaign process default
         $campaignProcess = CampaignProcess::create([
+            'process' =>"0",
             "campaign_id" => $campaign->id,
             "name" => $campaign->name,
-            "total_customers"=>1000,
+            "total_customers"=>Customer::count(),
         ]);
 
         // return $campaignProcess->id;
         $this->sendEmailCampaign($request['list_mail_customers'],$campaignProcess);
 
 
-        return [$campaign,$campaign_backgroud,$campaign_button,$campaign_variant];
+        return [$campaign];
 
         // init campagin_process with data default.
         // create batch -> realtime.
@@ -62,58 +76,41 @@ class CampaignController extends Controller
         // dd($campaignProcessId);
         $batch = Bus::batch([])
         ->then(function (Batch $batch) use ($campaignProcess) {
-            info("in fucntion send emial  ".$campaignProcess->id);
+
             event(new MailSent($batch->id,$campaignProcess->id));
-            info([
-                'process' =>$batch->progress(),
-                'send_email_done' =>$batch->processedJobs(),
-                'send_email_fail' =>$batch->failedJobs,
-                ]
-            );
+            // info(gettype($batch->progress()).' :  '.$batch->progress() .' campaign processed: ').$campaignProcess->process;
+
            $campaignProcess->update([
                 'status' =>'completed',
-                'process' =>$batch->progress(),
+                'process' => intval($batch->progress()),
                 'send_email_done' =>$batch->processedJobs(),
                 'send_email_fail' =>$batch->failedJobs,
             ]);
-            // info($campaignProcess);
+
         })->dispatch();
 
         $batchId = $batch->id;
 
         // $users = [
-        //     // 'manhitc@gmail.com',
+        //        'manhitc@gmail.com',
         //     'khanhhcm4@gmail.com','nguyenducmanh123@gmail.com','phamgiakinh345@gmail.com','tranvangnhia57@gmail.com','khanhpham5301@gmail.com',
         //     'khanhhcm4@gmail.com','nguyenducmanh123@gmail.com','phamgiakinh345@gmail.com','tranvangnhia57@gmail.com','khanhpham5301@gmail.com',
         // ];
         foreach ($listMailCustomers as  $MailCustomer) {
             $batch->add(new SendMail($batchId, $MailCustomer,$campaignProcess->id));
         }
-
-        // return $batch;
     }
-   
-    public function searchCampaign(Request $request)
+
+    public function searchFilterCampaign(Request $request)
     {
-        $search = Campaign::query()
-            ->Campaign($request)
-            ->get();
+        $params = $request->except('_token');
+
+        $data = CampaignProcess::filter($params)->get();
 
         return response([
-            'data' => $search,
+            'data' =>  $data,
             'status' => true,
         ], 200);
     }
 
-    public function sortCampaign(Request $request)
-    {
-        $sortCreated_at = Campaign::query()
-            ->SortCampaingnDate($request)
-            ->get();
-
-        return response([
-            'data' => $sortCreated_at,
-            'status' => true,
-        ], 201);
-    }
 }
