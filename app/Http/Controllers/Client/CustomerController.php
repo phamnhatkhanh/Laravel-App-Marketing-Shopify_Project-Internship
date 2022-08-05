@@ -51,11 +51,13 @@ class CustomerController extends Controller
     public function index()
     {
         $customers = Customer::simplePaginate(15);
+
          return response()->json([
             'total_customers' => Customer::count(),
             'data' => Customer::simplePaginate(15),
             'status' => true
         ]);
+
 
     }
 

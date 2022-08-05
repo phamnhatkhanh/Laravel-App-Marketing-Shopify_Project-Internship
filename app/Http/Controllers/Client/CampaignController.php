@@ -113,41 +113,4 @@ class CampaignController extends Controller
         ], 200);
     }
 
-    public function sortCampaign(Request $request)
-    {
-        $sortCreated_at = Campaign::query()
-            ->SortCampaingnDate($request)
-            ->get();
-
-        return response([
-            'data' => $sortCreated_at,
-            'status' => true,
-        ], 201);
-    }
-
-
-    // public function saveCampaign(Request $request){
-    //     info($request);
-    //     //save campaign
-    //     $campaign = Campaign::create($request->all());
-    //     $request['campaign_id']=$campaign->id;
-    //     $campaign_backgroud = CampaignBackgroud::create($request->all());
-    //     $campaign_button = CampaignButton::create($request->all());
-    //     foreach ($request->variant_name as $name) {
-    //         $campaign_variant = CampaignVariant::create([
-    //             "campaign_id" => $request->campaign_id,
-    //             "name" => $name
-    //         ]);
-    //     }
-    //     //create campaign process default
-    //     $campaignProcess = CampaignProcess::create([
-    //         'process' =>"0",
-    //         "campaign_id" => $campaign->id,
-    //         "name" => $campaign->name,
-    //         "total_customers"=>Customer::count(),
-    //     ]);
-    //     // return $campaignProcess->id;
-    //     $this->sendEmailCampaign($request['list_mail_customers'],$campaignProcess);
-    //     return [$campaign,$campaign_backgroud,$campaign_button,$campaign_variant];
-    // }
 }
