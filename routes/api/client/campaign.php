@@ -10,5 +10,4 @@ use App\Http\Controllers\JwtAuthController;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\ProductRequest;
 
-Route::post('/searchCampaign', [CampaignController::class, 'searchCampaign']);
-Route::post('/sortCampaign', [CampaignController::class, 'sortCampaign']);
+Route::post('/filterCampaign', [CampaignController::class, 'searchFilterCampaign']);

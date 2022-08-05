@@ -101,27 +101,16 @@ class CampaignController extends Controller
         // return $batch;
     }
 
-    public function searchCampaign(Request $request)
+    public function searchFilterCampaign(Request $request)
     {
-        $search = Campaign::query()
-            ->Campaign($request)
-            ->get();
+        $params = $request->except('_token');
+
+        $data = CampaignProcess::filter($params)->get();
 
         return response([
-            'data' => $search,
+            'data' =>  $data,
             'status' => true,
         ], 200);
     }
 
-    public function sortCampaign(Request $request)
-    {
-        $sortCreated_at = Campaign::query()
-            ->SortCampaingnDate($request)
-            ->get();
-
-        return response([
-            'data' => $sortCreated_at,
-            'status' => true,
-        ], 201);
-    }
 }

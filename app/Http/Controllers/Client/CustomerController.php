@@ -23,19 +23,20 @@ class CustomerController extends Controller
         $this->customerRepository = $customerRepository;
     }
 
-    public function syncCutomerFromShopify(){
+    public function syncCutomerFromShopify()
+    {
         //get data from shopify -> chunk add job.
         $customers = Customer::all();
 
         $batch = Bus::batch([])
-        ->then(function (Batch $batch) {
-            event(new SynchronizedCustomer($batch->id));
-        })->dispatch();
+            ->then(function (Batch $batch) {
+                event(new SynchronizedCustomer($batch->id));
+            })->dispatch();
         $batch_id = $batch->id;
 
         $chunksCustomer = $customers->chunk(5);
         foreach ($chunksCustomer as  $chunkCumtomer) {
-            $batch->add(new SyncCumtomer($batch_id,$chunkCumtomer));
+            $batch->add(new SyncCumtomer($batch_id, $chunkCumtomer));
         }
 
         return Customer::simplePaginate(15);
@@ -55,67 +56,15 @@ class CustomerController extends Controller
         ], 201);
     }
 
-    public function searchCustomer(Request $request)
+    public function searchFilterCustomer(Request $request)
     {
-        $result = Customer::query()
-            ->firstName($request)
-            ->lastName($request)
-            ->email($request)
-            ->phone($request)
-            ->get();
+        $params = $request->except('_token');
+
+        $result = Customer::filter($params)->get();
 
         return response([
             'data' => $result,
             'status' => true,
         ], 200);
     }
-
-    public function sortCustomer(Request $request)
-    {
-        $sortCreated_at = Customer::query()
-            ->Sort($request)
-            ->get();
-
-        return response([
-            'data' => $sortCreated_at,
-            'status' => true,
-        ], 201);
-    }
-
-    public function createDate(Request $request)
-    {
-        $createdDate = Customer::query()
-            ->createAt($request)
-            ->get();
-
-        return response([
-            'data' => $createdDate,
-            'status' => true,
-        ], 201);
-    }
-
-    public function totalSpent(Request $request)
-    {
-        $totalSpent = Customer::query()
-            ->totalspent($request)
-            ->get();
-        return response([
-            'data' => $totalSpent,
-            'status' => true,
-        ], 201);
-    }
-
-    public function totalOrder(Request $request)
-    {
-        $totalOrder = Customer::query()
-            ->totalOrder($request)
-            ->get();
-
-        return response([
-            'data' => $totalOrder,
-            'status' => true,
-        ], 201);
-    }
-
-   
 }

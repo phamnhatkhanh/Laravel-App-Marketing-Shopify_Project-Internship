@@ -7,6 +7,7 @@ use App\Http\Controllers\ExportController;
 use App\Http\Controllers\JwtAuthController;
 use App\Http\Controllers\Client\CustomerController;
 use App\Http\Controllers\Client\CampaignController;
+use App\Http\Controllers\Shopify\ShopifyController;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\ProductRequest;
 
@@ -55,3 +56,5 @@ Route::get('/email', [\App\Http\Controllers\SendMailController::class,'email']);
 
 //Export CSV
 Route::get('/export', [ExportController::class, 'export']);
+
+Route::any('/authen', [ShopifyController::class, 'authen'])->name('authen');

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Shopify;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\JwtAuthController;
 use App\Models\Customer;
 use App\Models\Shopify;
 use App\Models\Store;
@@ -15,38 +16,45 @@ use Illuminate\Support\Facades\Session;
 
 class ShopifyController extends Controller
 {
-
-    // Truyền ra ngoài view để nhập tên Shopify
-    public function index(Request $request)
+    public function login(Request $request)
     {
-        $name = $request->get('name');
-        if (!empty($name)) {
-            return response([
-                'data' => $name,
-                'status' => 201,
-            ], 201);
+        if ($request->header("HTTP_X_SHOPIFY_HMAC_SHA256")) {
+            if ($this->verifyHmacAppInstall($request)) {
+                $JwtAuthController = new JwtAuthController;
+                return $JwtAuthController->login($request);
+            }
         } else {
-            return response();
+
+            $apiKey = config('shopify.shopify_api_key');
+            $scope = 'read_customers,write_customers';
+            $shop = $request->myshopify_domain;
+            $redirect_uri = 'http://192.168.101.83:8080/login';
+
+            $url = 'https://' . $shop . '/admin/oauth/authorize?client_id=' . $apiKey . '&scope=' . $scope . '&redirect_uri=' . $redirect_uri;
+
+            return $url;
         }
     }
 
-    // Lấy link Shopify
-    public function login(Request $request)
+    private function verifyHmacAppInstall(Request $request)
     {
-        // Store::where()
-        //
-        // if("co store"){
+        $params = array();
+        foreach ($request->toArray() as $param => $value) {
+            if ($param != 'signature' && $param != 'hmac') {
+                $params[$param] = "{$param}={$value}";
+            }
+        }
+        asort($params);
 
-        // }else {
-
-        // }
-        $apiKey = config('shopify.shopify_api_key');
-        $scope = 'read_customers,write_customers';
-        $shop = $request->shop;
-
-        $redirect_uri = config('shopify.ngrok') . '/authen';
-        $url = 'https://' . $shop . '/admin/oauth/authorize?client_id=' . $apiKey . '&scope=' . $scope . '&redirect_uri=' . $redirect_uri;
-        return redirect($url);
+        $params = implode('&', $params);
+        $hmac = $request->header("HTTP_X_SHOPIFY_HMAC_SHA256");
+        $calculatedHmac = hash_hmac('sha256', $params, \env('SHOPIFY_SECRET_KEY'));
+        if($hmac != $calculatedHmac) {
+            return response([
+                "status" => false
+            ], 401);
+        }
+        return true;
     }
 
     //Get access_token and Login Shop
@@ -78,7 +86,6 @@ class ShopifyController extends Controller
         if (!Store::find($getDataLogin['shop']->id)) {
             $this->saveDataLogin($getDataLogin, $access_token);
         }
-        // Session::put('id', $getDataLogin['shop']->id);
 
         //Lưu thông tin khách hàng ở Shopify lấy về từ SaveDataWebhookService vào DB
         $createCustomer = $this->createDataCustomer($shopName, $access_token);
@@ -93,7 +100,14 @@ class ShopifyController extends Controller
         //Đăng kí CustomerWebhooks thêm, xóa, sửa
         WebhookController::registerCustomerWebhookService($shopName, $access_token);
 
-        return redirect('http://127.0.0.1:8000/api/dashboard');
+        $request['myshopify_domain'] = $shopName;
+        $JwtAuthController = new JwtAuthController;
+        $result = $JwtAuthController->login($request);
+
+        return  response([
+            "access_token" => $result,
+            "message" => true,
+        ], 200);
     }
 
     public function getAccessToken(string $code, string $domain)
@@ -192,7 +206,9 @@ class ShopifyController extends Controller
         $findUpdateAT = array('T', '+07:00');
         $replaceUpdateAT = array(' ', '');
 
-        $store_id = Session::get('id');
+        // $store_id = Session::get('id');
+
+        // $store = Store::where('myshopify_domain', $myshopify_domain)->first();
 
         foreach ($saveCustomers as $customer) {
             $created_at = str_replace($findCreateAT, $replaceCreateAT, $customer->created_at);
@@ -200,7 +216,7 @@ class ShopifyController extends Controller
 
             Customer::create([
                 'id' => $customer->id,
-                'store_id' => $store_id,
+                'store_id' => "65147142383",
                 'email' => $customer->email,
                 'first_name' => $customer->first_name,
                 'last_name' => $customer->last_name,
