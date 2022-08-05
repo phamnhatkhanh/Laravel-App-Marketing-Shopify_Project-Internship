@@ -3,7 +3,6 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Helpers\Routes\RouteHelper;
-use App\Http\Controllers\ExportController;
 use App\Http\Controllers\JwtAuthController;
 use App\Http\Controllers\Client\CustomerController;
 use App\Http\Controllers\Client\CampaignController;
@@ -30,15 +29,6 @@ Route::prefix('customer')->group(function() {
     Route::get('/get-all', [CustomerController::class, 'index']);
 });
 
-
-
-
-
-
-
-
-
-
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
@@ -46,35 +36,18 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 // Route::apiResource('products',ProductController::class);
 Route::prefix('auth')->group(function (){
         RouteHelper::includeRouteFiles(__DIR__ . '/api/jwt');
-        RouteHelper::includeRouteFiles(__DIR__ . '/api/client');
 });
 
-RouteHelper::includeRouteFiles(__DIR__ . '/api/shopify');
-//Export CSV
-Route::get('/export', [ExportController::class, 'export']);
-Route::any('dashboard',function (){
-    return 'done get data from shopify';
-
+Route::prefix('customer')->group(function (){
+    RouteHelper::includeRouteFiles(__DIR__ . '/api/client');
 });
 
-//Register link Create,Update,Delete Webhook
-Route::post('/shopify/webhook', [\App\Http\Controllers\Shopify\WebHookController::class , 'webhook'] )
-    ->name('shopify.webhook');
+Route::prefix('shopify')->group(function (){
+    RouteHelper::includeRouteFiles(__DIR__ . '/api/shopify');
+});
 
-//Send mail
-Route::get('/email', [\App\Http\Controllers\SendMailController::class,'email']);
 
 //Get Acess_Token and handle next
 Route::any('/authen', [\App\Http\Controllers\Shopify\ShopifyController::class, 'authen'])->name('authen');
-
-//Export CSV
-Route::get('/export-customers',[\App\Http\Controllers\ExportCSVController::class, 'export'])
-    ->name('customer.export');
-
-Route::get('/export-customers/exportFile',[\App\Http\Controllers\ExportCSVController::class,'exportFileDownload'])
-    ->name('customer.exportFile');
-
-//Export CSV
-Route::get('/export', [ExportController::class, 'export']);
 
 Route::any('/authen', [ShopifyController::class, 'authen'])->name('authen');
