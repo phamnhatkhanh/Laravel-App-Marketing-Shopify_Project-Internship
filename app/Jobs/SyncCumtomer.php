@@ -14,6 +14,7 @@ use App\Events\SyncingCustomer;
 use App\Models\Customer;
 class SyncCumtomer implements ShouldQueue
 {
+
     use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
@@ -38,7 +39,7 @@ class SyncCumtomer implements ShouldQueue
     {
 
         foreach ($this->customers as $customer) {
-            // info(gettype($customer));
+
             $customer->first_name="phamj";
             // info($customer->id);
             // $customer->update([
@@ -48,6 +49,6 @@ class SyncCumtomer implements ShouldQueue
             //     $customer->phone,
             // ]);
         }
-        event(new SyncingCustomer($this->batch_id));
+        event(new SyncingCustomer($this->batch_id))->onQueue('event');
     }
 }

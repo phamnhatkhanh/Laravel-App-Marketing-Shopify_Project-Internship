@@ -46,7 +46,8 @@ class SendMail implements ShouldQueue
         }
         // info ('please check server');
 
-
+// php artisan queue:work --queue=event
+// php artisan queue:work --queue=default
     }
 
 

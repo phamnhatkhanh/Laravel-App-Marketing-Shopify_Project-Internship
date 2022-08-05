@@ -14,6 +14,6 @@ class StoreSeeder extends Seeder
     public function run()
     {
         $stores = Store::factory()->times(5)->create();
-        Info($stores);
+
     }
 }

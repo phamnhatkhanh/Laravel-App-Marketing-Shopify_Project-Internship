@@ -15,6 +15,7 @@ class CampaignProcess extends Model
         'id',
         'campaign_id',
         'name',
+        'process',
         'status',
         'send_email_done',
         'send_email_fail',
