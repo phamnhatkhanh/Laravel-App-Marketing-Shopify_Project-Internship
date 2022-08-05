@@ -19,6 +19,7 @@ class ExportCSVController extends Controller
     }
 
     public function exportFileDownload(Request $request){
+        $input = $request->input;
         $store = Store::where('id', '59603255435')->first();
 
         $locationExport = 'backup/customers/';
@@ -28,7 +29,7 @@ class ExportCSVController extends Controller
 //        $fileExport = Excel::download(new CustomerExport(), $fileName);
         $fileExport = Excel::store(new CustomerExport(), $fileName);
 
-        $this->dispatch(new SendEmail($store ,$fileName));
+        $this->dispatch(new SendEmail($store ,$fileName, $input));
         return back();
 //        return response([
 //            'data' => $fileExport,

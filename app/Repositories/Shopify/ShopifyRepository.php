@@ -14,7 +14,8 @@ use Illuminate\Support\Facades\Session;
 
 class ShopifyRepository implements ShopifyRepositoryInterface
 {
-    public function index(Request $request){
+    public function index(Request $request)
+    {
         $name = $request->get('name');
         if (!empty($name)) {
 
@@ -28,7 +29,8 @@ class ShopifyRepository implements ShopifyRepositoryInterface
         }
     }
 
-    public function login(Request $request){
+    public function login(Request $request)
+    {
         $apiKey = config('shopify.shopify_api_key');
         $scope = 'read_customers,write_customers';
         $shop = $request->shop;
@@ -39,11 +41,13 @@ class ShopifyRepository implements ShopifyRepositoryInterface
         return $url;
     }
 
-    public function authen(Request $request){
+    public function authen(Request $request)
+    {
 
     }
 
-    public function getAccessToken(string $code, string $domain){
+    public function getAccessToken(string $code, string $domain)
+    {
         $client2 = new Client();
         $response = $client2->post(
             "https://" . $domain . "/admin/oauth/access_token",
@@ -59,7 +63,8 @@ class ShopifyRepository implements ShopifyRepositoryInterface
         return json_decode($response->getBody()->getContents());
     }
 
-    public static function registerCustomerWebhookService($shop, $access_token){
+    public static function registerCustomerWebhookService($shop, $access_token)
+    {
         $topic_access = [
             'customers/create',
             'customers/update',
@@ -68,7 +73,7 @@ class ShopifyRepository implements ShopifyRepositoryInterface
         ];
         $client = new Client();
         $url = 'https://' . $shop . '/admin/api/2022-07/webhooks.json';
-        foreach ($topic_access as $topic){
+        foreach ($topic_access as $topic) {
             $resShop = $client->request('post', $url, [
                 'headers' => [
                     'X-Shopify-Access-Token' => $access_token,
@@ -77,14 +82,15 @@ class ShopifyRepository implements ShopifyRepositoryInterface
                     'webhook' => [
                         'topic' => $topic,
                         'format' => 'json',
-                        'address' => config('shopify.ngrok').'/api/shopify/webhook',
+                        'address' => config('shopify.ngrok') . '/api/shopify/webhook',
                     ],
                 ]
             ]);
         }
     }
 
-    public function getDataLogin($shop, $access_token){
+    public function getDataLogin($shop, $access_token)
+    {
         $url = 'https://' . $shop . '/admin/api/2022-07/shop.json?';
         $client = new Client();
         $dataAuthen = $client->request('GET', $url, [
@@ -97,7 +103,8 @@ class ShopifyRepository implements ShopifyRepositoryInterface
         return $getDataStore;
     }
 
-    public function countDataCustomer($shop, $access_token){
+    public function countDataCustomer($shop, $access_token)
+    {
         $client = new Client();
         $url = 'https://' . $shop . '/admin/api/2022-07/customers/count.json';
         $resCustomer = $client->request('get', $url, [
@@ -110,13 +117,77 @@ class ShopifyRepository implements ShopifyRepositoryInterface
         return $countCustomer;
     }
 
-    public function createDataCustomer($shop, $access_token){
+    public function createDataCustomer($shop, $access_token)
+    {
+        $limit = 250;
+        $countCustomer = $this->countDataCustomer($shop, $access_token);
+        $ceilRequest = (int)ceil($countCustomer['count'] / $limit);
+        $numberRequest = $countCustomer > $limit ? $ceilRequest : 1;
+        $log = [];
+        $params = [
+            'fields' => 'id,first_name, last_name, email, phone, country, orders_count, total_spent',
+            'limit' => $limit,
+        ];
+        for ($i = 0; $i < $numberRequest; $i++) {
+            $client = new Client();
+            $url = 'https://' . $shop . '/admin/api/2022-07/customers.json';
+            $request = $client->request('get', $url, [
+                'headers' => [
+                    'X-Shopify-Access-Token' => $access_token,
+                    'Content-Type' => 'application/json',
+                ],
+                'query' => $params
+            ]);
 
+            $headers = $request->getHeaders();
+            $params = $this->setParam($headers, $params);
+
+            $responseCustomer = json_decode($request->getBody(), true);
+            $customers = !empty($responseCustomer['customers']) ? $responseCustomer['customers'] : [];
+            $storeID = Session::get('id');
+            data_set($customers, '*.store_id', $storeID);
+
+            Customer::insert($customers);
+        }
+        return $log;
     }
 
-//    public function setParam(array $headers, $params);
+    public function setParam(array $headers, $params)
+    {
+        $links = explode(',', @$headers['Link'][0]);
+        $nextPage = $prevPage = null;
+        foreach ($links as $link) {
+            if (strpos($link, 'rel="next"')) {
+                $nextPage = $link;
+            }
+            if (strpos($link, 'rel="previous"')) {
+                $prevPage = $link;
+            }
+        }
 
-    public function saveDataLogin($res, $access_token){
+        $params = [];
+
+        if ($nextPage) {
+            preg_match('~<(.*?)>~', $nextPage, $next);
+            $url_components = parse_url($next[1]);
+            parse_str($url_components['query'], $parseStr);
+            $params = $parseStr;
+            $params['next_cursor'] = $parseStr['page_info'];
+        }
+
+        if ($prevPage) {
+            preg_match('~<(.*?)>~', $prevPage, $next);
+            $url_components = parse_url($next[1]);
+            parse_str($url_components['query'], $parseStr);
+            $params = !empty($params) ? $params : $parseStr;
+            $params['prev_cursor'] = $parseStr['page_info'];
+        }
+
+        return $params;
+    }
+
+    public function saveDataLogin($res, $access_token)
+    {
         $saveData = $res['shop'];
 
         $findCreateAT = array('T', '+07:00');
@@ -151,7 +222,8 @@ class ShopifyRepository implements ShopifyRepositoryInterface
         return $dataPost;
     }
 
-    public function saveDataCustomer($getCustomer){
+    public function saveDataCustomer($getCustomer)
+    {
         $saveCustomers = $getCustomer['customers'];
 
         $findCreateAT = array('T', '+07:00');
