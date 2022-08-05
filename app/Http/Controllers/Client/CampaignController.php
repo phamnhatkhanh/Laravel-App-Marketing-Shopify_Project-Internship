@@ -101,14 +101,14 @@ class CampaignController extends Controller
         }
     }
 
-    public function searchCampaign(Request $request)
+    public function searchFilterCampaign(Request $request)
     {
-        $search = Campaign::query()
-            ->Campaign($request)
-            ->get();
+        $params = $request->except('_token');
+
+        $data = CampaignProcess::filter($params)->get();
 
         return response([
-            'data' => $search,
+            'data' =>  $data,
             'status' => true,
         ], 200);
     }
