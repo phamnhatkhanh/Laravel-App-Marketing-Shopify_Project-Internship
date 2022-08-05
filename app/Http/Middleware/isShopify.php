@@ -32,7 +32,6 @@ class isShopify
 
     public function verify_webhook($data, $hmac_header)
     {
-
         $calculated_hmac = base64_encode(hash_hmac('sha256', $data, \env('KEY_SECRET_APP_SHOPIFY'), true));
         return hash_equals($hmac_header, $calculated_hmac);
     }
