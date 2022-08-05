@@ -7,11 +7,11 @@ use Illuminate\Http\Request;
 
 interface WebHookRepositoryInterface
 {
-    public function all();
-    public function find(Model $product);
-    public function store(Request $request);
-    public function update(Request $request, Model $product);
-    public function destroy(Model $product);
+    function webhook(Request $request);
+    public function registerCustomerWebhookService($shop, $access_token);
+    public function createFromShopify($payload, $myshopify_domain);
+    public function updateFromShopify($payload);
+    public function deleteFromShopify($payload);
 }
 
 
