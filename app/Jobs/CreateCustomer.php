@@ -39,7 +39,7 @@ class CreateCustomer implements ShouldQueue
     {
         $customer = $this->customer;
         $myshopify_domain = $this->myshopify_domain;
-
+        
         $findCreateAT = array('T', '+07:00');
         $replaceCreateAT = array(' ', '');
 

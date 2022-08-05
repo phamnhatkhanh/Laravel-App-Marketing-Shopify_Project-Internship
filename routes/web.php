@@ -17,6 +17,7 @@ use App\Http\Controllers\Shopify\ShopifyController;
 */
 
 Route::get('/mail', [CampaignController::class, 'sendEmailCampaign']);
+Route::get('/test-mail', [CampaignController::class, 'sendEmailCampaign']);
 
 Route::get('/', function () {
     return view('showNotification');
@@ -37,7 +38,7 @@ Auth::routes();
 
 Route::get('/home', [HomeController::class, 'index'])->name('home');
 
-//Get Acess_Token and handle next
+
 
 
 

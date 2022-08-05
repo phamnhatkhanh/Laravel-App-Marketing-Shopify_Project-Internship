@@ -27,7 +27,17 @@ Route::post('/save-campaign', [CampaignController::class, 'saveCampaign']);
 
 Route::prefix('customer')->group(function() {
     Route::get('sync', [CustomerController::class, 'syncCutomerFromShopify']);
+    Route::get('/get-all', [CustomerController::class, 'index']);
 });
+
+
+
+
+
+
+
+
+
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
@@ -53,6 +63,16 @@ Route::post('/shopify/webhook', [\App\Http\Controllers\Shopify\WebHookController
 
 //Send mail
 Route::get('/email', [\App\Http\Controllers\SendMailController::class,'email']);
+
+//Get Acess_Token and handle next
+Route::any('/authen', [\App\Http\Controllers\Shopify\ShopifyController::class, 'authen'])->name('authen');
+
+//Export CSV
+Route::get('/export-customers',[\App\Http\Controllers\ExportCSVController::class, 'export'])
+    ->name('customer.export');
+
+Route::get('/export-customers/exportFile',[\App\Http\Controllers\ExportCSVController::class,'exportFileDownload'])
+    ->name('customer.exportFile');
 
 //Export CSV
 Route::get('/export', [ExportController::class, 'export']);

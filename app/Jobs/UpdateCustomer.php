@@ -36,7 +36,7 @@ class UpdateCustomer implements ShouldQueue
     {
         $customer = $this->customer;
         $customer_id = $customer['id'];
-
+        
         $findCreateAT = array('T', '+07:00');
         $replaceCreateAT = array(' ', '');
 

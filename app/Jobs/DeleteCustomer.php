@@ -32,7 +32,7 @@ private $customer;
     public function handle()
     {
         $customer = $this->customer;
-
+        
         $id = $customer['id'];
         Customer::where('id', $id)->delete();
     }

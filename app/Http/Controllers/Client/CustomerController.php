@@ -39,7 +39,8 @@ class CustomerController extends Controller
             $batch->add(new SyncCumtomer($batch_id, $chunkCumtomer));
         }
 
-        return Customer::simplePaginate(15);
+       return Customer::simplePaginate(15);
+
         // return $customers;
     }
     /**
@@ -50,10 +51,14 @@ class CustomerController extends Controller
     public function index()
     {
         $customers = Customer::simplePaginate(15);
-        return response([
-            'data' => $customers,
-            'status' => true,
-        ], 201);
+
+         return response()->json([
+            'total_customers' => Customer::count(),
+            'data' => Customer::simplePaginate(15),
+            'status' => true
+        ]);
+
+
     }
 
     public function searchFilterCustomer(Request $request)
