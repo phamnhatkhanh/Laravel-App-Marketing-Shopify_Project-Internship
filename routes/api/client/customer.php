@@ -9,8 +9,11 @@ use App\Http\Requests\LoginRequest;
 use App\Http\Requests\ProductRequest;
 
 
-//Get, Search, Sort Customer
-Route::get('/getCustomer', [CustomerController::class, 'index']);
+
+
+Route::get('/', [CustomerController::class, 'index']);
+Route::get('sync', [CustomerController::class, 'syncCutomerFromShopify']);
+
 Route::post('/filterCustomer', [CustomerController::class, 'searchFilterCustomer']);
 Route::get('/export',[CustomerController::class,'exportCustomerCSV'])
     ->name('customer.export');

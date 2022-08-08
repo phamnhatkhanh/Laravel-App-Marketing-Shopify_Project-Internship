@@ -13,10 +13,5 @@ Route::any('/login', [\App\Http\Controllers\Shopify\ShopifyController::class, 'l
 Route::post('/webhook', [\App\Http\Controllers\Shopify\WebHookController::class , 'webhook'] )
     ->name('shopify.webhook');
 
-Route::get('/showCustomer', [CustomerController::class, 'showCustomer']);
-Route::post('/searchCustomer', [CustomerController::class, 'searchCustomer']);
-Route::post('/createDate', [CustomerController::class, 'createDate']);
-Route::post('/totalSpent', [CustomerController::class, 'totalSpent']);
-Route::post('/totalOrder', [CustomerController::class, 'totalOrder']);
 
 
