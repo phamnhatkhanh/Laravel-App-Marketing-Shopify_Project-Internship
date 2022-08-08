@@ -41,20 +41,6 @@ class CustomerRepository implements CustomerRepositoryInterface
 
         return Customer::simplePaginate(15);
     }
-    public function exportCustomerCSV(){
-        $locationExport = 'backup/customers/';
-        $dateExport = date('d-m-Y_H-i-s');
-        $fileName = $locationExport.'customer'.$dateExport.'.csv';
-        $store = Store::latest()->first();
-        $fileExport = Excel::store(new CustomerExport(), $fileName);
-
-        $sendEmailExport = $this->dispatch(new SendEmail($fileName, $store));
-
-        return response([
-            'data' => "Export successfully",
-            'status' => 204,
-        ], 204);
-    }
 
     public function index()
     {
@@ -70,11 +56,11 @@ class CustomerRepository implements CustomerRepositoryInterface
         $params = $request->except('_token');
 
         $result = Customer::searchcustomer($params)
-        ->order($params)
-        ->totalspant($params)
-        ->sort($params)
-        ->date($params)
-        ->get();
+            ->order($params)
+            ->totalspant($params)
+            ->sort($params)
+            ->date($params)
+            ->get();
 
         return response([
             'data' => $result,
@@ -82,10 +68,11 @@ class CustomerRepository implements CustomerRepositoryInterface
         ], 200);
     }
 
-    public function exportCustomerCSV(){
+    public function exportCustomerCSV()
+    {
         $locationExport = 'backup/customers/';
         $dateExport = date('d-m-Y_H-i-s');
-        $fileName = $locationExport.'customer'.$dateExport.'.csv';
+        $fileName = $locationExport . 'customer' . $dateExport . '.csv';
         $store = Store::latest()->first();
         $fileExport = Excel::store(new CustomerExport(), $fileName);
 
@@ -96,5 +83,4 @@ class CustomerRepository implements CustomerRepositoryInterface
             'status' => 204,
         ], 204);
     }
-
 }
