@@ -31,7 +31,13 @@
             "App\\": "app/",
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/"
-        }
+        },
+        "files": [
+            "app/Helpers/Factory/FactoryHelper.php",
+            "app/Helpers/JsonRespone/formatJson.php",
+            "app/Helpers/Routes/RouteHelper.php"
+
+        ]
     },
     "autoload-dev": {
         "psr-4": {
@@ -53,6 +59,7 @@
             "@php artisan key:generate --ansi"
         ]
     },
+
     "extra": {
         "laravel": {
             "dont-discover": []

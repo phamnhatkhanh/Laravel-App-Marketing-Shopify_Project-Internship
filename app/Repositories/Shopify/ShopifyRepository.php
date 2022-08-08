@@ -3,18 +3,29 @@
 
 namespace App\Repositories\Shopify;
 
-use App\Repositories\Contracts\ShopifyRepositoryInterface;
-use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Throwable;
+
+use Illuminate\Support\Facades\Session;
+use Illuminate\Http\Request;
+use GuzzleHttp\Client;
 use App\Http\Controllers\JwtAuthController;
+
+use Throwable;
+
+use App\Repositories\Contracts\ShopifyRepositoryInterface;
+
 use App\Models\Customer;
 use App\Models\Store;
-use GuzzleHttp\Client;
-use Illuminate\Support\Facades\Session;
 
 class ShopifyRepository implements ShopifyRepositoryInterface
 {
+    protected $customer;
+    protected $store;
+    public function __construct(){
+        $this->customer = new Customer();
+        $this->store = new Store();
+
+    }
     public function login(Request $request)
     {
         if ($request->header("HTTP_X_SHOPIFY_HMAC_SHA256")) {

@@ -2,16 +2,27 @@
 
 namespace App\Repositories\Shopify;
 
+use GuzzleHttp\Client;
+use Illuminate\Http\Request;
+
+use Session;
+
 use App\Jobs\CreateCustomer;
 use App\Jobs\DeleteCustomer;
 use App\Jobs\UpdateCustomer;
-use App\Models\Shopify;
+
+
 use App\Models\Store;
-use GuzzleHttp\Client;
-use Illuminate\Http\Request;
-use Session;
+
 class WebhookRepository
 {
+
+    protected $store;
+     public function __construct(){
+        
+        $this->store = new Store();
+
+    }
     function webhook(Request $request){
         $topic = $request->header('X-Shopify-Topic');
         $myshopify_domain = $request->header('X-Shopify-Shop-Domain');

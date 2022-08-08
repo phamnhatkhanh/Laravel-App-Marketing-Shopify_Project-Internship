@@ -1,12 +1,8 @@
 <?php
 
 
-namespace App\Helpers\Routes;
-
-
-class RouteHelper
-{
-    public static function includeRouteFiles(string $folder)
+if (!function_exists('includeRouteFiles')) {
+    function includeRouteFiles(string $folder)
     {
         // iterate thru the v1 folder recursively
         $dirIterator = new \RecursiveDirectoryIterator($folder);
