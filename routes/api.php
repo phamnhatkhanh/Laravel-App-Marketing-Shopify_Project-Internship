@@ -34,9 +34,11 @@ Route::prefix('auth')->group(function (){
     includeRouteFiles(__DIR__ . '/api/jwt');
 });
 
-Route::prefix('customer')->group(function (){
-    includeRouteFiles(__DIR__ . '/api/client');
-});
+includeRouteFiles(__DIR__ . '/api/client');
+
+
+
+
 
 Route::prefix('shopify')->group(function (){
     includeRouteFiles(__DIR__ . '/api/shopify');
