@@ -3,7 +3,6 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Helpers\Routes\RouteHelper;
-use App\Http\Controllers\ExportController;
 use App\Http\Controllers\JwtAuthController;
 use App\Http\Controllers\Client\CustomerController;
 use App\Http\Controllers\Client\CampaignController;
@@ -29,15 +28,6 @@ Route::prefix('customer')->group(function() {
     Route::get('sync', [CustomerController::class, 'syncCutomerFromShopify']);
     Route::get('/get-all', [CustomerController::class, 'index']);
 });
-
-
-
-
-
-
-
-
-
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();

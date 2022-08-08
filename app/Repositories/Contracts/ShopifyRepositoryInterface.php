@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 
 interface ShopifyRepositoryInterface
 {
-    public function index(Request $request);
+    // public function index(Request $request);
     public function login(Request $request);
     public function authen(Request $request);
     public function getAccessToken(string $code, string $domain);
