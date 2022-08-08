@@ -16,18 +16,17 @@ class SendEmail implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    private $store, $fileName, $request;
+    private $fileName, $store;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($store, $fileName, $request)
+    public function __construct($fileName, $store)
     {
-        $this->store = $store;
         $this->fileName = $fileName;
-        $this->request = $request;
+        $this->store = $store;
 
     }
 
@@ -38,15 +37,14 @@ class SendEmail implements ShouldQueue
      */
     public function handle()
     {
-        $store = $this->store;
         $fileName = $this->fileName;
-        $request = $this->request;
+        $store = $this->store;
+        $emailStore = $store->email;
 
-        Mail::send('mail.attachment', compact('store' ), function ($email) use ($store, $fileName, $request) {
-            $email->subject('Test2221.');
-            $email->to($request);
+        Mail::send('mail.attachment', compact('store' ), function ($email) use ($fileName, $store) {
+            $email->subject('Backup data');
+            $email->to($store->email);
             $email->attach('storage/app/'.$fileName);
-
         });
     }
 }
