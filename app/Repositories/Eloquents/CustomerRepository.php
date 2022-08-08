@@ -22,6 +22,7 @@ use App\Events\SynchronizedCustomer;
 
 class CustomerRepository implements CustomerRepositoryInterface
 {
+
     public function syncCutomerFromShopify()
     {
         //get data from shopify -> chunk add job.
@@ -80,4 +81,20 @@ class CustomerRepository implements CustomerRepositoryInterface
             'status' => true,
         ], 200);
     }
+
+    public function exportCustomerCSV(){
+        $locationExport = 'backup/customers/';
+        $dateExport = date('d-m-Y_H-i-s');
+        $fileName = $locationExport.'customer'.$dateExport.'.csv';
+        $store = Store::latest()->first();
+        $fileExport = Excel::store(new CustomerExport(), $fileName);
+
+        $sendEmailExport = $this->dispatch(new SendEmail($fileName, $store));
+
+        return response([
+            'message' => 'Export CSV Done',
+            'status' => 204,
+        ], 204);
+    }
+
 }
