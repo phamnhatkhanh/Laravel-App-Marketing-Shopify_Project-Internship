@@ -7,7 +7,6 @@ use App\Http\Controllers\JwtAuthController;
 use App\Models\Customer;
 use App\Models\Store;
 use App\Repositories\Shopify\ShopifyRepository;
-use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;

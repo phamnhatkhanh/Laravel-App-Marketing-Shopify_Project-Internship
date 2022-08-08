@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\SendEmail;
+use App\Models\Store;
 use App\Repositories\Eloquents\CustomerRepository;
 use App\Http\Requests\StoreCustomerRequest;
 use App\Http\Requests\UpdateCustomerRequest;
@@ -12,6 +14,9 @@ use Illuminate\Bus\Batch;
 use App\Models\Customer;
 use App\Jobs\SyncCumtomer;
 use App\Events\SynchronizedCustomer;
+use App\Exports\CustomerExport;
+use Illuminate\Support\Facades\Session;
+use Maatwebsite\Excel\Facades\Excel;
 
 class CustomerController extends Controller
 {
@@ -35,6 +40,22 @@ class CustomerController extends Controller
     public function index()
     {
        return $this->customerRepository->index();
+
+    }
+
+    /**
+     *
+     *
+     */
+    public function exportCustomerCSV(){
+        return $this->customerRepository->exportCustomerCSV();
+    }
+
+    /**
+     *
+     *
+     */
+    public function exportIDCustomerCSV(Request $request){
 
     }
 

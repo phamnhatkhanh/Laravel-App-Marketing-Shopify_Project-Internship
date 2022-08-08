@@ -11,4 +11,9 @@ use App\Http\Requests\ProductRequest;
 
 //Get, Search, Sort Customer
 Route::get('/getCustomer', [CustomerController::class, 'index']);
-Route::get('/filterCustomer', [CustomerController::class, 'searchFilterCustomer']);
+Route::post('/filterCustomer', [CustomerController::class, 'searchFilterCustomer']);
+Route::get('/export',[CustomerController::class,'exportCustomerCSV'])
+    ->name('customer.export');
+
+Route::get('/export',[CustomerController::class,'exportIDCustomerCSV'])
+    ->name('customerID.export');

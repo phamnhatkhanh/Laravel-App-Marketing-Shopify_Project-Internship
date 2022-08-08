@@ -3,8 +3,12 @@
 
 namespace App\Repositories\Eloquents;
 
+use App\Exports\CustomerExport;
+use App\Jobs\SendEmail;
+use App\Models\Store;
 use App\Repositories\Contracts\CustomerRepositoryInterface;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 use App\Http\Controllers\Controller;
@@ -35,6 +39,20 @@ class CustomerRepository implements CustomerRepositoryInterface
         }
 
         return Customer::simplePaginate(15);
+    }
+    public function exportCustomerCSV(){
+        $locationExport = 'backup/customers/';
+        $dateExport = date('d-m-Y_H-i-s');
+        $fileName = $locationExport.'customer'.$dateExport.'.csv';
+        $store = Store::latest()->first();
+        $fileExport = Excel::store(new CustomerExport(), $fileName);
+
+        $sendEmailExport = $this->dispatch(new SendEmail($fileName, $store));
+
+        return response([
+            'data' => "Export successfully",
+            'status' => 204,
+        ], 204);
     }
 
     public function index()
