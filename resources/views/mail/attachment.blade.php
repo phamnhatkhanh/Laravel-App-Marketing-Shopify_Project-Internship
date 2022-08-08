@@ -10,12 +10,15 @@
 <body>
 <div>
     <div data-v-5a45470d="" class="sticky top-5" style="display: flex; flex-direction: column; gap: 20px;">
-        <div data-v-5a45470d="" class=  "preview-content" style="border-radius: 3px;"><img data-v-5a45470d="" src="public/husky.png"
+        <div data-v-5a45470d="" class=  "preview-content" style="border-radius: 3px;"><img data-v-5a45470d="" src="{{'public/husky.png'}}"
                                                                                          alt=""
                                                                                          style="width: 100%; object-fit: cover;">
             <div data-v-5a45470d="" class="preview-email-content"
                  style="background: rgb(255, 255, 255); padding: 28px 30px 36px; display: flex; flex-direction: column; gap: 30px; border-radius: 3px; color: rgb(40, 41, 61);">
-                <div data-v-5a45470d="" class="email--content" style="line-break: anywhere;"><p>{{$store->email}}</p></div>
+                <div>Xin chào: {{$store->name_merchant}}</div>
+                <div>Email: {{$store->email}}</div>
+                <div>Số điện thoại: {{$store->phone}}</div>
+                <div>Địa chỉ: {{$store->country_name}}</div>
                 <button data-v-5a45470d=""
                         style="width: 100%; line-height: 18px; font-size: 14px; font-weight: bold; padding: 9px 0px; background: rgb(0, 48, 132); color: rgb(255, 255, 255); border-radius: 4px;">
                     TRY FREE NOW

@@ -7,7 +7,6 @@ use App\Http\Controllers\JwtAuthController;
 use App\Models\Customer;
 use App\Models\Store;
 use App\Repositories\Shopify\ShopifyRepository;
-use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
@@ -23,6 +22,7 @@ class ShopifyController extends Controller
     public function __construct(ShopifyRepository $shopifyRepository)
     {
         $this->shopifyRepository = $shopifyRepository;
+    }
 
     public function login(Request $request)
     {
@@ -37,7 +37,6 @@ class ShopifyController extends Controller
             $scope = 'read_customers,write_customers';
             $shop = $request->myshopify_domain;
             $redirect_uri = 'http://192.168.101.83:8080/login';
-
             $url = 'https://' . $shop . '/admin/oauth/authorize?client_id=' . $apiKey . '&scope=' . $scope . '&redirect_uri=' . $redirect_uri;
 
             return $url;
@@ -95,7 +94,7 @@ class ShopifyController extends Controller
             $this->saveDataLogin($getDataLogin, $access_token);
         }
 
-        Session::put('id', $getDataLogin['shop']->id);
+        Session::put('store_id', $getDataLogin['shop']->id);
 
         //Lưu thông tin khách hàng ở Shopify lấy về từ SaveDataWebhookService vào DB
         $createCustomer = $this->createDataCustomer($shopName, $access_token);

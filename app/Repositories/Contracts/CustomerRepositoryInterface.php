@@ -9,6 +9,7 @@ interface CustomerRepositoryInterface
     // public function store(Request $request);
     // public function update(Request $request, Model $product);
     // public function destroy(Model $product);
+    public function exportCustomerCSV();
 }
 
 

@@ -10,7 +10,7 @@ Route::any('/login', [\App\Http\Controllers\Shopify\ShopifyController::class, 'l
 
 
 //Register link Create,Update,Delete Webhook
-Route::post('/shopify/webhook', [\App\Http\Controllers\Shopify\WebHookController::class , 'webhook'] )
+Route::post('/webhook', [\App\Http\Controllers\Shopify\WebHookController::class , 'webhook'] )
     ->name('shopify.webhook');
 
 Route::get('/showCustomer', [CustomerController::class, 'showCustomer']);
