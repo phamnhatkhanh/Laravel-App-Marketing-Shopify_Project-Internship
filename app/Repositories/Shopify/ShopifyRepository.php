@@ -21,11 +21,13 @@ class ShopifyRepository implements ShopifyRepositoryInterface
 {
     protected $customer;
     protected $store;
+
     public function __construct(){
         $this->customer = new Customer();
         $this->store = new Store();
 
     }
+
     public function login(Request $request)
     {
         if ($request->header("HTTP_X_SHOPIFY_HMAC_SHA256")) {
@@ -71,32 +73,14 @@ class ShopifyRepository implements ShopifyRepositoryInterface
         $code = $request->code;
         $shopName = $request->shop;
 
-        //Lấy Access_token gọi về từ WebhookService
+        //Lấy Access_token
         $getAccess_token = $this->getAccessToken($code, $shopName);
         $access_token = $getAccess_token->access_token;
 
-        //Lấy thông tin đăng nhập
+        //Lưu thông tin shop
         $getDataLogin = $this->getDataLogin($shopName, $access_token);
 
-        $password = $getDataLogin['shop']->myshopify_domain;
-
-        if ($password == "") {
-            return false;
-        }
-
-        $storeData = array(
-            "password" => bcrypt($password),
-        );
-        Session::put('password', $storeData);
-
-        // Lưu thông tin Shopify vào DB
-        if (!Store::find($getDataLogin['shop']->id)) {
-            $this->saveDataLogin($getDataLogin, $access_token);
-        }
-
-        Session::put('id', $getDataLogin['shop']->id);
-
-        //Lưu thông tin khách hàng ở Shopify lấy về từ SaveDataWebhookService vào DB
+        //Lưu thông tin khách hàng ở Shopify vào DB
         $this->createDataCustomer($shopName, $access_token);
 
         //Đăng kí CustomerWebhooks thêm, xóa, sửa
@@ -106,7 +90,7 @@ class ShopifyRepository implements ShopifyRepositoryInterface
         $JwtAuthController = new JwtAuthController;
         $result = $JwtAuthController->login($request);
 
-        return  response([
+        return response([
             "access_token" => $result,
             "message" => true,
         ], 200);
@@ -157,16 +141,67 @@ class ShopifyRepository implements ShopifyRepositoryInterface
 
     public function getDataLogin($shop, $access_token)
     {
+        $params = [
+            'fields' => 'id, name, email, password, phone, myshopify_domain, domain, access_token,
+                        address1, province, city, zip, country_name, created_at, updated_at',
+        ];
+        $log = [];
+
         $url = 'https://' . $shop . '/admin/api/2022-07/shop.json?';
         $client = new Client();
-        $dataAuthen = $client->request('GET', $url, [
+        $request = $client->request('GET', $url, [
             'headers' => [
                 'X-Shopify-Access-Token' => $access_token,
-            ]
+            ],
+            'query' => $params
         ]);
-        $getDataStore = (array)json_decode($dataAuthen->getBody());
+        $responseStore = (array)json_decode($request->getBody(), true);
 
-        return $getDataStore;
+        $store = !empty($responseStore) ? $responseStore : [];
+
+        $password = $store['shop']['myshopify_domain'];
+
+        if ($password == "") {
+            return false;
+        }
+
+        $findCreateAT = array('T', '+07:00');
+        $replaceCreateAT = array(' ', '');
+        $findUpdateAT = array('T', '+07:00');
+        $replaceUpdateAT = array(' ', '');
+
+        $created_at = str_replace($findCreateAT, $replaceCreateAT, $store['shop']['created_at']);
+        $updated_at = str_replace($findUpdateAT, $replaceUpdateAT, $store['shop']['updated_at']);
+
+        $storeData = [
+            "password" => bcrypt($password),
+        ];
+
+        data_set($store, '*.password', $storeData);
+        $getData = $store['shop'];
+        $data = [
+            'id' => $getData['id'],
+            'name_merchant' => $getData['name'],
+            'email' => $getData['email'],
+            'password' => $getData['password']['password'],
+            'phone' => $getData['phone'],
+            'myshopify_domain' => $getData['myshopify_domain'],
+            'domain' => $getData['domain'],
+            'access_token' => $access_token,
+            'address' => $getData['address1'],
+            'province' => $getData['province'],
+            'city' => $getData['city'],
+            'zip' => $getData['zip'],
+            'country_name' => $getData['country_name'],
+            'created_at' => $created_at,
+            'updated_at' => $updated_at,
+        ];
+
+        if (!Store::find($data['id'])) {
+            Store::insert($data);
+        }
+
+        return $log;
     }
 
     public function countDataCustomer($shop, $access_token)
@@ -191,7 +226,7 @@ class ShopifyRepository implements ShopifyRepositoryInterface
         $numberRequest = $countCustomer > $limit ? $ceilRequest : 1;
         $log = [];
         $params = [
-            'fields' => 'id,first_name, last_name, email, phone, country, orders_count, total_spent',
+            'fields' => 'id, first_name, last_name, email, phone, addresses, orders_count, total_spent, created_at, updated_at',
             'limit' => $limit,
         ];
         for ($i = 0; $i < $numberRequest; $i++) {
@@ -210,11 +245,44 @@ class ShopifyRepository implements ShopifyRepositoryInterface
 
             $responseCustomer = json_decode($request->getBody(), true);
             $customers = !empty($responseCustomer['customers']) ? $responseCustomer['customers'] : [];
-            $storeID = Session::get('id');
-            data_set($customers, '*.store_id', $storeID);
 
-            Customer::insert($customers);
+            $findCreateAT = array('T', '+07:00');
+            $replaceCreateAT = array(' ', '');
+            $findUpdateAT = array('T', '+07:00');
+            $replaceUpdateAT = array(' ', '');
+
+            $store = Store::latest()->first();
+            data_set($customers, '*.store_id', $store->id);
+
+            foreach ($customers as $customer){
+                $created_at = str_replace($findCreateAT, $replaceCreateAT, $customer['created_at']);
+                $updated_at = str_replace($findUpdateAT, $replaceUpdateAT, $customer['updated_at']);
+
+                foreach ($customer['addresses'] as $item){
+                    $country = $item['country'];
+
+                    $data = [
+                        'id' => $customer['id'],
+                        'store_id' => $customer['store_id'],
+                        'email' => $customer['email'],
+                        'first_name' => $customer['first_name'],
+                        'last_name' => $customer['last_name'],
+                        'orders_count' => $customer['orders_count'],
+                        'total_spent' => $customer['total_spent'],
+                        'phone' => $customer['phone'],
+                        'country' => $country,
+                        'created_at' => $created_at,
+                        'updated_at' => $updated_at,
+                    ];
+                }
+
+
+                if (!Customer::find($data['id'])){
+                    Customer::insert($data);
+                }
+            }
         }
+
         return $log;
     }
 
@@ -252,70 +320,4 @@ class ShopifyRepository implements ShopifyRepositoryInterface
         return $params;
     }
 
-    public function saveDataLogin($res, $access_token)
-    {
-        $saveData = $res['shop'];
-
-        $findCreateAT = array('T', '+07:00');
-        $replaceCreateAT = array(' ', '');
-        $findUpdateAT = array('T', '+07:00');
-        $replaceUpdateAT = array(' ', '');
-
-        $created_at = str_replace($findCreateAT, $replaceCreateAT, $saveData->created_at);
-        $updated_at = str_replace($findUpdateAT, $replaceUpdateAT, $saveData->updated_at);
-
-        $password = Session::get('password');
-
-        $dataPost = [
-            'id' => $saveData->id,
-            'name_merchant' => $saveData->name,
-            'email' => $saveData->email,
-            'password' => $password["password"],
-            'phone' => $saveData->phone,
-            'myshopify_domain' => $saveData->domain,
-            'domain' => $saveData->domain,
-            'access_token' => $access_token,
-            'address' => $saveData->address1,
-            'province' => $saveData->province,
-            'city' => $saveData->city,
-            'zip' => $saveData->zip,
-            'country_name' => $saveData->country_name,
-            'created_at' => $created_at,
-            'updated_at' => $updated_at,
-        ];
-        Store::create($dataPost);
-
-        return $dataPost;
-    }
-
-    public function saveDataCustomer($getCustomer)
-    {
-        $saveCustomers = $getCustomer['customers'];
-
-        $findCreateAT = array('T', '+07:00');
-        $replaceCreateAT = array(' ', '');
-
-        $findUpdateAT = array('T', '+07:00');
-        $replaceUpdateAT = array(' ', '');
-
-        $store_id = Session::get('id');
-
-        foreach ($saveCustomers as $customer) {
-            $created_at = str_replace($findCreateAT, $replaceCreateAT, $customer->created_at);
-            $updated_at = str_replace($findUpdateAT, $replaceUpdateAT, $customer->updated_at);
-
-            Customer::create([
-                'id' => $customer->id,
-                'store_id' => $store_id,
-                'email' => $customer->email,
-                'first_name' => $customer->first_name,
-                'last_name' => $customer->last_name,
-                'orders_count' => $customer->orders_count,
-                'total_spent' => $customer->total_spent,
-                'phone' => $customer->phone,
-                'created_at' => $created_at,
-                'updated_at' => $updated_at,
-            ]);
-        }
-    }
 }

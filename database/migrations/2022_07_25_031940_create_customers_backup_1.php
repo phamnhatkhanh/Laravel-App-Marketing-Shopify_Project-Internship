@@ -29,6 +29,7 @@ class CreateCustomersBackup1 extends Migration
             $table->dateTime('created_at')->nullable();
             $table->dateTime('updated_at')->nullable();
 
+
             $table->foreign('store_id')
                 ->references('id')
                 ->on(new Expression($databaseName . '.stores'))

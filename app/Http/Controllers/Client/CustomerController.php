@@ -39,6 +39,7 @@ class CustomerController extends Controller
     {
         return $this->customerRepository->syncCutomerFromShopify();
     }
+
     /**
      * Display a listing of the resource.
      *
@@ -62,8 +63,8 @@ class CustomerController extends Controller
      *
      *
      */
-    public function exportIDCustomerCSV(Request $request){
-
+    public function exportSelectCustomerCSV(Request $request){
+        return $this->customerRepository->exportSelectCustomerCSV($request);
     }
 
 

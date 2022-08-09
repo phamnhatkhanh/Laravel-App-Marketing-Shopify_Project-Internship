@@ -2,17 +2,15 @@
 
 namespace App\Jobs;
 
-use App\Mail\AttachmentMail;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
-class SendEmail implements ShouldQueue
+class SendEmailSelectedCustomer implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -27,7 +25,6 @@ class SendEmail implements ShouldQueue
     {
         $this->fileName = $fileName;
         $this->store = $store;
-
     }
 
     /**
@@ -43,7 +40,7 @@ class SendEmail implements ShouldQueue
         Mail::send('mail.attachment', compact('store' ), function ($email) use ($fileName, $store) {
             $email->subject('Backup data');
             $email->to($store->email);
-            $email->attach('storage/app/'.$fileName);
+            $email->attach($fileName);
         });
     }
 }
