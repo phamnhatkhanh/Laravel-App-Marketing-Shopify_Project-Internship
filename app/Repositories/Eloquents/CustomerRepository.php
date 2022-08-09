@@ -4,6 +4,7 @@
 namespace App\Repositories\Eloquents;
 
 use App\Jobs\SendEmailSelectedCustomer;
+
 use Symfony\Component\HttpFoundation\Response;
 use Maatwebsite\Excel\Facades\Excel;
 use Throwable;
@@ -86,7 +87,9 @@ class CustomerRepository implements CustomerRepositoryInterface
     {
         $locationExport = 'backup/customers/';
         $dateExport = date('d-m-Y_H-i-s');
+
         $fileName = $locationExport . 'customer_' . $dateExport . '.csv';
+
         $store = Store::latest()->first();
         Excel::store(new CustomerExport(), $fileName);
 

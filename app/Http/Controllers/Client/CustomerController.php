@@ -2,22 +2,10 @@
 
 namespace App\Http\Controllers\Client;
 
+
 use App\Http\Controllers\Controller;
-use App\Jobs\SendEmail;
-use App\Jobs\SendEmailSelectedCustomer;
-use App\Models\Customer;
-use App\Models\Store;
 use App\Repositories\Eloquents\CustomerRepository;
-use App\Http\Requests\StoreCustomerRequest;
-use App\Http\Requests\UpdateCustomerRequest;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\Bus;
-use Illuminate\Bus\Batch;
-
-
-use App\Exports\SelectedCustomerExport;
-use Maatwebsite\Excel\Facades\Excel;
 
 class CustomerController extends Controller
 {

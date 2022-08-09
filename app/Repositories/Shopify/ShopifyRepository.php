@@ -22,8 +22,7 @@ class ShopifyRepository implements ShopifyRepositoryInterface
     protected $customer;
     protected $store;
 
-    public function __construct()
-    {
+    public function __construct(){
         $this->customer = new Customer();
         $this->store = new Store();
 
