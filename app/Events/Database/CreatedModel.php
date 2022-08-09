@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Events;
+namespace App\Events\Database;
 
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
@@ -24,7 +24,7 @@ class CreatedModel
     {
         $this->db_server = $db_server;
         $this->model = $model;
-        
+
     }
 
     /**

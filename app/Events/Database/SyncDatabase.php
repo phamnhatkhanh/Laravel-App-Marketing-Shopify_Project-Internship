@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Events;
+namespace App\Events\Database;
 
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
@@ -20,9 +20,11 @@ class SyncDatabase
      * @return void
      */
     public $databaseSync;
-    public function __construct($databaseSync)
+    public $model;
+    public function __construct($databaseSync,$model)
     {
         $this->databaseSync = $databaseSync;
+        $this->model = $model;
     }
 
     /**

@@ -34,7 +34,9 @@ class CampaignController extends Controller
     public function getCampaignProceess(){
 
         $campaignProcess = $this->campaignRepository->getCampaignProceess();
-        return response(formatJsonRepsone(Response::HTTP_OK,"mess",$campaignProcess,"err"),
+        return response(
+            // "data"=>$campaignProcess,
+            formatJsonRepsone(Response::HTTP_OK,"mess",$campaignProcess,"err"),
             Response::HTTP_OK);
     }
 

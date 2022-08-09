@@ -1,18 +1,15 @@
 <?php
-// use App\Models\Product;
-// use App\Models\User;
-// use App\Models\Review;
-use App\Models\DbStatus;
-// use Symfony\Component\HttpFoundation\Response;
-// use Throwable;
-// use Illuminate\Support\Facades\Throwable;
-use Illuminate\Support\Facades\DB;
-use App\Events\SyncDatabase;
 
-if (!function_exists('isConnect')) {
-    function isConnect($model){
+use Illuminate\Support\Facades\DB;
+use App\Models\DbStatus;
+use App\Events\Database\SyncDatabase;
+
+if (!function_exists('getConnectDatabaseActived')) {
+    function getConnectDatabaseActived($model){
+
         info("IsConnect: prepare switcher db backup");
         $dbNames = DbStatus::where('model_name', '=', $model->getTable())->get();
+        $table_model = $model->getTable();
         $isSelectedDatabaseToConnect = "not_selected";
         foreach ($dbNames as  $db) {
             $db = $db->name;
@@ -31,21 +28,20 @@ if (!function_exists('isConnect')) {
                         }
                     }else{
                         //syncing +
+                        // dd($table_model);
                         info("IsConnect: Repo syncing db: ".$db);
                         DbStatus::where('name',$db)->update([ 'status' => 'syncing']);
-                        // event(done -> chane status) +
-                        event(new SyncDatabase($db));
+                        event(new SyncDatabase($db,$table_model));
                         continue;
-                        // switch other db.
                     }
                 }
             } catch (\Throwable $e) {
-                info("IsConnect: Repo_db_not connect ". $db);
-                info($e);
+                // info("IsConnect: Repo_db_not connect ". $db);
+                // info($e);
                 DbStatus::where('name',$db)->update([ "status" =>"disconnected" ]);
                 continue;
             }
-            // return "cannot connect to database";
+
         }
         return $model;
     }

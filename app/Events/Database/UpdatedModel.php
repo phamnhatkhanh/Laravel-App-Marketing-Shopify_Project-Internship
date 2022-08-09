@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Events;
+namespace App\Events\Database;
 
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
@@ -16,7 +16,7 @@ class UpdatedModel
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $db_server;
-    
+
     public $model;
 
     public function __construct($db_server,$model)
