@@ -2,22 +2,27 @@
 
 namespace App\Http\Controllers;
 
+use Symfony\Component\HttpFoundation\Response;
+
 use Illuminate\Http\Request;
-use App\Http\Requests;
-use JWTAuth;
-use JWT;
-use Tymon\JWTAuthExceptions\JWTException;
-use Tymon\JWTAuth\Contracts\JWTSubject as JWTSubject;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Validator;
+
+use Tymon\JWTAuthExceptions\JWTException;
+use Tymon\JWTAuth\Contracts\JWTSubject as JWTSubject;
+use Tymon\JWTAuth\Facades\JWTAuth as FacadesJWTAuth;
+
+use JWTAuth;
+use JWT;
+
+use App\Http\Requests;
 use App\Http\Requests\LoginRequest;
+
 use App\Models\Store;
 use App\Models\User;
-use Illuminate\Support\Facades\Crypt;
-use Symfony\Component\HttpFoundation\Response;
-use Tymon\JWTAuth\Facades\JWTAuth as FacadesJWTAuth;
 
 class JwtAuthController extends Controller
 {
@@ -37,7 +42,7 @@ class JwtAuthController extends Controller
      */
 
     public function login(Request $request)
-    {   
+    {
         $getStore = $request->toArray();
 
         $data = ([
@@ -83,7 +88,7 @@ class JwtAuthController extends Controller
             'status' => true,
         ], 200);
     }
-    
+
     /**
      * Register a User.
      *

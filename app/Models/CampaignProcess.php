@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Campaign;
+
 class CampaignProcess extends Model
 {
     use HasFactory;
@@ -24,19 +25,28 @@ class CampaignProcess extends Model
     ];
     public function campaign()
     {
-    	return $this->belongsTo(Campaign::class);
+        return $this->belongsTo(Campaign::class);
     }
 
-    public function scopeFilter($query, $params)
+    public function scopeSearchCampaign($query, $params)
     {
-        if (isset($params['name']) && trim($params['name'] !== '')) {
-            $query->where('name', 'LIKE', trim($params['name']) . '%');
+        if (!empty($params['keywords']) && trim($params['keywords']) !== '') {
+            $keywords = trim($params['keywords']);
+            $query->where('name', 'LIKE', "%$keywords%");
         }
+        return $query;
+    }
 
-        if (isset($params['sortDate']) && trim($params['sortDate'] !== '')) {
-            $query->orderBy('created_at', $params['sortDate']);
+    public function scopeSort($query, $params)
+    {
+        if (isset($params['sort']) && trim($params['sort'] !== '')) {
+            $query->orderBy('created_at', trim($params['sort']));
         }
+        return $query;
+    }
 
+    public function scopeStatus($query, $params)
+    {
         if (isset($params['status']) && trim($params['status'] !== '')) {
             $query->where("status", $params['status']);
         }

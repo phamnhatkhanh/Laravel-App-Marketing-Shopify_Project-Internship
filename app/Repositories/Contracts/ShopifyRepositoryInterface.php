@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 
 interface ShopifyRepositoryInterface
 {
-    public function index(Request $request);
+    // public function index(Request $request);
     public function login(Request $request);
     public function authen(Request $request);
     public function getAccessToken(string $code, string $domain);
@@ -15,8 +15,8 @@ interface ShopifyRepositoryInterface
      public function countDataCustomer($shop, $access_token);
      public function createDataCustomer($shop, $access_token);
      public function setParam(array $headers, $params);
-     public function saveDataLogin($res, $access_token);
-     public function saveDataCustomer($getCustomer);
+//     public function saveDataStore($res, $access_token);
+//     public function saveDataCustomer($getCustomer);
 }
 
 

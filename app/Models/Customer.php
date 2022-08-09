@@ -36,47 +36,78 @@ class Customer extends Model
     }
     public $timestamps = false;
 
-    public function scopeFilter($query, $params)
+    public function scopeSearchCustomer($query, $params)
     {
-        if (isset($params['keywords']) && trim($params['keywords'] !== '')) {
-            $query->where('first_name', 'LIKE', trim($params['keywords']) . '%')
-            ->Orwhere('last_name', 'LIKE', trim($params['keywords']) . '%')
-            ->Orwhere('email', 'LIKE', trim($params['keywords']) . '%')
-            ->Orwhere('phone', 'LIKE', trim($params['keywords']) . '%');
-        }
-
-        if (isset($params['total_spent']) && trim($params['total_spent'] !== '')) {
-            $arr = explode('-', $params['total_spent']);
-            if (count($arr) > 1) {
-                $query
-                    ->where("total_spent", ">", $arr[0])
-                    ->where("total_spent", "<=", $arr[1]);
-            }
-        }
-
-        if (isset($params['orders_count']) && trim($params['orders_count'] !== '')) {
-            $arr = explode('-', $params['orders_count']);
-            if (count($arr) > 1) {
-                $query
-                    ->where("orders_count", ">", $arr[0])
-                    ->where("orders_count", "<=", $arr[1]);
-            }
-        }
-
-        if (isset($params['created_at']) && trim($params['created_at'] !== '')) {
-            $arr = explode('/', $params['created_at']);
-
-            if (count($arr) > 1) {
-                $query
-                    ->whereDate("created_at", ">=", $arr[0])
-                    ->whereDate("created_at", "<=", $arr[1]);
-            }
-        }
-
-        if (isset($params['sort']) && trim($params['sort'] !== '')) {
-            $query->orderBy('created_at', $params['sort']);
+        if (!empty($params['keywords']) && trim($params['keywords']) !== '') {
+            $keywords = trim($params['keywords']);
+            $query->where('first_name', 'LIKE', "%$keywords%")
+                ->Orwhere('last_name', 'LIKE', "%$keywords%")
+                ->Orwhere('country', 'LIKE', "%$keywords%")
+                ->Orwhere('email', 'LIKE', "%$keywords%")
+                ->Orwhere('phone', 'LIKE', "%$keywords%");
         }
 
         return $query;
     }
+
+    public function scopeOrder($query, $params)
+    {
+        if (isset($params['orders_count']) && trim($params['orders_count'] !== '')) {
+            $arr = explode('-', $params['orders_count']);
+
+            if (count($arr) > 1) {
+                $query
+                    ->where("orders_count", ">", (int)$arr[0])
+                    ->where("orders_count", "<=", (int)$arr[1]);
+            }
+        }
+
+        return $query;
+    }
+
+    public function scopeTotalSpant($query, $params)
+    {
+        if (isset($params['total_spent']) && trim($params['total_spent']) !== '') {
+            $arr = explode('-', $params['total_spent']);
+
+            if (count($arr) > 1) {
+                $query->where("total_spent", ">", (int)$arr[0])
+                    ->where("total_spent", "<=", (int)$arr[1]);
+            }
+        }
+
+        return $query;
+    }
+
+    public function scopeSort($query, $params)
+    {
+        if (isset($params['sort']) && trim($params['sort'] !== '')) {
+            $query->orderBy('created_at', trim($params['sort']));
+        }
+
+        return $query;
+    }
+
+    public function scopeDate($query, $params)
+    {
+        if (isset($params['from_date']) && isset($params['to_date'])) {
+            $from_date = trim($params['from_date']);
+            $to_date = trim($params['to_date']);
+            $query->whereDate("created_at", ">=",  $from_date)
+                ->whereDate("created_at", "<=", $to_date);
+        }
+
+        if (isset($params['from_date']) && trim($params['from_date'])) {
+            $query->whereDate("created_at", "<=",  $params['from_date']);
+        }
+
+        if (isset($params['to_date']) && trim($params['to_date'])) {
+            $now = date('Y-m-d H:i:s');
+            $query->whereDate("created_at", ">=", $params['to_date'])
+                ->whereDate("created_at", "<=", $now);
+        }
+
+        return $query;
+    }
+
 }

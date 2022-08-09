@@ -3,7 +3,7 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use App\Helpers\Factory\FactoryHelper;
+
 use App\Models\Store;
 class CustomerFactory extends Factory
 {
@@ -19,7 +19,7 @@ class CustomerFactory extends Factory
         return [
             // 'id' => $this->faker->numberBetween(1,2000),
             'id' => self::$id++,
-            'store_id'=>FactoryHelper::getRandomModelId(Store::class),
+            'store_id'=>getRandomModelId(Store::class),
             'first_name'=>$this->faker->firstNameMale,
             'last_name'=>$this->faker->lastName,
             'email'=> $this->faker->email,

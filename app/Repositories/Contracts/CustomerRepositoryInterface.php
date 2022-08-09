@@ -1,15 +1,14 @@
 <?php
 
 namespace App\Repositories\Contracts;
-
+use Illuminate\Http\Request;
 interface CustomerRepositoryInterface
 {
-    // public function all();
-    // public function find(Model $product);
-    // public function store(Request $request);
-    // public function update(Request $request, Model $product);
-    // public function destroy(Model $product);
+    public function syncCutomerFromShopify();
+    public function index();
+    public function searchFilterCustomer(Request $request);
     public function exportCustomerCSV();
+    public function exportSelectCustomerCSV(Request $request);
 }
 
 

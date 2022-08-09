@@ -2,20 +2,21 @@
 
 namespace App\Http\Controllers\Client;
 
-use App\Exports\SelectedCustomerExport;
 use App\Http\Controllers\Controller;
 use App\Jobs\SendEmail;
 use App\Jobs\SendEmailSelectedCustomer;
+use App\Models\Customer;
+use App\Models\Store;
 use App\Repositories\Eloquents\CustomerRepository;
 use App\Http\Requests\StoreCustomerRequest;
 use App\Http\Requests\UpdateCustomerRequest;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Bus\Batch;
-use App\Models\Customer;
-use App\Jobs\SyncCumtomer;
-use App\Events\SynchronizedCustomer;
-use App\Exports\CustomerExport;
+
+
+use App\Exports\SelectedCustomerExport;
 use Maatwebsite\Excel\Facades\Excel;
 
 class CustomerController extends Controller
@@ -30,24 +31,9 @@ class CustomerController extends Controller
 
     public function syncCutomerFromShopify()
     {
-        //get data from shopify -> chunk add job.
-        $customers = Customer::all();
-
-        $batch = Bus::batch([])
-            ->then(function (Batch $batch) {
-                event(new SynchronizedCustomer($batch->id));
-            })->dispatch();
-        $batch_id = $batch->id;
-
-        $chunksCustomer = $customers->chunk(5);
-        foreach ($chunksCustomer as  $chunkCumtomer) {
-            $batch->add(new SyncCumtomer($batch_id, $chunkCumtomer));
-        }
-
-       return Customer::simplePaginate(15);
-
-        // return $customers;
+        return $this->customerRepository->syncCutomerFromShopify();
     }
+
     /**
      * Display a listing of the resource.
      *
@@ -55,14 +41,7 @@ class CustomerController extends Controller
      */
     public function index()
     {
-        $customers = Customer::simplePaginate(15);
-
-         return response()->json([
-            'total_customers' => Customer::count(),
-            'data' => Customer::simplePaginate(15),
-            'status' => true
-        ]);
-
+       return $this->customerRepository->index();
 
     }
 
@@ -78,29 +57,12 @@ class CustomerController extends Controller
      *
      *
      */
-    public function exportIDCustomerCSV(Request $request){
-        $locationExport = 'backup/customers/';
-        $dateExport = date('d-m-Y_H-i-s');
-        $fileName = $locationExport.'customer'.$dateExport.'.csv';
-        Excel::store(new SelectedCustomerExport(), $fileName);
-
-        $this->dispatch(new SendEmail($fileName));
-
-        return response([
-            'message' => 'Export CSV Done',
-            'status' => 204,
-        ], 204);
+    public function exportSelectCustomerCSV(Request $request){
+        return $this->customerRepository->exportSelectCustomerCSV($request);
     }
 
     public function searchFilterCustomer(Request $request)
     {
-        $params = $request->except('_token');
-
-        $result = Customer::filter($params)->get();
-
-        return response([
-            'data' => $result,
-            'status' => true,
-        ], 200);
+        return $this->customerRepository->searchFilterCustomer($request);
     }
 }
