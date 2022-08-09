@@ -7,6 +7,15 @@ use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Event;
 
+use App\Events\UpdatedModel;
+use App\Listeners\SyncDatabaseAfterUpdatedModel;
+use App\Events\DeletedModel;
+use App\Listeners\SyncDatabaseAfterDeletedModel;
+use App\Events\CreatedModel;
+use App\Listeners\SyncDatabaseAfterCreatedModel;
+use App\Events\SyncDatabase;
+use App\Listeners\SyncDatabaseAfterDisconnect;
+
 class EventServiceProvider extends ServiceProvider
 {
     /**
@@ -18,6 +27,19 @@ class EventServiceProvider extends ServiceProvider
         Registered::class => [
             SendEmailVerificationNotification::class,
         ],
+        UpdatedModel::class => [
+            SyncDatabaseAfterUpdatedModel::class
+        ],
+        DeletedModel::class => [
+            SyncDatabaseAfterDeletedModel::class
+        ],
+        CreatedModel::class => [
+            SyncDatabaseAfterCreatedModel::class
+        ],
+        SyncDatabase::class => [
+            SyncDatabaseAfterDisconnect::class
+        ],
+
     ];
 
     /**

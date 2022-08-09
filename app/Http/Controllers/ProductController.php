@@ -14,7 +14,7 @@ use Throwable;
 use Illuminate\Support\ServiceProvider;
 use PDOException;
 use Illuminate\Database\QueryException;
-use App\Helpers\JsonRespone\formatJson;
+
 use Symfony\Component\HttpFoundation\Response;
 
 class ProductController extends Controller
@@ -30,28 +30,28 @@ class ProductController extends Controller
     public function update(ProductRequest $request, $product_id)
     {
         $product = $this->productRepository->update($request, $product_id);
-        return response(formatJson::format(Response::HTTP_NO_CONTENT,"mess",$products,"err"),
+        return response(formatJsonRepsone(Response::HTTP_NO_CONTENT,"mess",$products,"err"),
                 Response::HTTP_NO_CONTENT);
     }
 
     public function index()
     {
         $products = $this->productRepository->all();
-        return response(formatJson::format(Response::HTTP_OK,"mess",$products,"err"),
+        return response(formatJsonRepsone(Response::HTTP_OK,"mess",$products,"err"),
                 Response::HTTP_OK);
     }
 
     public function show( $product_id)
     {
         $product = $this->productRepository->find($product_id);
-        return response(formatJson::format(Response::HTTP_OK,"mess",$product,"err"),
+        return response(formatJsonRepsone(Response::HTTP_OK,"mess",$product,"err"),
                 Response::HTTP_NO_CONTENT);
     }
 
      public function store(ProductRequest $request)
     {
         $product = $this->productRepository->store($request);
-        return response(formatJson::format(Response::HTTP_OK,"mess",$product,"err"),
+        return response(formatJsonRepsone(Response::HTTP_OK,"mess",$product,"err"),
                 Response::HTTP_CREATED);
     }
 

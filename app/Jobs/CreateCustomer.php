@@ -2,16 +2,18 @@
 
 namespace App\Jobs;
 
-use App\Models\Customer;
-use App\Models\Store;
+
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Http\Client\Request;
+use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Session;
+
+use App\Models\Customer;
+use App\Models\Store;
 
 class CreateCustomer implements ShouldQueue
 {
@@ -39,7 +41,7 @@ class CreateCustomer implements ShouldQueue
     {
         $customer = $this->customer;
         $myshopify_domain = $this->myshopify_domain;
-        
+
         $findCreateAT = array('T', '+07:00');
         $replaceCreateAT = array(' ', '');
 

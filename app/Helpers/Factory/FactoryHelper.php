@@ -1,18 +1,9 @@
 <?php
 
 
-namespace App\Helpers\Factory;
 
-
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-
-class FactoryHelper
-{
-    /**
-     * This function will get a random model id from the database.
-     * @param string | HasFactory $model
-     */
-    public static function getRandomModelId(string $model)
+if (!function_exists('getRandomModelId')) {
+    function getRandomModelId(string $model)
     {
         // get model count
 

@@ -9,4 +9,9 @@ use App\Http\Controllers\JwtAuthController;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\ProductRequest;
 
-Route::post('/filterCampaign', [CampaignController::class, 'searchFilterCampaign']);
+Route::prefix('campaign')->group(function (){
+    Route::post('/filterCampaign', [CampaignController::class, 'searchFilterCampaign']);
+    Route::post('/save-campaign', [CampaignController::class, 'saveCampaign']);
+    Route::get('/get-campaigns-process',[CampaignController::class, 'getCampaignProceess']);
+});
+

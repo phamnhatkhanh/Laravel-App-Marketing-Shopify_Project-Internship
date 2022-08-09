@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers\Shopify;
 
+use GuzzleHttp\Client;
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Repositories\Shopify\WebhookRepository;
+
 use App\Jobs\CreateCustomer;
 use App\Jobs\DeleteCustomer;
 use App\Jobs\UpdateCustomer;
-use App\Repositories\Shopify\WebhookRepository;
-use GuzzleHttp\Client;
-use Illuminate\Http\Request;
 
 class WebhookController extends Controller
 {
