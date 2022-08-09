@@ -13,8 +13,10 @@ use App\Http\Requests\ProductRequest;
 //Get, Search, Sort Customer
 Route::get('/getCustomer', [CustomerController::class, 'index']);
 Route::post('/filterCustomer', [CustomerController::class, 'searchFilterCustomer']);
+
+//ExportCSV All Customer
 Route::get('/export',[CustomerController::class,'exportCustomerCSV'])
     ->name('customer.export');
 
-Route::get('/export',[CustomerController::class,'exportIDCustomerCSV'])
+Route::get('/export-customers',[CustomerController::class,'exportIDCustomerCSV'])
     ->name('customerID.export');

@@ -19,9 +19,9 @@ class CustomerRepository implements CustomerRepositoryInterface
         $dateExport = date('d-m-Y_H-i-s');
         $fileName = $locationExport.'customer'.$dateExport.'.csv';
         $store = Store::latest()->first();
-        $fileExport = Excel::store(new CustomerExport(), $fileName);
+        Excel::store(new CustomerExport(), $fileName);
 
-        $sendEmailExport = $this->dispatch(new SendEmail($fileName, $store));
+        dispatch(new SendEmail($fileName, $store));
 
         return response([
             'message' => 'Export CSV Done',

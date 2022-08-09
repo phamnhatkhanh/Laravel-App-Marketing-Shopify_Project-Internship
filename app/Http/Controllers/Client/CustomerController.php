@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers\Client;
 
+use App\Exports\SelectedCustomerExport;
 use App\Http\Controllers\Controller;
 use App\Jobs\SendEmail;
-use App\Models\Store;
+use App\Jobs\SendEmailSelectedCustomer;
 use App\Repositories\Eloquents\CustomerRepository;
 use App\Http\Requests\StoreCustomerRequest;
 use App\Http\Requests\UpdateCustomerRequest;
@@ -15,7 +16,6 @@ use App\Models\Customer;
 use App\Jobs\SyncCumtomer;
 use App\Events\SynchronizedCustomer;
 use App\Exports\CustomerExport;
-use Illuminate\Support\Facades\Session;
 use Maatwebsite\Excel\Facades\Excel;
 
 class CustomerController extends Controller
@@ -79,7 +79,17 @@ class CustomerController extends Controller
      *
      */
     public function exportIDCustomerCSV(Request $request){
+        $locationExport = 'backup/customers/';
+        $dateExport = date('d-m-Y_H-i-s');
+        $fileName = $locationExport.'customer'.$dateExport.'.csv';
+        Excel::store(new SelectedCustomerExport(), $fileName);
 
+        $this->dispatch(new SendEmail($fileName));
+
+        return response([
+            'message' => 'Export CSV Done',
+            'status' => 204,
+        ], 204);
     }
 
     public function searchFilterCustomer(Request $request)
