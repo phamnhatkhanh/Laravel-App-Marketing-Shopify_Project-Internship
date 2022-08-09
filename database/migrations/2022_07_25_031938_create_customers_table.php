@@ -27,8 +27,8 @@ class CreateCustomersTable extends Migration
             $table->string("country",100)->nullable();
             $table->string("orders_count");
             $table->string("total_spent");
-            $table->dateTime('created_at')->nullable();
-            $table->dateTime('updated_at')->nullable();
+            $table->dateTime('created_at');
+            $table->dateTime('updated_at');
 
             $table->foreign('store_id')
                 ->references('id')

@@ -2,13 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
-use App\Http\Controllers\JwtAuthController;
-use App\Http\Controllers\Client\CustomerController;
-use App\Http\Controllers\Client\CampaignController;
 use App\Http\Controllers\Shopify\ShopifyController;
-use App\Http\Requests\LoginRequest;
-use App\Http\Requests\ProductRequest;
 
 /*
 |--------------------------------------------------------------------------
@@ -46,6 +40,4 @@ Route::prefix('shopify')->group(function (){
 
 
 //Get Acess_Token and handle next
-Route::any('/authen', [\App\Http\Controllers\Shopify\ShopifyController::class, 'authen'])->name('authen');
-
 Route::any('/authen', [ShopifyController::class, 'authen'])->name('authen');

@@ -15,8 +15,8 @@ interface ShopifyRepositoryInterface
      public function countDataCustomer($shop, $access_token);
      public function createDataCustomer($shop, $access_token);
      public function setParam(array $headers, $params);
-     public function saveDataLogin($res, $access_token);
-     public function saveDataCustomer($getCustomer);
+//     public function saveDataStore($res, $access_token);
+//     public function saveDataCustomer($getCustomer);
 }
 
 

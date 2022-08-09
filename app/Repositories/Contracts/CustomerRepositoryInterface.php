@@ -8,6 +8,7 @@ interface CustomerRepositoryInterface
     public function index();
     public function searchFilterCustomer(Request $request);
     public function exportCustomerCSV();
+    public function exportSelectCustomerCSV(Request $request);
 }
 
 

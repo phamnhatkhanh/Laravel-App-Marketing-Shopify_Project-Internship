@@ -10,19 +10,17 @@ use App\Http\Requests\ProductRequest;
 
 
 //Get, Search, Sort Customer
-Route::get('/getCustomer', [CustomerController::class, 'index']);
-Route::get('/filterCustomer', [CustomerController::class, 'searchFilterCustomer']);
-Route::get('/export',[CustomerController::class,'exportCustomerCSV'])
-    ->name('customer.export');
-    
+
 Route::prefix('customer')->group(function (){
     Route::get('/', [CustomerController::class, 'index']);
     Route::get('sync', [CustomerController::class, 'syncCutomerFromShopify']);
 
     Route::post('/filterCustomer', [CustomerController::class, 'searchFilterCustomer']);
-    Route::get('/export',[CustomerController::class,'exportCustomerCSV'])
-        ->name('customer.export');
 
-    Route::get('/export',[CustomerController::class,'exportIDCustomerCSV'])
-        ->name('customerID.export');
+    Route::get('/export',[CustomerController::class,'exportCustomerCSV']);
+
+
+    Route::get('/export-selected',[CustomerController::class,'exportSelectCustomerCSV']);
+
+
 });

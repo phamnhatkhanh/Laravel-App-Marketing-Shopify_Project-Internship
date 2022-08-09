@@ -3,6 +3,8 @@
 
 namespace App\Repositories\Eloquents;
 
+use App\Jobs\SendEmailSelectedCustomer;
+
 use Symfony\Component\HttpFoundation\Response;
 use Maatwebsite\Excel\Facades\Excel;
 use Throwable;
@@ -85,14 +87,62 @@ class CustomerRepository implements CustomerRepositoryInterface
     {
         $locationExport = 'backup/customers/';
         $dateExport = date('d-m-Y_H-i-s');
-        $fileName = $locationExport . 'customer' . $dateExport . '.csv';
-        $store = Store::latest()->first();
-        $fileExport = Excel::store(new CustomerExport(), $fileName);
 
-        $sendEmailExport = $this->dispatch(new SendEmail($fileName, $store));
+        $fileName = $locationExport . 'customer_' . $dateExport . '.csv';
+
+        $store = Store::latest()->first();
+        Excel::store(new CustomerExport(), $fileName);
+
+        dispatch(new SendEmail($fileName, $store));
 
         return response([
             'message' => 'Export CSV Done',
+            'status' => 204,
+        ], 204);
+    }
+
+    public function exportSelectCustomerCSV(Request $request){
+        $list_customers = $request->list_customer;
+        $except_customer = $request->except_customer;
+        $limit = $request->limit;
+        if ($request->has('list_customer')) {
+            $users = Customer::whereIn('id', $list_customers)->get();
+
+        } elseif($request->has('except_customer')){
+            $users = Customer::whereNotIn('id',  $except_customer)
+                ->take($limit)
+                ->get();
+        }else{
+            $users = Customer::simplePaginate(15);
+        }
+
+        $locationExport = storage_path('app/backup/customers/');
+        $dateExport = date('d-m-Y_H-i-s');
+        $fileName = $locationExport . 'customer_' . $dateExport . '.csv';
+
+        $handle = fopen($fileName, 'w');
+        fputcsv($handle, array('ID', 'Store_ID', 'First_Name', 'Last_Name', 'Email', 'Phone',
+            'Country', 'Orders_count', 'Total_Spent', 'Created_At', 'Updated_At'));
+
+        foreach($users as $item){
+            fputcsv($handle, array($item->id, $item->store_id, $item->first_name, $item->last_name, $item->email, $item->phone,
+                $item->country, $item->orders_count, $item->total_spent, $item->created_at, $item->updated_at));
+        }
+
+        fclose($handle);
+
+        $headers = array(
+            'Content-Type' => 'text/csv',
+        );
+
+//        $export = new SelectedCustomerExport($users);
+//        Excel::store($export, $fileName);
+
+        $store = Store::latest()->first();
+        dispatch(new SendEmailSelectedCustomer($fileName, $store));
+
+        return response([
+            'message' => 'Export Selected Customers CSV Done',
             'status' => 204,
         ], 204);
     }

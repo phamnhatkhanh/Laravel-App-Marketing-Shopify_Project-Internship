@@ -2,28 +2,10 @@
 
 namespace App\Http\Controllers\Client;
 
-use Maatwebsite\Excel\Facades\Excel;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\Bus;
-use Illuminate\Bus\Batch;
-
-use App\Repositories\Eloquents\CustomerRepository;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreCustomerRequest;
-use App\Http\Requests\UpdateCustomerRequest;
-
-use App\Models\Customer;
-use App\Models\Store;
-
-use App\Jobs\SendEmail;
-use App\Jobs\SyncCumtomer;
-
-use App\Events\SynchronizedCustomer;
-
-use App\Exports\CustomerExport;
-
+use App\Repositories\Eloquents\CustomerRepository;
+use Illuminate\Http\Request;
 
 class CustomerController extends Controller
 {
@@ -39,6 +21,7 @@ class CustomerController extends Controller
     {
         return $this->customerRepository->syncCutomerFromShopify();
     }
+
     /**
      * Display a listing of the resource.
      *
@@ -62,13 +45,12 @@ class CustomerController extends Controller
      *
      *
      */
-    public function exportIDCustomerCSV(Request $request){
-
+    public function exportSelectCustomerCSV(Request $request){
+        return $this->customerRepository->exportSelectCustomerCSV($request);
     }
 
     public function searchFilterCustomer(Request $request)
     {
         return $this->customerRepository->searchFilterCustomer($request);
-
     }
 }
