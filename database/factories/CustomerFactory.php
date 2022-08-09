@@ -19,7 +19,10 @@ class CustomerFactory extends Factory
         return [
             // 'id' => $this->faker->numberBetween(1,2000),
             'id' => self::$id++,
-            'store_id'=>getRandomModelId(Store::class),
+            'store_id'=>function(){
+                return Store::all()->random()->id;
+            },
+            // 'store_id'=>getRandomModelId(Store::class),
             'first_name'=>$this->faker->firstNameMale,
             'last_name'=>$this->faker->lastName,
             'email'=> $this->faker->email,
