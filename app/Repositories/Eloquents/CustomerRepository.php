@@ -150,6 +150,7 @@ class CustomerRepository implements CustomerRepositoryInterface
             'status' => 204,
         ], 204);
     }
+
     public function getCustomer(){
         // return "sfkjsnfks";
         return $this->customer->get();
@@ -195,4 +196,5 @@ class CustomerRepository implements CustomerRepositoryInterface
             return $customer;
         }
     }
+
 }

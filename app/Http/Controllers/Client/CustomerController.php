@@ -2,28 +2,10 @@
 
 namespace App\Http\Controllers\Client;
 
-use Maatwebsite\Excel\Facades\Excel;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\Bus;
-use Illuminate\Bus\Batch;
-
-use App\Repositories\Eloquents\CustomerRepository;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreCustomerRequest;
-use App\Http\Requests\UpdateCustomerRequest;
-
-use App\Models\Customer;
-use App\Models\Store;
-
-use App\Jobs\SendEmail;
-use App\Jobs\SyncCumtomer;
-
-use App\Events\SynchronizedCustomer;
-
-use App\Exports\CustomerExport;
-
+use App\Repositories\Eloquents\CustomerRepository;
+use Illuminate\Http\Request;
 
 class CustomerController extends Controller
 {
@@ -65,6 +47,7 @@ class CustomerController extends Controller
      */
     public function exportSelectCustomerCSV(Request $request){
         return $this->customerRepository->exportSelectCustomerCSV($request);
+
     }
 
 
@@ -109,6 +92,7 @@ class CustomerController extends Controller
             'data' => $customer,
             'mess' => "dleete customer done"
         ],201);
+
     }
 
     public function show($id)
