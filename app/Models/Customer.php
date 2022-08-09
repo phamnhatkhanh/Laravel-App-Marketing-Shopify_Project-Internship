@@ -89,14 +89,25 @@ class Customer extends Model
     }
 
     public function scopeDate($query, $params)
-    { 
+    {
         if (isset($params['from_date']) && isset($params['to_date'])) {
             $from_date = trim($params['from_date']);
             $to_date = trim($params['to_date']);
             $query->whereDate("created_at", ">=",  $from_date)
                 ->whereDate("created_at", "<=", $to_date);
         }
-        
+
+        if (isset($params['from_date']) && trim($params['from_date'])) {
+            $query->whereDate("created_at", "<=",  $params['from_date']);
+        }
+
+        if (isset($params['to_date']) && trim($params['to_date'])) {
+            $now = date('Y-m-d H:i:s');
+            $query->whereDate("created_at", ">=", $params['to_date'])
+                ->whereDate("created_at", "<=", $now);
+        }
+
         return $query;
     }
+
 }

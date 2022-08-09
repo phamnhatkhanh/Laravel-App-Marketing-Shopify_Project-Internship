@@ -55,7 +55,6 @@ class CustomerRepository implements CustomerRepositoryInterface
         return Customer::simplePaginate(15);
     }
 
-
     public function index()
     {
         return response()->json([
@@ -82,10 +81,11 @@ class CustomerRepository implements CustomerRepositoryInterface
         ], 200);
     }
 
-    public function exportCustomerCSV(){
+    public function exportCustomerCSV()
+    {
         $locationExport = 'backup/customers/';
         $dateExport = date('d-m-Y_H-i-s');
-        $fileName = $locationExport.'customer'.$dateExport.'.csv';
+        $fileName = $locationExport . 'customer' . $dateExport . '.csv';
         $store = Store::latest()->first();
         $fileExport = Excel::store(new CustomerExport(), $fileName);
 
@@ -96,5 +96,4 @@ class CustomerRepository implements CustomerRepositoryInterface
             'status' => 204,
         ], 204);
     }
-
 }

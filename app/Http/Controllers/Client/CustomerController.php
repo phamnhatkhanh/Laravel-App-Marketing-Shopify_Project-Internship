@@ -66,9 +66,6 @@ class CustomerController extends Controller
 
     }
 
-
-
-
     public function searchFilterCustomer(Request $request)
     {
         return $this->customerRepository->searchFilterCustomer($request);
