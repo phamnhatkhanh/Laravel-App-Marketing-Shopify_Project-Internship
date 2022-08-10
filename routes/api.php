@@ -3,6 +3,12 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Shopify\ShopifyController;
+use App\Http\Requests\LoginRequest;
+use App\Http\Requests\ProductRequest;
+use App\Models\Customer;
+use App\Models\Store;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Redis;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,20 +30,26 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 // Route::apiResource('products',ProductController::class);
-Route::prefix('auth')->group(function (){
-    includeRouteFiles(__DIR__ . '/api/jwt');
-});
 
 includeRouteFiles(__DIR__ . '/api/client');
 
-
-
-
-
-Route::prefix('shopify')->group(function (){
+Route::prefix('shopify')->group(function () {
     includeRouteFiles(__DIR__ . '/api/shopify');
 });
 
+Route::prefix('auth')->group(function () {
+    includeRouteFiles(__DIR__ . '/api/login');
+});
+
+
+// ?list_customer=[3,6,8]
+// ?except_customer=[2,6,3]&&get_quantify_customer = 3
+
+Route::get('/redis', function (Request $request) {
+
+    Cache::put('bar', 'baz', 10);
+    $val = Cache::get('bar');
 
 //Get Acess_Token and handle next
 Route::any('/authen', [ShopifyController::class, 'authen'])->name('authen');
+

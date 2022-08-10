@@ -17,7 +17,7 @@ use App\Models\Store;
 class ShopifyController extends Controller
 {
 
-    protected $productRepository;
+    protected $shopifyRepository;
 
 //     protected $product;
 
@@ -33,8 +33,6 @@ class ShopifyController extends Controller
     //Get access_token and Login Shop
     public function authen(Request $request)
     {
-
         return $this->shopifyRepository->authen($request);
-
     }
 }

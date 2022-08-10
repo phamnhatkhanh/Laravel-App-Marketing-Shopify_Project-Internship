@@ -25,24 +25,32 @@ class ShopifyRepository implements ShopifyRepositoryInterface
     public function __construct(){
         $this->customer = new Customer();
         $this->store = new Store();
-
     }
 
     public function login(Request $request)
     {
+        info($request->header("HTTP_X_SHOPIFY_HMAC_SHA256"));
         if ($request->header("HTTP_X_SHOPIFY_HMAC_SHA256")) {
-            if ($this->verifyHmacAppInstall($request)) {
+          
+            if ($this->verifyHmacAppInstall($request)) {  
+                $shop = Store::where("myshopify_domain",$request->shop)->first();
+
+                if(empty($shop)){
+                    $this->authen($request);
+                }
+
                 $JwtAuthController = new JwtAuthController;
                 return $JwtAuthController->login($request);
-            }
+            } 
         } else {
+            info("NO hmac Login");
             $apiKey = config('shopify.shopify_api_key');
             $scope = 'read_customers,write_customers';
             $shop = $request->myshopify_domain;
             $redirect_uri = 'http://192.168.101.83:8080/login';
-
+            // $redirect_uri = 'http://localhost:8000/api/auth/authen';
             $url = 'https://' . $shop . '/admin/oauth/authorize?client_id=' . $apiKey . '&scope=' . $scope . '&redirect_uri=' . $redirect_uri;
-
+            info($url);
             return $url;
         }
     }
@@ -59,8 +67,11 @@ class ShopifyRepository implements ShopifyRepositoryInterface
 
         $params = implode('&', $params);
         $hmac = $request->header("HTTP_X_SHOPIFY_HMAC_SHA256");
+
         $calculatedHmac = hash_hmac('sha256', $params, \env('SHOPIFY_SECRET_KEY'));
+       
         if ($hmac != $calculatedHmac) {
+        
             return response([
                 "status" => false
             ], 401);
@@ -73,11 +84,11 @@ class ShopifyRepository implements ShopifyRepositoryInterface
         $code = $request->code;
         $shopName = $request->shop;
 
-        //Lấy Access_token
+      
+        //Lấy Access_token gọi về từ WebhookService
         $getAccess_token = $this->getAccessToken($code, $shopName);
         $access_token = $getAccess_token->access_token;
 
-        //Lưu thông tin shop
         $getDataLogin = $this->getDataLogin($shopName, $access_token);
 
         //Lưu thông tin khách hàng ở Shopify vào DB
@@ -85,19 +96,11 @@ class ShopifyRepository implements ShopifyRepositoryInterface
 
         //Đăng kí CustomerWebhooks thêm, xóa, sửa
         $this->registerCustomerWebhookService($shopName, $access_token);
-
-        $request['myshopify_domain'] = $shopName;
-        $JwtAuthController = new JwtAuthController;
-        $result = $JwtAuthController->login($request);
-
-        return response([
-            "access_token" => $result,
-            "message" => true,
-        ], 200);
     }
 
     public function getAccessToken(string $code, string $domain)
     {
+      
         $client2 = new Client();
         $response = $client2->post(
             "https://" . $domain . "/admin/oauth/access_token",
@@ -109,7 +112,7 @@ class ShopifyRepository implements ShopifyRepositoryInterface
                 ]
             ]
         );
-
+        
         return json_decode($response->getBody()->getContents());
     }
 
