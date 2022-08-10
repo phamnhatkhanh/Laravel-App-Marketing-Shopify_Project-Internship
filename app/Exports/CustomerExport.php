@@ -8,12 +8,18 @@ use Maatwebsite\Excel\Concerns\WithHeadings;
 
 class CustomerExport implements FromCollection, WithHeadings
 {
+    protected $customer;
+
+    public function __construct(){
+        $this->customer = getConnectDatabaseActived(new Customer());
+
+    }
     /**
     * @return \Illuminate\Support\Collection
     */
     public function collection()
     {
-        return Customer::all();
+        return $this->customer->all();
     }
 
     public function headings() :array{

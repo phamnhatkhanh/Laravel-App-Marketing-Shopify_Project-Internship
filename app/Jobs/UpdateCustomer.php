@@ -15,6 +15,7 @@ class UpdateCustomer implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    private $data_customer;
     private $customer;
 
     /**
@@ -22,9 +23,11 @@ class UpdateCustomer implements ShouldQueue
      *
      * @return void
      */
-    public function __construct($customer)
+    public function __construct($data_customer)
     {
-        $this->customer = $customer;
+        $this->data_customer = $data_customer;
+        $this->customer = getConnectDatabaseActived(new Customer());
+
     }
 
     /**
@@ -34,26 +37,26 @@ class UpdateCustomer implements ShouldQueue
      */
     public function handle()
     {
-        $customer = $this->customer;
-        $customer_id = $customer['id'];
-        
+        $data_customer = $this->customer;
+        $data_customer_id = $data_customer['id'];
+
         $findCreateAT = array('T', '+07:00');
         $replaceCreateAT = array(' ', '');
 
         $findUpdateAT = array('T', '+07:00');
         $replaceUpdateAT = array(' ', '');
 
-        $created_at = str_replace($findCreateAT, $replaceCreateAT, $customer['created_at']);
-        $updated_at = str_replace($findUpdateAT, $replaceUpdateAT, $customer['updated_at']);
+        $created_at = str_replace($findCreateAT, $replaceCreateAT, $data_customer['created_at']);
+        $updated_at = str_replace($findUpdateAT, $replaceUpdateAT, $data_customer['updated_at']);
 
 
-        Customer::where('id', $customer_id)->update([
-            'email' => $customer['email'],
-            'first_name' => $customer['first_name'],
-            'last_name' => $customer['last_name'],
-            'orders_count' => $customer['orders_count'],
-            'total_spent' => $customer['total_spent'],
-            'phone' => $customer['phone'],
+        $this->customer->where('id', $data_customer_id)->update([
+            'email' => $data_customer['email'],
+            'first_name' => $data_customer['first_name'],
+            'last_name' => $data_customer['last_name'],
+            'orders_count' => $data_customer['orders_count'],
+            'total_spent' => $data_customer['total_spent'],
+            'phone' => $data_customer['phone'],
             'created_at' => $created_at,
             'updated_at' => $updated_at,
         ]);

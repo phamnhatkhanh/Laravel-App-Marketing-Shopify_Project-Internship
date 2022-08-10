@@ -14,15 +14,18 @@ use App\Models\Customer;
 class DeleteCustomer implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    private $data_customer;
     private $customer;
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($customer)
+    public function __construct($data_customer)
     {
-        $this->customer = $customer;
+        $this->data_customer = $data_customer;
+        $this->customer = getConnectDatabaseActived(new Customer());
+
     }
 
     /**
@@ -32,9 +35,9 @@ class DeleteCustomer implements ShouldQueue
      */
     public function handle()
     {
-        $customer = $this->customer;
+        $data_customer = $this->data_customer;
 
-        $id = $customer['id'];
-        Customer::where('id', $id)->delete();
+        $id = $data_customer['id'];
+        $this->customer->where('id', $id)->delete();
     }
 }
