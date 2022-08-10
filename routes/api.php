@@ -21,10 +21,6 @@ use Illuminate\Support\Facades\Redis;
 |
 */
 
-
-
-
-
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
@@ -47,9 +43,12 @@ Route::prefix('auth')->group(function () {
 
 Route::get('/redis', function (Request $request) {
 
-    Cache::put('bar', 'baz', 10);
-    $val = Cache::get('bar');
+    $store = Store::all();
 
-//Get Acess_Token and handle next
-Route::any('/authen', [ShopifyController::class, 'authen'])->name('authen');
+    $redis = Redis::connection();
+    $redis->set('store', $store);
 
+    $stores = $redis->get("store");
+
+    echo $stores;
+});

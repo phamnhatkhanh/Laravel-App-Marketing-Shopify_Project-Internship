@@ -14,8 +14,6 @@ class StoreFactory extends Factory
     private static $id = 1;
     public function definition()
     {
-
-
         return [
             'id' => self::$id++,
             // 'id' => $this->faker->numberBetween(1000, 7000),

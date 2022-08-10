@@ -47,6 +47,7 @@ class CampaignController extends Controller
 
     public function searchFilterCampaign(Request $request)
     {
+        info("a");
        return $this->campaignRepository->searchFilterCampaign($request);
     }
 
