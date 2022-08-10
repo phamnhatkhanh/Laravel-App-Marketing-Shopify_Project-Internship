@@ -68,7 +68,7 @@ class CustomerRepository implements CustomerRepositoryInterface
         if ($request->has('list_customer')) {
             $arr = explode(',', $request['list_customer']);
             if(count($arr) > 0){
-                $users = Customer::whereIn('id', $arr)   
+                $users = Customer::whereIn('id', $arr)
                 ->simplePaginate(15);
             }
 
@@ -79,11 +79,11 @@ class CustomerRepository implements CustomerRepositoryInterface
                 // ->get();
                 ->simplePaginate(3);
             }
-           
+
         }else{
             $users = Customer::simplePaginate(15);
         }
-     
+
         return response([
             "total_customers" => Customer::count(),
             "data" => $users,
@@ -110,6 +110,7 @@ class CustomerRepository implements CustomerRepositoryInterface
 
     public function exportCustomerCSV()
     {
+
         $locationExport = 'backup/customers/';
         $dateExport = date('d-m-Y_H-i-s');
 
@@ -127,6 +128,7 @@ class CustomerRepository implements CustomerRepositoryInterface
     }
 
     public function exportSelectCustomerCSV(Request $request){
+        dd("sjfbsjh");
         $list_customers = $request->list_customer;
         $except_customer = $request->except_customer;
         $limit = $request->limit;
@@ -189,7 +191,7 @@ class CustomerRepository implements CustomerRepositoryInterface
         return $customer;
     }
 
-     public function update( $request, $customer_id){
+    public function update( $request, $customer_id){
         // dd($this->customer->getConnection()->getName());
         // dd("update function ".$customer_id);
 

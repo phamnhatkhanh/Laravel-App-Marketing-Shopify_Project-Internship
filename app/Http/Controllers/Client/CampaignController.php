@@ -35,19 +35,60 @@ class CampaignController extends Controller
 
         $campaignProcess = $this->campaignRepository->getCampaignProceess();
         return response(
-            // "data"=>$campaignProcess,
             formatJsonRepsone(Response::HTTP_OK,"mess",$campaignProcess,"err"),
             Response::HTTP_OK);
     }
 
     public function saveCampaign(Request $request){
-
         return $this->campaignRepository->saveCampaign($request);
     }
 
     public function searchFilterCampaign(Request $request)
     {
        return $this->campaignRepository->searchFilterCampaign($request);
+    }
+
+    public function getCampaign()
+    {
+        // dd("get campaignRepository");
+        return $this->campaignRepository->getCampaign();
+    }
+
+    public function update(Request $request, $id)
+    {
+
+        // dd("upate proe");
+        $campaign = $this->campaignRepository->update($request, $id);
+
+        return response([
+            'data' => $campaign
+        ],201);
+    }
+
+    public function store(Request $request)
+    {
+        // dd("store prodcut");
+        $campaign = $this->campaignRepository->store($request);
+        return response([
+            'data' => $campaign
+            // 'data' => new campaignResource($campaign)
+        ],201);
+    }
+
+    public function destroy($id)
+    {
+        // dd("dlete campaign resource");
+        $campaign = $this->campaignRepository->destroy( $id);
+        return response([
+            'data' => $campaign,
+            'mess' => "dleete campaign done"
+        ],201);
+
+    }
+
+    public function show($id)
+    {
+
     }
 
 }

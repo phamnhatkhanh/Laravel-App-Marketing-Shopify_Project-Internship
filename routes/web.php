@@ -12,7 +12,6 @@ use App\Models\Store;
 use App\Models\ObserveModel;
 use App\Models\Review;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Schema;
 /*
 |--------------------------------------------------------------------------
@@ -93,7 +92,10 @@ Route::get('/set-db',function(){
     return  "done set db";
     // return $listNameConnectionMysql;
 });
+
 Route::get('/getCustomer', [CustomerController::class, 'getCustomer']);
+Route::get('/getStore', [ShopifyController::class, 'getStore']);
+
 Route::get('/mail', [CampaignController::class, 'sendEmailCampaign']);
 Route::get('/test-mail', [CampaignController::class, 'sendEmailCampaign']);
 
