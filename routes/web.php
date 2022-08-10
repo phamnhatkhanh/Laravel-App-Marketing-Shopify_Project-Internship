@@ -12,7 +12,6 @@ use App\Models\Store;
 use App\Models\ObserveModel;
 use App\Models\Review;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Schema;
 /*
 |--------------------------------------------------------------------------
@@ -105,10 +104,10 @@ Route::get('getPusher', function () {
     return view('form_pusher');
 });
 
-Route::get('/pusher', function (Illuminate\Http\Request $request) {
-    event(new App\Events\HelloPusherEvent($request));
-    return redirect('getPusher');
-});
+//Route::get('/pusher', function (Illuminate\Http\Request $request) {
+//    event(new App\Events\HelloPusherEvent($request));
+//    return redirect('getPusher');
+//});
 
 Auth::routes();
 

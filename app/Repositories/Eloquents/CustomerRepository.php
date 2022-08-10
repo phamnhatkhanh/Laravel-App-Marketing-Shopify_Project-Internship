@@ -68,7 +68,7 @@ class CustomerRepository implements CustomerRepositoryInterface
         if ($request->has('list_customer')) {
             $arr = explode(',', $request['list_customer']);
             if(count($arr) > 0){
-                $users = Customer::whereIn('id', $arr)   
+                $users = Customer::whereIn('id', $arr)
                 ->simplePaginate(15);
             }
 
@@ -79,11 +79,11 @@ class CustomerRepository implements CustomerRepositoryInterface
                 // ->get();
                 ->simplePaginate(3);
             }
-           
+
         }else{
             $users = Customer::simplePaginate(15);
         }
-     
+
         return response([
             "total_customers" => Customer::count(),
             "data" => $users,
@@ -130,6 +130,7 @@ class CustomerRepository implements CustomerRepositoryInterface
         $list_customers = $request->list_customer;
         $except_customer = $request->except_customer;
         $limit = $request->limit;
+
         if ($request->has('list_customer')) {
             $users = $this->customer->whereIn('id', $list_customers)->get();
 
