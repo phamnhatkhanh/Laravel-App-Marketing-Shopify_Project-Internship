@@ -197,8 +197,8 @@ class ShopifyRepository implements ShopifyRepositoryInterface
             'updated_at' => $updated_at,
         ];
 
-        if (!Store::find($data['id'])) {
-            Store::insert($data);
+        if (!$this->store->find($data['id'])) {
+            $this->store->insert($data);
         }
 
         return $log;
@@ -251,7 +251,7 @@ class ShopifyRepository implements ShopifyRepositoryInterface
             $findUpdateAT = array('T', '+07:00');
             $replaceUpdateAT = array(' ', '');
 
-            $store = Store::latest()->first();
+            $store = $this->store->latest()->first();
             data_set($customers, '*.store_id', $store->id);
 
             foreach ($customers as $customer){
@@ -277,8 +277,8 @@ class ShopifyRepository implements ShopifyRepositoryInterface
                 }
 
 
-                if (!Customer::find($data['id'])){
-                    Customer::insert($data);
+                if (!$this->customer->find($data['id'])){
+                    $this->customer->insert($data);
                 }
             }
         }

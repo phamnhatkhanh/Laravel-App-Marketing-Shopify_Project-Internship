@@ -20,8 +20,11 @@ class ExportCSVEvent
      *
      * @return void
      */
-    public function __construct()
-    {
+    protected $customer;
+
+    public function __construct(){
+        $this->customer = getConnectDatabaseActived(new Customer());
+
         //
     }
 
@@ -40,7 +43,7 @@ class ExportCSVEvent
             ,   'Pragma'              => 'public'
         ];
 
-        $list = Customer::all()->toArray();
+        $list = $this->customer->all()->toArray();
 
         # add headers for each column in the CSV download
         array_unshift($list, array_keys($list[0]));

@@ -12,8 +12,14 @@ use Illuminate\Support\Facades\Mail;
 class SendMailController extends Controller
 {
 
+     protected $customer;
+
+    public function __construct(){
+        $this->customer = getConnectDatabaseActived(new Customer());
+
+    }
     public function email(){
-        $user = Customer::first();
+        $user = $this->customer->first();
 
 //        dispatch(new SendEmail($user));
 

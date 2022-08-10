@@ -19,11 +19,11 @@ class RepositoryServiceProvider extends ServiceProvider {
             'App\Repositories\Contracts\CustomerRepositoryInterface',
             'App\Repositories\Eloquents\CustomerRepository',
 
-            // 'App\Repositories\Contracts\ShopifyRepositoryInterface',
-            // 'App\Repositories\Eloquents\ShopifyRepository',
+            'App\Repositories\Contracts\ShopifyRepositoryInterface',
+            'App\Repositories\Eloquents\ShopifyRepository',
 
-            // 'App\Repositories\Contracts\WebHookRepositoryInterface',
-            // 'App\Repositories\Eloquents\WebHookRepository',
+            'App\Repositories\Contracts\WebHookRepositoryInterface',
+            'App\Repositories\Eloquents\WebHookRepository',
 
         );
 

@@ -19,18 +19,23 @@ class CreateCustomer implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    private $customer, $myshopify_domain;
-
+    private $data_customer,$customer, $myshopify_domain;
+    protected $store;
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($customer,$myshopify_domain)
+    public function __construct($data_customer,$myshopify_domain)
     {
-        $this->customer = $customer;
+        $this->data_customer = $data_customer;
+        $this->customer = getConnectDatabaseActived(new Customer());
+        $this->store = getConnectDatabaseActived(new Store());
         $this->myshopify_domain = $myshopify_domain;
     }
+
+
+
 
     /**
      * Execute the job.
@@ -39,7 +44,7 @@ class CreateCustomer implements ShouldQueue
      */
     public function handle()
     {
-        $customer = $this->customer;
+        $data_customer = $this->data_customer;
         $myshopify_domain = $this->myshopify_domain;
 
         $findCreateAT = array('T', '+07:00');
@@ -48,20 +53,20 @@ class CreateCustomer implements ShouldQueue
         $findUpdateAT = array('T', '+07:00');
         $replaceUpdateAT = array(' ', '');
 
-        $created_at = str_replace($findCreateAT, $replaceCreateAT, $customer['created_at']);
-        $updated_at = str_replace($findUpdateAT, $replaceUpdateAT, $customer['updated_at']);
+        $created_at = str_replace($findCreateAT, $replaceCreateAT, $data_customer['created_at']);
+        $updated_at = str_replace($findUpdateAT, $replaceUpdateAT, $data_customer['updated_at']);
 
-        $store = Store::where('myshopify_domain', $myshopify_domain)->first();
+        $store = $this->store->where('myshopify_domain', $myshopify_domain)->first();
 
-        Customer::create([
-            'id' => $customer['id'],
+        $this->customer->create([
+            'id' => $data_customer['id'],
             'store_id' => $store->id,
-            'email' => $customer['email'],
-            'first_name' => $customer['first_name'],
-            'last_name' => $customer['last_name'],
-            'orders_count' => $customer['orders_count'],
-            'total_spent' => $customer['total_spent'],
-            'phone' => $customer['phone'],
+            'email' => $data_customer['email'],
+            'first_name' => $data_customer['first_name'],
+            'last_name' => $data_customer['last_name'],
+            'orders_count' => $data_customer['orders_count'],
+            'total_spent' => $data_customer['total_spent'],
+            'phone' => $data_customer['phone'],
             'created_at' => $created_at,
             'updated_at' => $updated_at,
         ]);

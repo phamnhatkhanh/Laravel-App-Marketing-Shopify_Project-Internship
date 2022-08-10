@@ -36,14 +36,16 @@ class CustomerRepository implements CustomerRepositoryInterface
 {
 
     protected $customer;
+    protected $store;
     public function __construct(){
         $this->customer = getConnectDatabaseActived(new Customer());
+        $this->store = getConnectDatabaseActived(new Store());
 
     }
     public function syncCutomerFromShopify()
     {
         //get data from shopify -> chunk add job.
-        $customers = Customer::all();
+        $customers = $this->customer->all();
 
         $batch = Bus::batch([])
             ->then(function (Batch $batch) {
@@ -58,7 +60,7 @@ class CustomerRepository implements CustomerRepositoryInterface
             $batch->add(new SyncCumtomer($batch_id, $chunkCumtomer));
         }
 
-        return Customer::simplePaginate(15);
+        return $this->customer->simplePaginate(15);
     }
 
     public function index()
@@ -94,7 +96,7 @@ class CustomerRepository implements CustomerRepositoryInterface
 
         $fileName = $locationExport . 'customer_' . $dateExport . '.csv';
 
-        $store = Store::latest()->first();
+        $store = $this->store->latest()->first();
         Excel::store(new CustomerExport(), $fileName);
 
         dispatch(new SendEmail($fileName, $store));
@@ -110,14 +112,14 @@ class CustomerRepository implements CustomerRepositoryInterface
         $except_customer = $request->except_customer;
         $limit = $request->limit;
         if ($request->has('list_customer')) {
-            $users = Customer::whereIn('id', $list_customers)->get();
+            $users = $this->customer->whereIn('id', $list_customers)->get();
 
         } elseif($request->has('except_customer')){
-            $users = Customer::whereNotIn('id',  $except_customer)
+            $users = $this->customer->whereNotIn('id',  $except_customer)
                 ->take($limit)
                 ->get();
         }else{
-            $users = Customer::simplePaginate(15);
+            $users = $this->customer->simplePaginate(15);
         }
 
         $locationExport = storage_path('app/backup/customers/');
@@ -142,7 +144,7 @@ class CustomerRepository implements CustomerRepositoryInterface
 //        $export = new SelectedCustomerExport($users);
 //        Excel::store($export, $fileName);
 
-        $store = Store::latest()->first();
+        $store = $this->store->latest()->first();
         dispatch(new SendEmailSelectedCustomer($fileName, $store));
 
         return response([
@@ -152,7 +154,7 @@ class CustomerRepository implements CustomerRepositoryInterface
     }
 
     public function getCustomer(){
-        // return "sfkjsnfks";
+
         return $this->customer->get();
     }
     public function store($request){
@@ -162,9 +164,7 @@ class CustomerRepository implements CustomerRepositoryInterface
         $request['updated_at'] = Carbon::now()->format('Y-m-d H:i:s');;
 
         $this->customer->create($request->all());
-
         $customer = $this->customer->where('id', $request['id'])->first();
-        //  dd( $customer->id );
         $connect = ($this->customer->getConnection()->getName());
         event(new CreatedModel($connect,$customer));
         return $customer;
