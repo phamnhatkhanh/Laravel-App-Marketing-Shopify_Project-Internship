@@ -48,7 +48,9 @@ Route::get('/set-db',function(){
                 $model  = str_replace("/","\\",$model );
                 // dd(new $model());
                 $out[] = $model;
+                //hello
             }
+
         }
         return $out;
     }
