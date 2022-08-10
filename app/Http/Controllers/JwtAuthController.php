@@ -50,31 +50,7 @@ class JwtAuthController extends Controller
             "myshopify_domain"=>$getStore['shop']
         ]);
 
-        $validator = Validator::make($data, [
-            'myshopify_domain' => 'required',
-            'password' => "",
-        ]);
-
-        $ip = $request->ip();
-
-        $num_count = Redis::get($ip);
-        if (!$num_count) {
-            Redis::set($ip, 1, 'EX', 50);
-        } else {
-            Redis::incr($ip);
-        }
-        $num_count = Redis::get($ip);
-        $ttl = Redis::ttl($ip);
-
-        //Check resquest
-        if ($num_count > 3) {
-            return response()->json([
-                'status' => false,
-                'num_count' => $num_count,
-                'ttl' => $ttl,
-                'message' => 'server is busy!'
-            ]);
-        }
+        $validator = Validator::make($data);
 
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);

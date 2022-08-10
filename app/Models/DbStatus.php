@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class DbStatus extends Model
 {
     use HasFactory;
-     protected $connection = 'mysql';
+    protected $connection = 'mysql';
     protected $table = 'db_statuses';
     protected $fillable = ['name','status','model_name'];
 }

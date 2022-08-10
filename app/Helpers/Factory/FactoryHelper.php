@@ -1,7 +1,5 @@
 <?php
 
-
-
 if (!function_exists('getRandomModelId')) {
     function getRandomModelId(string $model)
     {

@@ -4,6 +4,10 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Client\CampaignController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Shopify\ShopifyController;
+use Illuminate\Support\Facades\Cache;
+use App\Models\Store;
+
+use Illuminate\Http\Request;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,11 +29,11 @@ Route::get('/', function () {
 });
 
 
-Route::get('getPusher', function (){
-   return view('form_pusher');
+Route::get('getPusher', function () {
+    return view('form_pusher');
 });
 
-Route::get('/pusher', function(Illuminate\Http\Request $request) {
+Route::get('/pusher', function (Illuminate\Http\Request $request) {
     event(new App\Events\HelloPusherEvent($request));
     return redirect('getPusher');
 });
@@ -37,9 +41,4 @@ Route::get('/pusher', function(Illuminate\Http\Request $request) {
 Auth::routes();
 
 Route::get('/home', [HomeController::class, 'index'])->name('home');
-
-
-
-
-
 

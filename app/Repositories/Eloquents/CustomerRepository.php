@@ -55,13 +55,32 @@ class CustomerRepository implements CustomerRepositoryInterface
         return Customer::simplePaginate(15);
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        return response()->json([
-            'total_customers' => $this->customer->count(),
-            'data' => $this->customer->simplePaginate(15),
-            'status' => true
-        ]);
+        if ($request->has('list_customer')) {
+            $arr = explode(',', $request['list_customer']);
+            if(count($arr) > 0){
+                $users = Customer::whereIn('id', $arr)   
+                ->simplePaginate(15);
+            }
+
+        } elseif($request->has('except_customer')){
+            $arr = explode(',', $request['except_customer']);
+            if(count($arr) > 0){
+                $users = Customer::whereNotIn('id', $arr)
+                // ->get();
+                ->simplePaginate(3);
+            }
+           
+        }else{
+            $users = Customer::simplePaginate(15);
+        }
+     
+        return response([
+            "total_customers" => Customer::count(),
+            "data" => $users,
+            "status" => "success"
+        ],200);
     }
 
     public function searchFilterCustomer(Request $request)
@@ -73,7 +92,7 @@ class CustomerRepository implements CustomerRepositoryInterface
         ->totalspant($params)
         ->sort($params)
         ->date($params)
-        ->get();
+        ->simplePaginate(15);
 
         return response([
             'data' => $result,

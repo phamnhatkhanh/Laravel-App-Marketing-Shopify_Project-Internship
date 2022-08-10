@@ -50,7 +50,6 @@ class CampaignRepository implements CampaignRepositoryInterface
             "total_customers"=>Customer::count(),
         ]);
 
-
         $this->sendEmailCampaign($request['list_mail_customers'],$campaignProcess);
 
         return [$campaign];
@@ -85,11 +84,10 @@ class CampaignRepository implements CampaignRepositoryInterface
     public function searchFilterCampaign(Request $request)
     {
         $params = $request->except('_token');
-
         $data = CampaignProcess::searchcampaign($params)
         ->sort($params)
         ->status($params)
-        ->get();
+        ->simplePaginate(15);
 
         return response([
             'data' =>  $data,

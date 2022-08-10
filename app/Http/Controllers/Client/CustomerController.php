@@ -44,9 +44,9 @@ class CustomerController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-       return $this->customerRepository->index();
+       return $this->customerRepository->index($request);
 
     }
 

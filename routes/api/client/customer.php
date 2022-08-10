@@ -19,7 +19,7 @@ Route::prefix('customer')->group(function (){
     Route::get('/', [CustomerController::class, 'index']);
     Route::get('sync', [CustomerController::class, 'syncCutomerFromShopify']);
 
-    Route::post('/filterCustomer', [CustomerController::class, 'searchFilterCustomer']);
+    Route::get('/filterCustomer', [CustomerController::class, 'searchFilterCustomer']);
     Route::get('/export',[CustomerController::class,'exportCustomerCSV'])
         ->name('customer.export');
 
