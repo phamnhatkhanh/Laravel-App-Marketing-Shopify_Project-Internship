@@ -33,7 +33,7 @@ class SyncDatabaseAfterDisconnect
         $dbNames = DbStatus::where('model_name', '=', $event->model)->get();
 
         $listDataNeedSync = ObserveModel::where('database',$event->databaseSync)->get();
-
+        info("SyncDatabaseAfterDisconnect list item sync: ".json_encode($listDataNeedSync));
         foreach ($dbNames as $dbName) {
             $dbName = $dbName->name;
             info("DB: ".$dbName);
@@ -44,8 +44,7 @@ class SyncDatabaseAfterDisconnect
                     $dbConnect = DbStatus::where('name',$dbName)->first();
                     // info("SyncDatabaseAfterDisconnect: find db connect ".$dbName);
                     if(
-                        ($dbConnect->status == 'actived') // not get DB sync
-                        ){
+                        ($dbConnect->status == 'actived')){
                         info("SyncDatabaseAfterDisconnect: get DB is active in DB ".$dbName);
                         // info($listDataNeedSync);
 
@@ -68,19 +67,23 @@ class SyncDatabaseAfterDisconnect
                                     ->where('id', $dataNeedSync->id_row)
                                     ->first();
 
-                                $data = json_decode(json_encode($latestData), true);
-                                info("SyncDatabaseAfterDisconnect data: ".json_encode($latestData));
-                                if($dataNeedSync->action  == "update") {
-                                     DB::connection($event->databaseSync)
-                                    ->table($dataNeedSync->table)
-                                    ->where('id', $dataNeedSync->id_row)
-                                    ->update($data);
-                                }else{
-                                     DB::connection($event->databaseSync)
-                                    ->table($dataNeedSync->table)
-                                    // ->where('id', $dataNeedSync->id_row)
-                                    ->insert($data);
+                                    info("SyncDatabaseAfterDisconnect data: ".json_encode($latestData));
+                                if(!is_null($latestData)){
+                                    info("do action ");
+                                    $data = json_decode(json_encode($latestData), true);
+                                    if($dataNeedSync->action  == "update") {
+                                        DB::connection($event->databaseSync)
+                                        ->table($dataNeedSync->table)
+                                        ->where('id', $dataNeedSync->id_row)
+                                        ->update($data);
+                                    }else{
+                                        DB::connection($event->databaseSync)
+                                        ->table($dataNeedSync->table)
+                                        // ->where('id', $dataNeedSync->id_row)
+                                        ->insert($data);
+                                    }
                                 }
+
 
                             }
                             $dataNeedSync->delete();
@@ -99,5 +102,6 @@ class SyncDatabaseAfterDisconnect
                 continue;
             }
         }
+
     }
 }
