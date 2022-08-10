@@ -8,24 +8,23 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Mail;
 
-use App\Models\Customer;
-
-class DeleteCustomer implements ShouldQueue
+class SendEmailSelectedCustomer implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-    private $data_customer;
-    private $customer;
+
+    private $fileName, $store;
+
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($data_customer)
+    public function __construct($fileName, $store)
     {
-        $this->data_customer = $data_customer;
-        $this->customer = getConnectDatabaseActived(new Customer());
-
+        $this->fileName = $fileName;
+        $this->store = $store;
     }
 
     /**
@@ -35,9 +34,13 @@ class DeleteCustomer implements ShouldQueue
      */
     public function handle()
     {
-        $data_customer = $this->data_customer;
+        $fileName = $this->fileName;
+        $store = $this->store;
 
-        $id = $data_customer['id'];
-        $this->customer->where('id', $id)->delete();
+        Mail::send('mail.attachment', compact('store' ), function ($email) use ($fileName, $store) {
+            $email->subject('Backup data');
+            $email->to($store->email);
+            $email->attach($fileName);
+        });
     }
 }

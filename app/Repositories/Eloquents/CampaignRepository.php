@@ -22,14 +22,19 @@ use Throwable;
 class CampaignRepository implements CampaignRepositoryInterface
 {
 
+    protected $customer;
+    protected $campaign;
     protected $campaignProcess;
+
     public function __construct(){
-        $this->campaignProcess = new CampaignProcess();
+        $this->campaignProcess = getConnectDatabaseActived(new CampaignProcess());
+        $this->customer = getConnectDatabaseActived(new Customer());
+        $this->campaign = getConnectDatabaseActived(new Campaign());
 
     }
 
     public function getCampaignProceess(){
-        $campaignProcess = CampaignProcess::all();
+        $campaignProcess = $this->campaignProcess->all();
 
         return $campaignProcess;
     }
@@ -37,17 +42,17 @@ class CampaignRepository implements CampaignRepositoryInterface
     public function saveCampaign(Request $request){
 
         //save campaign
-        $campaign = Campaign::create($request->all());
+        $campaign = $this->campaign->create($request->all());
         $request['campaign_id']=$campaign->id;
 
-        info(json_encode($request->all()));
+        // info(json_encode($request->all()));
 
         //create campaign process default
-        $campaignProcess = CampaignProcess::create([
+        $campaignProcess = $this->campaignProcess->create([
             'process' =>"0",
             "campaign_id" => $campaign->id,
             "name" => $campaign->name,
-            "total_customers"=>Customer::count(),
+            "total_customers"=>$this->customer->count(),
         ]);
 
         $this->sendEmailCampaign($request['list_mail_customers'],$campaignProcess);
@@ -84,7 +89,7 @@ class CampaignRepository implements CampaignRepositoryInterface
     public function searchFilterCampaign(Request $request)
     {
         $params = $request->except('_token');
-        $data = CampaignProcess::searchcampaign($params)
+        $data = $this->campaignProcess->searchcampaign($params)
         ->sort($params)
         ->status($params)
         ->simplePaginate(15);

@@ -28,11 +28,15 @@ class SyncDatabaseAfterCreatedModel
 
     public function handle($event)
     {
-        info("hhe created product listener");
+        info("SyncDatabaseAfterCreatedModel: created product listener");
         $dbNames = DbStatus::where('model_name', '=', $event->model->getTable())->get();
         $dataCreatedModel = $event->model->toArray();
+        // dd($event->model);
+        info("SyncDatabaseAfterCreatedModel: ".json_encode($dataCreatedModel));
+
         $dataCreatedModel['created_at'] =  Carbon::parse($dataCreatedModel['created_at'])->format('Y-m-d H:i:s');
         $dataCreatedModel['updated_at'] =  Carbon::parse($dataCreatedModel['updated_at'])->format('Y-m-d H:i:s');
+        info("SyncDatabaseAfterCreatedModel: ".json_encode($dataCreatedModel));
         foreach ($dbNames as $dbName) {
             $dbName = $dbName->name;
             try {

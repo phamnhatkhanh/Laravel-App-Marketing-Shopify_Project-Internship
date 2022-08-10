@@ -2,10 +2,6 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
-use App\Http\Controllers\JwtAuthController;
-use App\Http\Controllers\Client\CustomerController;
-use App\Http\Controllers\Client\CampaignController;
 use App\Http\Controllers\Shopify\ShopifyController;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\ProductRequest;
@@ -54,18 +50,6 @@ Route::get('/redis', function (Request $request) {
     Cache::put('bar', 'baz', 10);
     $val = Cache::get('bar');
 
-    dd($val);
-    // Log::Debug($val);
-//     $value = Cache::get('key');
-//    return $value;
-//    $getCustomer = Store::all();
-//     dd($getCustomer->toArray());
-//     $data = [
-//         'id' => $getCustomer->id,
-//         'myshopify_domain' => $getCustomer->myshopify_domain,
-//         'email' => $getCustomer->email
-//     ];
+//Get Acess_Token and handle next
+Route::any('/authen', [ShopifyController::class, 'authen'])->name('authen');
 
-//     Redis::create($data);
-       
-});

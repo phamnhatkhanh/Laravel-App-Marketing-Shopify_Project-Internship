@@ -7,13 +7,13 @@ use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Event;
 
-use App\Events\UpdatedModel;
+use App\Events\Database\UpdatedModel;
 use App\Listeners\SyncDatabaseAfterUpdatedModel;
-use App\Events\DeletedModel;
+use App\Events\Database\DeletedModel;
 use App\Listeners\SyncDatabaseAfterDeletedModel;
-use App\Events\CreatedModel;
+use App\Events\Database\CreatedModel;
 use App\Listeners\SyncDatabaseAfterCreatedModel;
-use App\Events\SyncDatabase;
+use App\Events\Database\SyncDatabase;
 use App\Listeners\SyncDatabaseAfterDisconnect;
 
 class EventServiceProvider extends ServiceProvider

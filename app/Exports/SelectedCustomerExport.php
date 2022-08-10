@@ -3,23 +3,25 @@
 namespace App\Exports;
 
 use App\Models\Customer;
+use Illuminate\Http\Request;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 
-class CustomerExport implements FromCollection, WithHeadings
+class SelectedCustomerExport implements FromCollection, WithHeadings
 {
-    protected $customer;
+    protected $customers;
 
-    public function __construct(){
-        $this->customer = getConnectDatabaseActived(new Customer());
-
+    public function __construct(array $customers)
+    {
+        $this->customers = $customers;
     }
     /**
     * @return \Illuminate\Support\Collection
     */
     public function collection()
     {
-        return $this->customer->all();
+        $customers = $this->customers;
+        return Customer::where('id', $customers)->all();
     }
 
     public function headings() :array{

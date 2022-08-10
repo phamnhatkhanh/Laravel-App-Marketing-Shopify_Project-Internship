@@ -32,17 +32,15 @@ class SyncDatabaseAfterUpdatedModel
 
     public function handle($event)
     {
-        // dd($event->model);
-        // $dbNames = ['mysql_products','mysql_products_backup', 'mysql_products_backup_2'];
-        // $dbNames = ['mysql_reviews','mysql_reviews_backup'];
+
         $dbNames = DbStatus::where('model_name', '=', $event->model->getTable())->get();
-// dd($dbNames);
+        // dd($dbNames);
         if(!empty($event->model)){
             //  dd($event->model);
             $dataUpdateModel = $event->model->toArray();
             unset($dataUpdateModel['created_at']);
             unset($dataUpdateModel['updated_at']);
-            info($dataUpdateModel);
+            // info($dataUpdateModel);
 
             foreach ($dbNames as $dbName) {
                 $dbName = $dbName->name;
