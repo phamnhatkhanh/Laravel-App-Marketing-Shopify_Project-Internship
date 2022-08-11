@@ -43,6 +43,7 @@ class JwtAuthController extends Controller
 
     public function login(Request $request)
     {
+        
         $getStore = $request->toArray();
 
         $data = ([
@@ -50,7 +51,10 @@ class JwtAuthController extends Controller
             "myshopify_domain"=>$getStore['shop']
         ]);
 
-        $validator = Validator::make($data);
+        $validator = Validator::make($data, [
+            'myshopify_domain' => 'required',
+            'password' => '',
+        ]);
 
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);

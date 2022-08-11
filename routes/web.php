@@ -48,7 +48,9 @@ Route::get('/set-db',function(){
                 $model  = str_replace("/","\\",$model );
                 // dd(new $model());
                 $out[] = $model;
+                //hello
             }
+
         }
         return $out;
     }
@@ -107,12 +109,15 @@ Route::get('getPusher', function () {
     return view('form_pusher');
 });
 
-Route::get('/pusher', function (Illuminate\Http\Request $request) {
-    event(new App\Events\HelloPusherEvent($request));
-    return redirect('getPusher');
-});
+
+//Route::get('/pusher', function (Illuminate\Http\Request $request) {
+//    event(new App\Events\HelloPusherEvent($request));
+//    return redirect('getPusher');
+//});
 
 Auth::routes();
 
 Route::get('/home', [HomeController::class, 'index'])->name('home');
 
+
+Route::get('/home', [HomeController::class, 'index'])->name('home');

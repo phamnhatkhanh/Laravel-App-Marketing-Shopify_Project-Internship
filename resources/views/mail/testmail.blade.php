@@ -1,21 +1,47 @@
-
-<p>faceboook
-    <span style="background:#003084;padding:2px;border-radius:4px;color: #ffffff"
-    id="Customer_First_name">Customer_First_name</span>
-</p>
-The body of your message.
-
-<p>hello<span style="background:#003084;padding:2px;border-radius:4px;color: #ffffff" id="Shop_name">Shop_name</span></p>
-
-
-<div data-v-5a45470d="" class="sticky top-5" style="display: flex; flex-direction: column; gap: 20px;"><div data-v-5a45470d="" class="preview-content" style="border-radius: 3px;"><img data-v-5a45470d="" src="blob:http://localhost:8081/fcbf64c5-634f-4137-9e1f-f39361a38105" alt="" style="width: 100%; object-fit: cover;"><div data-v-5a45470d="" class="preview-email-content" style="background: rgb(255, 255, 255); padding: 28px 30px 36px; display: flex; flex-direction: column; gap: 30px;"><div data-v-5a45470d="" class="email--content" style="line-break: anywhere; color: rgb(40, 41, 61);"></div><button data-v-5a45470d="" style="width: 100%; line-height: 18px; font-size: 14px; font-weight: bold; padding: 9px 0px; background: rgb(0, 48, 132); color: rgb(255, 255, 255); border-radius: 4px;"> TRY FREE NOW </button></div></div><div data-v-5a45470d="" class="preview--footer" style="font-size: 14px; font-weight: 400; line-height: 18px; color: rgb(85, 87, 112);"><div data-v-5a45470d=""><p style="text-align: center">Copyright 2010-2022 Firegroup, all rights reserved.</p></div><a data-v-5a45470d="" href="#" style="display: block; text-align: center; text-decoration: underline;">Unsubscribe here</a></div></div>
-
-Thanks,<br>
-
-<p style="text-align: center">Copyright 2010-2022 Firegroup, all rights reserved.</p>
-
-
-<script>
-    let khanh = document.getElementById("Customer_First_name");
-    khanh.innerText = "khanh";
-</script>
+<div style="width: 100%">
+    <table style="width:600px; margin:0px auto">
+        <thead>
+        <tr>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>
+                <img id="bannerImage" data-v-5a45470d="" src="http://localhost:8000/uploads/3.jpg" alt=""
+                     style="width: 100%; object-fit: cover;">
+                <p><span>Hi </span>
+                    <span style="background:#003084;padding:2px;border-radius:4px;color:#ffffff"
+                          id="m_4377536313384117452Customer_Full_name">Customer_Full_name</span>
+                    <span>,<br>Fed up
+                                with
+                                hopping around between Socialwidget and Shopify admin dashboard? Well, that ends now
+                                since
+                                we’ve just switched Socialwidget into an embedded app, allowing you to get access to and
+                                use
+                                it right in your admin panel. <br><br>This is to ensure that we can provide you with the
+                                best in-app experience!</span></p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <button
+                    style="width:100%;line-height:18px;font-size:14px;font-weight:bold;padding:9px 0px;background:rgb(0,48,132);color:rgb(255,255,255);border-radius:4px">
+                    TRY FREE NOW
+                </button>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div style="font-size:14px;font-weight:400;line-height:18px;color:rgb(85,87,112)">
+                    <div>
+                        <p style="text-align:center">Copyright 2010-2022 Firegroup, all rights reserved.</p>
+                    </div>
+                    <a href="#m_4377536313384117452_"
+                       style="display:block;text-align:center;text-decoration:underline">Unsubscribe here</a>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>

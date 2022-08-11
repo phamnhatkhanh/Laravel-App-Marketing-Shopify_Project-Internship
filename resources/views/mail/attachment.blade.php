@@ -10,7 +10,7 @@
 <body>
 <div>
     <div data-v-5a45470d="" class="sticky top-5" style="display: flex; flex-direction: column; gap: 20px;">
-        <div data-v-5a45470d="" class=  "preview-content" style="border-radius: 3px;"><img data-v-5a45470d="" src="{{'public/husky.png'}}"
+        <div data-v-5a45470d="" class=  "preview-content" style="border-radius: 3px;"><img data-v-5a45470d="" src="{{'public/3.png'}}"
                                                                                          alt=""
                                                                                          style="width: 100%; object-fit: cover;">
             <div data-v-5a45470d="" class="preview-email-content"

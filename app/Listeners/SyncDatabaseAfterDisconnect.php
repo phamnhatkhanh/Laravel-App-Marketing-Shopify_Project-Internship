@@ -28,7 +28,6 @@ class SyncDatabaseAfterDisconnect
      */
     public function handle($event)
     {
-
         // dd($event->model);
         $dbNames = DbStatus::where('model_name', '=', $event->model)->get();
 

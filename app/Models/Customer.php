@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Mail;
 use App\Models\Store;
+use DateTime;
 use Illuminate\Support\Facades\DB;
 use Tymon\JWTAuth\Claims\Custom;
 
@@ -29,7 +30,6 @@ class Customer extends Model
         'updated_at',
     ];
 
-
     public function store()
     {
         return $this->belongsTo(Store::class);
@@ -52,28 +52,43 @@ class Customer extends Model
 
     public function scopeOrder($query, $params)
     {
-        if (isset($params['orders_count']) && trim($params['orders_count'] !== '')) {
-            $arr = explode('-', $params['orders_count']);
+        if (isset($params['orders_from']) && isset($params['orders_to'])) {
 
-            if (count($arr) > 1) {
-                $query
-                    ->where("orders_count", ">", (int)$arr[0])
-                    ->where("orders_count", "<=", (int)$arr[1]);
-            }
+            $orders_from = trim($params['orders_from']);
+            $orders_to = trim($params['orders_to']);
+            $query->where("orders_count", ">=", $orders_from)
+                ->where("orders_count", "<=", $orders_to);
+        }
+
+        if (isset($params['orders_from']) && trim($params['orders_from'])) {
+            $query->where("orders_count", "<=", $params['orders_from']);
+        }
+
+        if (isset($params['orders_to']) && trim($params['orders_to'])) {
+            $query->where("orders_count", ">=", $params['orders_to']);
         }
 
         return $query;
     }
 
-    public function scopeTotalSpant($query, $params)
+    public function scopeTotalSpent($query, $params)
     {
-        if (isset($params['total_spent']) && trim($params['total_spent']) !== '') {
-            $arr = explode('-', $params['total_spent']);
+        if (isset($params['spent_from']) && isset($params['spent_to'])) {
+            info("from-to");
 
-            if (count($arr) > 1) {
-                $query->where("total_spent", ">", (int)$arr[0])
-                    ->where("total_spent", "<=", (int)$arr[1]);
-            }
+            $spent_from = trim($params['spent_from']);
+            $spent_to = trim($params['spent_to']);
+            $query->where("total_spent", ">=", $spent_from)
+                ->where("total_spent", "<=", $spent_to);
+        }
+
+        if (isset($params['spent_from']) && trim($params['spent_from'])) {
+            $query->whereNotBetween('total_spent', [0, $params['spent_from']]);
+        }
+
+        if (isset($params['spent_to']) && trim($params['spent_to'])) {
+            $query->whereBetween('total_spent', [0, $params['spent_to']])
+                ->where("total_spent", "=", $params['spent_to']);
         }
 
         return $query;
@@ -90,24 +105,23 @@ class Customer extends Model
 
     public function scopeDate($query, $params)
     {
-        if (isset($params['from_date']) && isset($params['to_date'])) {
-            $from_date = trim($params['from_date']);
-            $to_date = trim($params['to_date']);
-            $query->whereDate("created_at", ">=",  $from_date)
-                ->whereDate("created_at", "<=", $to_date);
+        $now = date('Y-m-d H:i:s');
+        if (isset($params['date_from']) && isset($params['date_to'])) {
+            $date_from = trim($params['date_from']);
+            $date_to = trim($params['date_to']);
+            $query->whereDate("created_at", ">=",  $date_from)
+                ->whereDate("created_at", "<=", $date_to);
         }
 
-        if (isset($params['from_date']) && trim($params['from_date'])) {
-            $query->whereDate("created_at", "<=",  $params['from_date']);
+        if (isset($params['date_from']) && trim($params['date_from'])) {
+            $query->whereDate("created_at", "<=",  $params['date_from']);
         }
 
-        if (isset($params['to_date']) && trim($params['to_date'])) {
-            $now = date('Y-m-d H:i:s');
-            $query->whereDate("created_at", ">=", $params['to_date'])
+        if (isset($params['date_to']) && trim($params['date_to'])) {
+            $query->whereDate("created_at", ">=", $params['date_to'])
                 ->whereDate("created_at", "<=", $now);
+
+            return $query;
         }
-
-        return $query;
     }
-
 }
