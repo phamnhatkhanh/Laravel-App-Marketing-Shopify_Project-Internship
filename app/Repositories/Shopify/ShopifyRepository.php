@@ -31,8 +31,8 @@ class ShopifyRepository implements ShopifyRepositoryInterface
     {
         info($request->header("HTTP_X_SHOPIFY_HMAC_SHA256"));
         if ($request->header("HTTP_X_SHOPIFY_HMAC_SHA256")) {
-          
-            if ($this->verifyHmacAppInstall($request)) {  
+
+            if ($this->verifyHmacAppInstall($request)) {
                 $shop = Store::where("myshopify_domain",$request->shop)->first();
 
                 if(empty($shop)){
@@ -41,14 +41,14 @@ class ShopifyRepository implements ShopifyRepositoryInterface
 
                 $JwtAuthController = new JwtAuthController;
                 return $JwtAuthController->login($request);
-            } 
+            }
         } else {
             info("NO hmac Login");
             $apiKey = config('shopify.shopify_api_key');
             $scope = 'read_customers,write_customers';
             $shop = $request->myshopify_domain;
             $redirect_uri = 'http://192.168.101.83:8080/login';
-            // $redirect_uri = 'http://localhost:8000/api/auth/authen';
+//             $redirect_uri = 'http://127.0.0.1:8000/api/auth/authen';
             $url = 'https://' . $shop . '/admin/oauth/authorize?client_id=' . $apiKey . '&scope=' . $scope . '&redirect_uri=' . $redirect_uri;
             info($url);
             return $url;
@@ -69,9 +69,9 @@ class ShopifyRepository implements ShopifyRepositoryInterface
         $hmac = $request->header("HTTP_X_SHOPIFY_HMAC_SHA256");
 
         $calculatedHmac = hash_hmac('sha256', $params, \env('SHOPIFY_SECRET_KEY'));
-       
+
         if ($hmac != $calculatedHmac) {
-        
+
             return response([
                 "status" => false
             ], 401);
@@ -84,7 +84,7 @@ class ShopifyRepository implements ShopifyRepositoryInterface
         $code = $request->code;
         $shopName = $request->shop;
 
-      
+
         //Lấy Access_token gọi về từ WebhookService
         $getAccess_token = $this->getAccessToken($code, $shopName);
         $access_token = $getAccess_token->access_token;
@@ -100,7 +100,7 @@ class ShopifyRepository implements ShopifyRepositoryInterface
 
     public function getAccessToken(string $code, string $domain)
     {
-      
+
         $client2 = new Client();
         $response = $client2->post(
             "https://" . $domain . "/admin/oauth/access_token",
@@ -112,7 +112,7 @@ class ShopifyRepository implements ShopifyRepositoryInterface
                 ]
             ]
         );
-        
+
         return json_decode($response->getBody()->getContents());
     }
 
@@ -182,6 +182,7 @@ class ShopifyRepository implements ShopifyRepositoryInterface
 
         data_set($store, '*.password', $storeData);
         $getData = $store['shop'];
+
         $data = [
             'id' => $getData['id'],
             'name_merchant' => $getData['name'],
@@ -278,7 +279,6 @@ class ShopifyRepository implements ShopifyRepositoryInterface
                         'updated_at' => $updated_at,
                     ];
                 }
-
 
                 if (!$this->customer->find($data['id'])){
                     $this->customer->insert($data);

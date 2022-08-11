@@ -38,6 +38,7 @@ class CustomerController extends Controller
      */
     public function exportCustomerCSV(){
         return $this->customerRepository->exportCustomerCSV();
+
     }
 
     /**
@@ -58,8 +59,6 @@ class CustomerController extends Controller
 
      public function getCustomer()
     {
-
-        // dd("skfbsjfhds");
         return $this->customerRepository->getCustomer();
     }
 

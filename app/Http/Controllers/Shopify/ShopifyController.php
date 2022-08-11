@@ -30,6 +30,7 @@ class ShopifyController extends Controller
         return $this->shopifyRepository->login($request);
     }
 
+
     //Get access_token and Login Shop
     public function authen(Request $request)
     {

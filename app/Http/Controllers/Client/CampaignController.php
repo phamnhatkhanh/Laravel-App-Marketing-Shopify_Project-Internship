@@ -2,6 +2,15 @@
 
 namespace App\Http\Controllers\Client;
 
+use App\Jobs\SendEmailPreview;
+use App\Mail\SendMailPreview;
+use App\Models\Store;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use IvoPetkov\HTML5DOMDocument;
+use IvoPetkov\HTML5DOMElement;
+use IvoPetkov\HTML5DOMNodeList;
+use phpDocumentor\Reflection\Types\Boolean;
 use Symfony\Component\HttpFoundation\Response;
 
 use App\Http\Controllers\Controller;
@@ -27,27 +36,35 @@ class CampaignController extends Controller
     protected $campaignRepository;
     protected $campaign;
 
-    public function __construct(CampaignRepository $campaignRepository){
-        $this->campaignRepository= $campaignRepository;
+    public function __construct(CampaignRepository $campaignRepository)
+    {
+        $this->campaignRepository = $campaignRepository;
     }
 
-    public function getCampaignProceess(){
+    public function getCampaignProceess()
+    {
 
         $campaignProcess = $this->campaignRepository->getCampaignProceess();
         return response(
-            // "data"=>$campaignProcess,
-            formatJsonRepsone(Response::HTTP_OK,"mess",$campaignProcess,"err"),
+        // "data"=>$campaignProcess,
+            formatJsonRepsone(Response::HTTP_OK, "mess", $campaignProcess, "err"),
             Response::HTTP_OK);
     }
 
-    public function saveCampaign(Request $request){
+    public function saveCampaign(Request $request)
+    {
 
         return $this->campaignRepository->saveCampaign($request);
     }
 
+    public function sendEmailPreview(Request $request)
+    {
+        return $this->campaignRepository->sendEmailPreview($request);
+    }
+
     public function searchFilterCampaign(Request $request)
     {
-       return $this->campaignRepository->searchFilterCampaign($request);
+        return $this->campaignRepository->searchFilterCampaign($request);
     }
 
 }

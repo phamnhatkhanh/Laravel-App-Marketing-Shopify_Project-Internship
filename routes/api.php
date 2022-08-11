@@ -51,6 +51,4 @@ Route::get('/redis', function (Request $request) {
     $val = Cache::get('bar');
 });
 
-//Get Acess_Token and handle next
-Route::any('/authen', [ShopifyController::class, 'authen'])->name('authen');
 

@@ -177,6 +177,7 @@ class CustomerRepository implements CustomerRepositoryInterface
 
         return $this->customer->get();
     }
+
     public function store($request){
 
         $request['id'] = $this->customer->max('id')+1;
@@ -190,7 +191,7 @@ class CustomerRepository implements CustomerRepositoryInterface
         return $customer;
     }
 
-     public function update( $request, $customer_id){
+    public function update( $request, $customer_id){
         // dd($this->customer->getConnection()->getName());
         // dd("update function ".$customer_id);
 
@@ -206,6 +207,7 @@ class CustomerRepository implements CustomerRepositoryInterface
         // $this->customer;
         return $customer;
     }
+
     public function destroy( $customer_id){
         // dd("dleete function ".$customer_id);
         $customer = $this->customer->where('id',$customer_id)->first();

@@ -9,18 +9,16 @@ use App\Http\Requests\LoginRequest;
 use App\Http\Requests\ProductRequest;
 
 
-
-Route::apiResource('/customer',CustomerController::class);
-
-Route::prefix('customer')->group(function (){
+Route::prefix('customer')->group(function () {
     // Route::get('/getCustomer', [CustomerController::class, 'getCustomer']);
 
     Route::get('sync', [CustomerController::class, 'syncCutomerFromShopify']);
 
-    Route::get('/filterCustomer', [CustomerController::class, 'searchFilterCustomer']);
+    Route::get('filterCustomer', [CustomerController::class, 'searchFilterCustomer']);
 
-    Route::get('/export',[CustomerController::class,'exportCustomerCSV']);
-    Route::get('/export-selected',[CustomerController::class,'exportSelectCustomerCSV']);
+    Route::get('export', [CustomerController::class, 'exportCustomerCSV']);
 
-
+    Route::get('export-selected', [CustomerController::class, 'exportSelectCustomerCSV']);
 });
+
+Route::apiResource('/customer', CustomerController::class);
