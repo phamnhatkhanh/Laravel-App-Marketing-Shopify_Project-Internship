@@ -3,9 +3,10 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\Campaign_Process;
+use App\Models\CampaignProcess;
 class CampaignProcessSeeder extends Seeder
 {
+    private static $id = 1;
     /**
      * Run the database seeds.
      *
@@ -13,7 +14,12 @@ class CampaignProcessSeeder extends Seeder
      */
     public function run()
     {
-        Campaign_Process::factory()->times(5)->create();
+        $campaignProcesses = CampaignProcess::factory()->times(5)->create();
+        foreach ($campaignProcesses as  $campaignProcess) {
+            $campaignProcess->id = self::$id++;
+            CampaignProcess::on('mysql_campaigns_processes_backup')->create(($campaignProcess->toArray()));
+
+        }
     }
 }
 // Database\Factories\

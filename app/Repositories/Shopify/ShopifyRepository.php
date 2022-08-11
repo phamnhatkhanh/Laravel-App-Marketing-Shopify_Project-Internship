@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use GuzzleHttp\Client;
 use App\Http\Controllers\JwtAuthController;
 
+use Carbon\Carbon;
 use Throwable;
 
 use App\Repositories\Contracts\ShopifyRepositoryInterface;
@@ -17,19 +18,23 @@ use App\Repositories\Contracts\ShopifyRepositoryInterface;
 use App\Models\Customer;
 use App\Models\Store;
 
+use App\Events\Database\CreatedModel;
+use App\Events\Database\UpdatedModel;
+use App\Events\Database\DeletedModel;
+use App\Events\SyncDatabase;
+use App\Events\SynchronizedCustomer;
+
 class ShopifyRepository implements ShopifyRepositoryInterface
 {
     protected $customer;
     protected $store;
-
     public function __construct(){
-        $this->customer = new Customer();
-        $this->store = new Store();
-    }
+        $this->customer = getConnectDatabaseActived(new Customer());
+        $this->store = getConnectDatabaseActived(new Store());
 
+    }
     public function login(Request $request)
     {
-        info($request->header("HTTP_X_SHOPIFY_HMAC_SHA256"));
         if ($request->header("HTTP_X_SHOPIFY_HMAC_SHA256")) {
 
             if ($this->verifyHmacAppInstall($request)) {
@@ -48,7 +53,7 @@ class ShopifyRepository implements ShopifyRepositoryInterface
             $scope = 'read_customers,write_customers';
             $shop = $request->myshopify_domain;
             $redirect_uri = 'http://192.168.101.83:8080/login';
-//             $redirect_uri = 'http://127.0.0.1:8000/api/auth/authen';
+
             $url = 'https://' . $shop . '/admin/oauth/authorize?client_id=' . $apiKey . '&scope=' . $scope . '&redirect_uri=' . $redirect_uri;
             info($url);
             return $url;
@@ -83,8 +88,6 @@ class ShopifyRepository implements ShopifyRepositoryInterface
     {
         $code = $request->code;
         $shopName = $request->shop;
-
-
         //Lấy Access_token gọi về từ WebhookService
         $getAccess_token = $this->getAccessToken($code, $shopName);
         $access_token = $getAccess_token->access_token;
@@ -321,6 +324,50 @@ class ShopifyRepository implements ShopifyRepositoryInterface
         }
 
         return $params;
+    }
+
+
+
+    public function getStore(){
+
+        // dd("sjdfbhsjf");
+        return $this->store->get();
+    }
+    public function store($request){
+        // dd("repo: store");
+        $request['id'] = $this->store->max('id')+1;
+        $request['created_at'] = Carbon::now()->format('Y-m-d H:i:s');;
+        $request['updated_at'] = Carbon::now()->format('Y-m-d H:i:s');;
+
+        $this->store->create($request->all());
+        $store = $this->store->where('id', $request['id'])->first();
+        $connect = ($this->store->getConnection()->getName());
+        event(new CreatedModel($connect,$store));
+        return $store;
+    }
+
+     public function update( $request, $store_id){
+        // dd("repo: update");
+
+        $this->store->where('id',$store_id)->update($request->all());
+        $store  = ($this->store->where('id',$store_id)->first());
+        $connect = ($this->store->getConnection()->getName());
+
+        event(new UpdatedModel($connect,$store));
+        // info("pass connect");
+
+        // $this->store;
+        return $store;
+    }
+    public function destroy( $store_id){
+        // dd("dleete function ".$store_id);
+        $store = $this->store->where('id',$store_id)->first();
+        if(!empty($store)){
+            $store->delete();
+            $connect = ($this->store->getConnection()->getName());
+            event(new DeletedModel($connect,$store));
+            return $store;
+        }
     }
 
 }

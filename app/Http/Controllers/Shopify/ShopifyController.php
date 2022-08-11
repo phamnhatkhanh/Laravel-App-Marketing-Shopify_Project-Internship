@@ -36,4 +36,49 @@ class ShopifyController extends Controller
     {
         return $this->shopifyRepository->authen($request);
     }
+
+     public function getStore()
+    {
+
+        // dd("skfbsjfhds");
+        return $this->shopifyRepository->getStore();
+    }
+
+
+
+    public function store(Request $request)
+    {
+        // dd("store prodcut");
+        $store = $this->shopifyRepository->store($request);
+        return response([
+            'data' => $store
+            // 'data' => new customerResource($store)
+        ],201);
+    }
+
+    public function update(Request $request, $id)
+    {
+
+        // dd("upate proe");
+        $store = $this->shopifyRepository->update($request, $id);
+
+        return response([
+            'data' => $store
+        ],201);
+    }
+    public function destroy($id)
+    {
+
+        $store = $this->shopifyRepository->destroy( $id);
+        return response([
+            'data' => $store,
+            'mess' => "dleete customer done"
+        ],201);
+
+    }
+
+    public function show($id)
+    {
+
+    }
 }

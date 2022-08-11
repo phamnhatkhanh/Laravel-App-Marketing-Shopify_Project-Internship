@@ -29,6 +29,7 @@ class CustomerController extends Controller
      */
     public function index(Request $request)
     {
+
        return $this->customerRepository->index($request);
     }
 
@@ -37,6 +38,7 @@ class CustomerController extends Controller
      *
      */
     public function exportCustomerCSV(){
+        dd("shdbfsjf");
         return $this->customerRepository->exportCustomerCSV();
 
     }
@@ -46,6 +48,7 @@ class CustomerController extends Controller
      *
      */
     public function exportSelectCustomerCSV(Request $request){
+        dd("shdbfsjf");
         return $this->customerRepository->exportSelectCustomerCSV($request);
 
     }
@@ -57,7 +60,7 @@ class CustomerController extends Controller
 
     }
 
-     public function getCustomer()
+    public function getCustomer()
     {
         return $this->customerRepository->getCustomer();
     }
@@ -65,6 +68,7 @@ class CustomerController extends Controller
     public function update(Request $request, $customer_id)
     {
 
+        // dd("upate proe");
         $customer = $this->customerRepository->update($request, $customer_id);
 
         return response([

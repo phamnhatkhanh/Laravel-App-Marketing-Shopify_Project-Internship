@@ -10,10 +10,15 @@ use App\Http\Requests\LoginRequest;
 use App\Http\Requests\ProductRequest;
 
 Route::prefix('campaign')->group(function (){
-    Route::post('/filterCampaign', [CampaignController::class, 'searchFilterCampaign']);
+
+    Route::get('/filterCampaign', [CampaignController::class, 'searchFilterCampaign']);
+
+    Route::get('/getCampaign', [CampaignController::class, 'getCampaign']);
+
     Route::post('/save-campaign', [CampaignController::class, 'saveCampaign']);
     Route::get('/get-campaigns-process',[CampaignController::class, 'getCampaignProceess']);
 
     Route::post('/send-email-preview',[CampaignController::class, 'sendEmailPreview']);
 });
 
+Route::apiResource('/campaign',CampaignController::class);

@@ -92,7 +92,10 @@ Route::get('/set-db',function(){
     return  "done set db";
     // return $listNameConnectionMysql;
 });
+
 Route::get('/getCustomer', [CustomerController::class, 'getCustomer']);
+Route::get('/getStore', [ShopifyController::class, 'getStore']);
+
 Route::get('/mail', [CampaignController::class, 'sendEmailCampaign']);
 Route::get('/test-mail', [CampaignController::class, 'sendEmailCampaign']);
 
@@ -106,6 +109,7 @@ Route::get('getPusher', function () {
     return view('form_pusher');
 });
 
+
 //Route::get('/pusher', function (Illuminate\Http\Request $request) {
 //    event(new App\Events\HelloPusherEvent($request));
 //    return redirect('getPusher');
@@ -115,3 +119,5 @@ Auth::routes();
 
 Route::get('/home', [HomeController::class, 'index'])->name('home');
 
+
+Route::get('/home', [HomeController::class, 'index'])->name('home');
