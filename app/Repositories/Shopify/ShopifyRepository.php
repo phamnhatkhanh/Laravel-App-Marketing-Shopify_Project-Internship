@@ -53,6 +53,7 @@ class ShopifyRepository implements ShopifyRepositoryInterface
             $scope = 'read_customers,write_customers';
             $shop = $request->myshopify_domain;
             $redirect_uri = 'http://192.168.101.83:8080/login';
+
             $url = 'https://' . $shop . '/admin/oauth/authorize?client_id=' . $apiKey . '&scope=' . $scope . '&redirect_uri=' . $redirect_uri;
             info($url);
             return $url;
@@ -87,7 +88,6 @@ class ShopifyRepository implements ShopifyRepositoryInterface
     {
         $code = $request->code;
         $shopName = $request->shop;
-
         //Lấy Access_token gọi về từ WebhookService
         $getAccess_token = $this->getAccessToken($code, $shopName);
         $access_token = $getAccess_token->access_token;
@@ -185,6 +185,7 @@ class ShopifyRepository implements ShopifyRepositoryInterface
 
         data_set($store, '*.password', $storeData);
         $getData = $store['shop'];
+
         $data = [
             'id' => $getData['id'],
             'name_merchant' => $getData['name'],
@@ -281,7 +282,6 @@ class ShopifyRepository implements ShopifyRepositoryInterface
                         'updated_at' => $updated_at,
                     ];
                 }
-
 
                 if (!$this->customer->find($data['id'])){
                     $this->customer->insert($data);

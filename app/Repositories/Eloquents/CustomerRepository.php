@@ -67,6 +67,7 @@ class CustomerRepository implements CustomerRepositoryInterface
     {
         if ($request->has('list_customer')) {
             $arr = explode(',', $request['list_customer']);
+
             if (count($arr) > 0) {
                 $users = Customer::whereIn('id', $arr)
                     ->simplePaginate(3);
@@ -75,9 +76,11 @@ class CustomerRepository implements CustomerRepositoryInterface
             $arr = explode(',', $request['except_customer']);
             if (count($arr) > 0) {
                 $users = Customer::whereNotIn('id', $arr)
-                    // ->get();
-                    ->simplePaginate(3);
-            
+                // ->get();
+                ->simplePaginate(3);
+            }
+
+
         }else{
             $users = Customer::simplePaginate(15);
         }
@@ -130,6 +133,7 @@ class CustomerRepository implements CustomerRepositoryInterface
         $list_customers = $request->list_customer;
         $except_customer = $request->except_customer;
         $limit = $request->limit;
+
         if ($request->has('list_customer')) {
             $users = $this->customer->whereIn('id', $list_customers)->get();
         } elseif ($request->has('except_customer')) {
@@ -180,8 +184,10 @@ class CustomerRepository implements CustomerRepositoryInterface
 
         return $this->customer->get();
     }
-    public function store($request)
-    {
+
+
+    public function store($request){
+
 
         $request['id'] = $this->customer->max('id') + 1;
         $request['created_at'] = Carbon::now()->format('Y-m-d H:i:s');;
@@ -212,8 +218,10 @@ class CustomerRepository implements CustomerRepositoryInterface
         // $this->customer;
         return $customer;
     }
-    public function destroy($customer_id)
-    {
+
+
+    public function destroy( $customer_id){
+
         // dd("dleete function ".$customer_id);
         $customer = $this->customer->where('id', $customer_id)->first();
         if (!empty($customer)) {

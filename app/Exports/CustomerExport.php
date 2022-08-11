@@ -19,7 +19,7 @@ class CustomerExport implements FromCollection, WithHeadings
     */
     public function collection()
     {
-        return $this->customer->all();
+        return $this->customer->get();
     }
 
     public function headings() :array{

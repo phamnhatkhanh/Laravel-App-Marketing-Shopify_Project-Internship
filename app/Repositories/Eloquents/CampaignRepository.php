@@ -2,6 +2,8 @@
 
 namespace App\Repositories\Eloquents;
 
+use App\Jobs\SendEmailPreview;
+use App\Models\Store;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Bus\Batch;
 
@@ -21,6 +23,7 @@ use App\Events\Database\DeletedModel;
 
 use App\Repositories\Contracts\CampaignRepositoryInterface;
 use Illuminate\Http\Request;
+use IvoPetkov\HTML5DOMDocument;
 use Throwable;
 
 class CampaignRepository implements CampaignRepositoryInterface
@@ -59,8 +62,10 @@ class CampaignRepository implements CampaignRepositoryInterface
 
         $this->sendEmailCampaign($request['list_mail_customers'],$campaignProcess);
 
+//        dispatch(new SendEmailPreview($subject, $sendEmail));
         return [$campaign];
     }
+
 
     // nhan list user va gui sau hien tai fix cung.
     private function sendEmailCampaign($listMailCustomers,$campaignProcess){
@@ -83,6 +88,62 @@ class CampaignRepository implements CampaignRepositoryInterface
             info("key: ".  $key. "  value: ".$MailCustomer);
             // $batch->add(new SendMail($batchId, $MailCustomer,$campaignProcess->id));
         }
+    }
+
+    public function sendEmailPreview(Request $request)
+    {
+        if ($request->hasFile('fileImage')) {
+            if ($request->file('fileImage')->isValid()) {
+                $request->validate(
+                    [
+                        'fileImage' => 'required|image|mimes:jpeg,png,jpg,gif|max:5120',
+                    ]
+                );
+
+                $imageName = time() . '.' . $request->fileImage->extension();
+                $request->fileImage->move(public_path('uploads'), $imageName);
+            }
+        } else {
+            $imageName = '';
+        }
+
+        $body = $request->preview_email;
+        $store = Store::latest()->first();
+
+        $domBody = new HTML5DOMDocument();
+        $domBody->loadHTML($body);
+
+        $findFooter = array('<p style="text-align: center">', '</p>');
+        $replaceFooter = array('', '');
+        $footer = str_replace($findFooter, $replaceFooter, $request->footer);
+
+        if (!empty($imageName)) {
+            $img = $domBody->getElementsByTagName('img')[0];
+            $img->setAttribute('src', asset('uploads/' . $imageName));
+        }
+
+        $body = $domBody->saveHTML();
+        $body = str_replace('Customer_Full_name', $store->name_merchant ?? '', $body);
+        $body = str_replace('Customer_First_name', $store->name_merchant ?? '', $body);
+        $body = str_replace('Customer_Last_name', $store->name_merchant ?? '', $body);
+        $body = str_replace('Shop_name', $store->name_merchant ?? '', $body);
+
+        $subject = $request->subject;
+        $findSubject = array('<p>', '<span>', '</span></p>');
+        $replaceSubject = array('', '', '');
+        $subject = str_replace($findSubject, $replaceSubject, $subject);
+
+        $subject = str_replace('Customer_Full_name', $store->name_merchant ?? '', $subject);
+        $subject = str_replace('Customer_First_name', $store->name_merchant ?? '', $subject);
+        $subject = str_replace('Customer_Last_name', $store->name_merchant ?? '', $subject);
+        $subject = str_replace('Shop_name', $store->name_merchant ?? '', $subject);
+
+        dispatch(new SendEmailPreview($body, $subject, $imageName, $store, $request->send_email));
+
+        return response([
+            'message' => 'Send Email Test Success',
+            'status' => 204,
+        ], 204);
     }
 
     public function searchFilterCampaign(Request $request)
