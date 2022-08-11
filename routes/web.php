@@ -23,9 +23,9 @@ use Illuminate\Support\Facades\Schema;
 | contains the "web" middleware group. Now create something great!
 |
 */
-// Route::get('/update-data', function(){
+Route::get('/data', function(){
 
-// }
+});
 
 Route::get('/set-db',function(){
 

@@ -42,7 +42,7 @@ class SendMail implements ShouldQueue
         Mail::to($this->MailCustomer)->send(new WelcomeMail());
         event(new SendingMail($this->batchId,$this->campaignProcessId));
         if (Mail::failures() != 0) {
-            // return "Email has been sent successfully.";
+            return "Email has been sent successfully.";
         }
         // info ('please check server');
 

@@ -45,12 +45,12 @@ class CustomerRepository implements CustomerRepositoryInterface
     public function syncCutomerFromShopify()
     {
         //get data from shopify -> chunk add job.
-        $customers = $this->customer->all();
+        $customers = $this->customer->get();
 
         $batch = Bus::batch([])
             ->then(function (Batch $batch) {
 
-            })->finally(function (Batch $batch) {
+            })->finally(function (Batch $batch)  {
                 event(new SynchronizedCustomer($batch->id));
             })->onQueue('jobs')->dispatch();
         $batch_id = $batch->id;
@@ -60,7 +60,14 @@ class CustomerRepository implements CustomerRepositoryInterface
             $batch->add(new SyncCumtomer($batch_id, $chunkCumtomer));
         }
 
-        return $this->customer->simplePaginate(15);
+        return response([
+            "status" => true,
+            "message" => "Success sync customer"
+        ],200);
+
+
+
+
     }
 
     public function index(Request $request)
@@ -68,24 +75,24 @@ class CustomerRepository implements CustomerRepositoryInterface
         if ($request->has('list_customer')) {
             $arr = explode(',', $request['list_customer']);
             if(count($arr) > 0){
-                $users = Customer::whereIn('id', $arr)
+                $users = $this->customer->whereIn('id', $arr)
                 ->simplePaginate(15);
             }
 
         } elseif($request->has('except_customer')){
             $arr = explode(',', $request['except_customer']);
             if(count($arr) > 0){
-                $users = Customer::whereNotIn('id', $arr)
+                $users = $this->customer->whereNotIn('id', $arr)
                 // ->get();
                 ->simplePaginate(3);
             }
 
         }else{
-            $users = Customer::simplePaginate(15);
+            $users = $this->customer->simplePaginate(15);
         }
 
         return response([
-            "total_customers" => Customer::count(),
+            "total_customers" => $this->customer->count(),
             "data" => $users,
             "status" => "success"
         ],200);
@@ -176,6 +183,7 @@ class CustomerRepository implements CustomerRepositoryInterface
 
     public function getCustomer(){
 
+        // dd( $this->customer);
         return $this->customer->get();
     }
     public function store($request){
