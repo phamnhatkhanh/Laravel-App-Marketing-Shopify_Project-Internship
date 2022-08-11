@@ -6,6 +6,7 @@ use Illuminate\Database\Seeder;
 use App\Models\Campaign;
 class CampaignSeeder extends Seeder
 {
+    private static $id = 1;
     /**
      * Run the database seeds.
      *
@@ -13,6 +14,11 @@ class CampaignSeeder extends Seeder
      */
     public function run()
     {
-        Campaign::factory()->times(5)->create();
+        $campaigns = Campaign::factory()->times(5)->create();
+        foreach ($campaigns as  $campaign) {
+            $campaign->id = self::$id++;
+            Campaign::on('mysql_campaigns_backup')->create(($campaign->toArray()));
+
+        }
     }
 }

@@ -77,8 +77,8 @@ class CustomerRepository implements CustomerRepositoryInterface
                 $users = Customer::whereNotIn('id', $arr)
                     // ->get();
                     ->simplePaginate(3);
-            }
-        } else {
+            
+        }else{
             $users = Customer::simplePaginate(15);
         }
 
@@ -108,6 +108,7 @@ class CustomerRepository implements CustomerRepositoryInterface
 
     public function exportCustomerCSV()
     {
+
         $locationExport = 'backup/customers/';
         $dateExport = date('d-m-Y_H-i-s');
 
@@ -193,8 +194,9 @@ class CustomerRepository implements CustomerRepositoryInterface
         return $customer;
     }
 
-    public function update($request, $customer_id)
-    {
+
+    public function update( $request, $customer_id){
+
         // dd($this->customer->getConnection()->getName());
         // dd("update function ".$customer_id);
 

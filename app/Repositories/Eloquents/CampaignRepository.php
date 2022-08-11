@@ -11,9 +11,13 @@ use App\Models\CampaignBackgroud;
 use App\Models\CampaignButton;
 use App\Models\CampaignVariant;
 use App\Models\Customer;
-
+use Carbon\Carbon;
 use App\Jobs\SendMail;
 use App\Events\MailSent;
+
+use App\Events\Database\CreatedModel;
+use App\Events\Database\UpdatedModel;
+use App\Events\Database\DeletedModel;
 
 use App\Repositories\Contracts\CampaignRepositoryInterface;
 use Illuminate\Http\Request;
@@ -33,22 +37,21 @@ class CampaignRepository implements CampaignRepositoryInterface
     }
 
     public function getCampaignProceess(){
-        $campaignProcess = $this->campaignProcess->all();
+        $campaignProcess = $this->campaignProcess->get();
 
         return $campaignProcess;
     }
 
     public function saveCampaign(Request $request){
-
         //save campaign
         $campaign = $this->campaign->create($request->all());
         $request['campaign_id']=$campaign->id;
 
         // info(json_encode($request->all()));
-
         //create campaign process default
         $campaignProcess = $this->campaignProcess->create([
-            'process' =>"0",
+            "process" =>"0",
+            "status" => "running",
             "campaign_id" => $campaign->id,
             "name" => $campaign->name,
             "total_customers"=>$this->customer->count(),
@@ -62,26 +65,23 @@ class CampaignRepository implements CampaignRepositoryInterface
     // nhan list user va gui sau hien tai fix cung.
     private function sendEmailCampaign($listMailCustomers,$campaignProcess){
 
-        $batch = Bus::batch([])
-        ->then(function (Batch $batch) {
+        // $batch = Bus::batch([])
+        // ->then(function (Batch $batch) {
+        // })
+        // ->finally(function (Batch $batch) use ($campaignProcess) {
+        //     event(new MailSent($batch->id,$campaignProcess->id));
+        //    $campaignProcess->update([
+        //         'status' =>'completed',
+        //         'process' => intval($batch->progress()),
+        //         'send_email_done' =>$batch->processedJobs(),
+        //         'send_email_fail' =>$batch->failedJobs,
+        //     ]);
+        // })->onQueue('jobs')->dispatch();
+        // $batchId = $batch->id;
+        foreach ($listMailCustomers as  $key => $MailCustomer) {
 
-        })
-        ->finally(function (Batch $batch) use ($campaignProcess) {
-
-            event(new MailSent($batch->id,$campaignProcess->id));
-
-           $campaignProcess->update([
-                'status' =>'completed',
-                'process' => intval($batch->progress()),
-                'send_email_done' =>$batch->processedJobs(),
-                'send_email_fail' =>$batch->failedJobs,
-            ]);
-
-        })->onQueue('jobs')->dispatch();
-
-        $batchId = $batch->id;
-        foreach ($listMailCustomers as  $MailCustomer) {
-            $batch->add(new SendMail($batchId, $MailCustomer,$campaignProcess->id));
+            info("key: ".  $key. "  value: ".$MailCustomer);
+            // $batch->add(new SendMail($batchId, $MailCustomer,$campaignProcess->id));
         }
     }
 
@@ -100,5 +100,51 @@ class CampaignRepository implements CampaignRepositoryInterface
         ], 200);
     }
 
+
+
+    public function getCampaign()
+    {
+        // dd("skfbsjfhds");
+        return $this->campaign->get();
+
+    }
+
+    public function store($request){
+
+        // dd("repo: sotre");
+
+        // $request['created_at'] = Carbon::now()->format('Y-m-d H:i:s');;
+        // $request['updated_at'] = Carbon::now()->format('Y-m-d H:i:s');;
+
+        $campaign = $this->campaign->create($request->all());
+        // dd($campaign);
+        // $campaign = $this->campaign->where('id', $request['id'])->first();
+        $connect = ($this->campaign->getConnection()->getName());
+        event(new CreatedModel($connect,$campaign));
+        return $campaign;
+    }
+
+    public function update( $request, $campaign_id){
+        $this->campaign->where('id',$campaign_id)->update($request->all());
+        $campaign  = ($this->campaign->where('id',$campaign_id)->first());
+        $connect = ($this->campaign->getConnection()->getName());
+        event(new UpdatedModel($connect,$campaign));
+
+        return $campaign;
+    }
+    public function destroy( $campaign_id){
+        // dd("dleete function ".$campaign_id);
+        $campaign = $this->campaign->where('id',$campaign_id)->first();
+        if(!empty($campaign)){
+            $campaign->delete();
+            $connect = ($this->campaign->getConnection()->getName());
+            event(new DeletedModel($connect,$campaign));
+            return $campaign;
+        }
+    }
+    public function show($id)
+    {
+
+    }
 
 }

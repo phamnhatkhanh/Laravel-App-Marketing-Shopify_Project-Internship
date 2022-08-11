@@ -92,7 +92,10 @@ Route::get('/set-db',function(){
     return  "done set db";
     // return $listNameConnectionMysql;
 });
+
 Route::get('/getCustomer', [CustomerController::class, 'getCustomer']);
+Route::get('/getStore', [ShopifyController::class, 'getStore']);
+
 Route::get('/mail', [CampaignController::class, 'sendEmailCampaign']);
 Route::get('/test-mail', [CampaignController::class, 'sendEmailCampaign']);
 

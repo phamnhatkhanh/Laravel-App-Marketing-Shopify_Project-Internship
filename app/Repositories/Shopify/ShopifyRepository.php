@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use GuzzleHttp\Client;
 use App\Http\Controllers\JwtAuthController;
 
+use Carbon\Carbon;
 use Throwable;
 
 use App\Repositories\Contracts\ShopifyRepositoryInterface;
@@ -17,21 +18,26 @@ use App\Repositories\Contracts\ShopifyRepositoryInterface;
 use App\Models\Customer;
 use App\Models\Store;
 
+use App\Events\Database\CreatedModel;
+use App\Events\Database\UpdatedModel;
+use App\Events\Database\DeletedModel;
+use App\Events\SyncDatabase;
+use App\Events\SynchronizedCustomer;
+
 class ShopifyRepository implements ShopifyRepositoryInterface
 {
     protected $customer;
     protected $store;
-
     public function __construct(){
-        $this->customer = new Customer();
-        $this->store = new Store();
-    }
+        $this->customer = getConnectDatabaseActived(new Customer());
+        $this->store = getConnectDatabaseActived(new Store());
 
+    }
     public function login(Request $request)
     {
         if ($request->header("HTTP_X_SHOPIFY_HMAC_SHA256")) {
-          
-            if ($this->verifyHmacAppInstall($request)) {  
+
+            if ($this->verifyHmacAppInstall($request)) {
                 $shop = Store::where("myshopify_domain",$request->shop)->first();
 
                 if(empty($shop)){
@@ -40,7 +46,7 @@ class ShopifyRepository implements ShopifyRepositoryInterface
 
                 $JwtAuthController = new JwtAuthController;
                 return $JwtAuthController->login($request);
-            } 
+            }
         } else {
             info("NO hmac Login");
             $apiKey = config('shopify.shopify_api_key');
@@ -67,9 +73,9 @@ class ShopifyRepository implements ShopifyRepositoryInterface
         $hmac = $request->header("HTTP_X_SHOPIFY_HMAC_SHA256");
 
         $calculatedHmac = hash_hmac('sha256', $params, \env('SHOPIFY_SECRET_KEY'));
-       
+
         if ($hmac != $calculatedHmac) {
-        
+
             return response([
                 "status" => false
             ], 401);
@@ -97,7 +103,7 @@ class ShopifyRepository implements ShopifyRepositoryInterface
 
     public function getAccessToken(string $code, string $domain)
     {
-      
+
         $client2 = new Client();
         $response = $client2->post(
             "https://" . $domain . "/admin/oauth/access_token",
@@ -109,7 +115,7 @@ class ShopifyRepository implements ShopifyRepositoryInterface
                 ]
             ]
         );
-        
+
         return json_decode($response->getBody()->getContents());
     }
 
@@ -318,6 +324,50 @@ class ShopifyRepository implements ShopifyRepositoryInterface
         }
 
         return $params;
+    }
+
+
+
+    public function getStore(){
+
+        // dd("sjdfbhsjf");
+        return $this->store->get();
+    }
+    public function store($request){
+        // dd("repo: store");
+        $request['id'] = $this->store->max('id')+1;
+        $request['created_at'] = Carbon::now()->format('Y-m-d H:i:s');;
+        $request['updated_at'] = Carbon::now()->format('Y-m-d H:i:s');;
+
+        $this->store->create($request->all());
+        $store = $this->store->where('id', $request['id'])->first();
+        $connect = ($this->store->getConnection()->getName());
+        event(new CreatedModel($connect,$store));
+        return $store;
+    }
+
+     public function update( $request, $store_id){
+        // dd("repo: update");
+
+        $this->store->where('id',$store_id)->update($request->all());
+        $store  = ($this->store->where('id',$store_id)->first());
+        $connect = ($this->store->getConnection()->getName());
+
+        event(new UpdatedModel($connect,$store));
+        // info("pass connect");
+
+        // $this->store;
+        return $store;
+    }
+    public function destroy( $store_id){
+        // dd("dleete function ".$store_id);
+        $store = $this->store->where('id',$store_id)->first();
+        if(!empty($store)){
+            $store->delete();
+            $connect = ($this->store->getConnection()->getName());
+            event(new DeletedModel($connect,$store));
+            return $store;
+        }
     }
 
 }
