@@ -12,6 +12,13 @@ class CampaignProcess extends Model
     protected $connection = 'mysql_campaigns_processes';
     protected $table = 'campaign_processes';
 
+    // protected $store;
+    // public function __construct(){
+    //     $this->customer = getConnectDatabaseActived(new Customer());
+    //     $this->store = getConnectDatabaseActived(new Store());
+
+    // }
+
     protected $fillable = [
         'id',
         'campaign_id',
@@ -48,7 +55,19 @@ class CampaignProcess extends Model
     public function scopeStatus($query, $params)
     {
         if (isset($params['status']) && trim($params['status'] !== '')) {
-            $query->where("status", $params['status']);
+            $arr = explode(',', $params['status']);
+            if (count($arr) > 0) {
+                $query->whereIn('status',  $arr);
+            }
+        }
+        return $query;
+    }
+
+    public function scopeName($query, $params)
+    {
+        if (!empty($params['keywords']) && trim($params['keywords']) !== '') {
+            $keywords = trim($params['keywords']);
+            $query->where('name', 'LIKE', "%$keywords%");
         }
         return $query;
     }

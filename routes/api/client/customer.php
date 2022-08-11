@@ -8,9 +8,6 @@ use App\Http\Controllers\JwtAuthController;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\ProductRequest;
 
-
-
-
 Route::prefix('customer')->group(function (){
     // Route::get('/getCustomer', [CustomerController::class, 'getCustomer']);
 
@@ -24,5 +21,6 @@ Route::prefix('customer')->group(function (){
 
 });
 
-
 Route::apiResource('/customer',CustomerController::class);
+Route::apiResource('/customer',CustomerController::class);
+

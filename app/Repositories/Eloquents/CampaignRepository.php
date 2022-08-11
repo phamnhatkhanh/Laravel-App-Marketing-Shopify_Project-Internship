@@ -34,7 +34,6 @@ class CampaignRepository implements CampaignRepositoryInterface
         $this->campaignProcess = getConnectDatabaseActived(new CampaignProcess());
         $this->customer = getConnectDatabaseActived(new Customer());
         $this->campaign = getConnectDatabaseActived(new Campaign());
-
     }
 
     public function getCampaignProceess(){
@@ -91,8 +90,9 @@ class CampaignRepository implements CampaignRepositoryInterface
         $params = $request->except('_token');
         $data = $this->campaignProcess->searchcampaign($params)
         ->sort($params)
+        ->name($params)
         ->status($params)
-        ->simplePaginate(15);
+        ->get();
 
         return response([
             'data' =>  $data,
