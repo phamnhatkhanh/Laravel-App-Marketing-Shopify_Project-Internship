@@ -15,7 +15,8 @@ class CreateCampaignProcessesBackup extends Migration
     public function up()
     {
         Schema::connection('mysql_campaigns_processes_backup')->create('campaign_processes', function (Blueprint $table) {
-            $databaseName = DB::connection('mysql_campaigns')->getDatabaseName();
+            $DB_campaigns = DB::connection('mysql_campaigns')->getDatabaseName();
+            $DB_campaigns_backup = DB::connection('mysql_campaigns_backup')->getDatabaseName();
 
             $table->id();
             $table->unsignedBigInteger('campaign_id');
@@ -30,8 +31,12 @@ class CreateCampaignProcessesBackup extends Migration
 
             $table->foreign('campaign_id')
                 ->references('id')
-                ->on(new Expression($databaseName . '.campaigns'))
-                // ->on('campaigns')
+                ->on(new Expression($DB_campaigns . '.campaigns'))
+                ->onDelete('cascade');
+
+            $table->foreign('campaign_id','campaignsProcess_campagins_backup')
+                ->references('id')
+                ->on(new Expression($DB_campaigns_backup . '.campaigns'))
                 ->onDelete('cascade');
         });
     }
@@ -46,6 +51,7 @@ class CreateCampaignProcessesBackup extends Migration
         if(Schema::connection('mysql_campaigns_processes_backup')->hasTable('campaign_processes')){
 
             Schema::connection('mysql_campaigns_processes_backup')->table('campaign_processes', function (Blueprint $table) {
+                $table->dropForeign('campaignsProcess_campagins_backup');
                 $table->dropForeign(['campaign_id']);
                 $table->dropColumn('campaign_id');
             });
