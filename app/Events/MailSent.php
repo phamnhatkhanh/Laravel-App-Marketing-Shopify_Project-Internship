@@ -33,7 +33,6 @@ class MailSent implements ShouldBroadcast
         info('comleted send mail');
          $batches =  JobBatch::find($this->batchId);
 
-
          return response()->json([
             'campaignId' => $campaignProcessId,
             'processing'=>$batches->progress(),

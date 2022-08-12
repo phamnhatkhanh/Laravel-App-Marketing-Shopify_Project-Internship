@@ -37,6 +37,7 @@ class CustomerRepository implements CustomerRepositoryInterface
 
     protected $customer;
     protected $store;
+
     public function __construct()
     {
         $this->customer = getConnectDatabaseActived(new Customer());
@@ -76,17 +77,28 @@ class CustomerRepository implements CustomerRepositoryInterface
             $arr = explode(',', $request['except_customer']);
             if (count($arr) > 0) {
                 $users = Customer::whereNotIn('id', $arr)
-                // ->get();
-                ->simplePaginate(3);
+                    // ->get();
+                    ->simplePaginate(3);
             }
+        } else {
+            $params = $request->except('_token');
 
+            $users = $this->customer->searchcustomer($params)
+                ->order($params)
+                ->totalspent($params)
+                ->sort($params)
+                ->date($params)
+                ->simplePaginate(15);
 
-        }else{
-            $users = Customer::simplePaginate(15);
+            $total =  $this->customer->searchcustomer($params)->count();
+            $totalpage = (int)round($total / 15);
         }
+        $total = Customer::count();
+        $totalpage = (int)round($total / 15);
 
         return response([
-            "total_customers" => Customer::count(),
+            "total_customers" => $total,
+            "totalPage" => $totalpage,
             "data" => $users,
             "status" => "success"
         ], 200);
@@ -103,15 +115,17 @@ class CustomerRepository implements CustomerRepositoryInterface
             ->date($params)
             ->simplePaginate(15);
 
+        $total =  $this->customer->searchcustomer($params)->count();
+        $totalpage = (int)round($total / 15);
         return response([
             'data' => $result,
+            "totalPage" => $totalpage,
             'status' => true,
         ], 200);
     }
 
     public function exportCustomerCSV()
     {
-
         $locationExport = 'backup/customers/';
         $dateExport = date('d-m-Y_H-i-s');
 
@@ -149,6 +163,7 @@ class CustomerRepository implements CustomerRepositoryInterface
         $fileName = $locationExport . 'customer_' . $dateExport . '.csv';
 
         $handle = fopen($fileName, 'w');
+
         fputcsv($handle, array(
             'ID', 'Store_ID', 'First_Name', 'Last_Name', 'Email', 'Phone',
             'Country', 'Orders_count', 'Total_Spent', 'Created_At', 'Updated_At'
@@ -167,9 +182,6 @@ class CustomerRepository implements CustomerRepositoryInterface
             'Content-Type' => 'text/csv',
         );
 
-        //        $export = new SelectedCustomerExport($users);
-        //        Excel::store($export, $fileName);
-
         $store = $this->store->latest()->first();
         dispatch(new SendEmailSelectedCustomer($fileName, $store));
 
@@ -186,9 +198,8 @@ class CustomerRepository implements CustomerRepositoryInterface
     }
 
 
-    public function store($request){
-
-
+    public function store($request)
+    {
         $request['id'] = $this->customer->max('id') + 1;
         $request['created_at'] = Carbon::now()->format('Y-m-d H:i:s');;
         $request['updated_at'] = Carbon::now()->format('Y-m-d H:i:s');;
@@ -201,7 +212,8 @@ class CustomerRepository implements CustomerRepositoryInterface
     }
 
 
-    public function update( $request, $customer_id){
+    public function update($request, $customer_id)
+    {
 
         // dd($this->customer->getConnection()->getName());
         // dd("update function ".$customer_id);
@@ -220,7 +232,8 @@ class CustomerRepository implements CustomerRepositoryInterface
     }
 
 
-    public function destroy( $customer_id){
+    public function destroy($customer_id)
+    {
 
         // dd("dleete function ".$customer_id);
         $customer = $this->customer->where('id', $customer_id)->first();

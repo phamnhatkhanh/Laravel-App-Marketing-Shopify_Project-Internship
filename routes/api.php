@@ -43,10 +43,9 @@ Route::prefix('auth')->group(function () {
 
 Route::get('/redis', function (Request $request) {
 
-    Cache::put('bar', 'baz', 10);
-    $val = Cache::get('bar');
-
-    $stores = $redis->get("store");
-
-    echo $stores;
+    $redis = Redis::connection();
+    $store = Store::all();
+    $redis->set('store',$store);
+    $name = $redis->get('store');
+    echo $name;
 });

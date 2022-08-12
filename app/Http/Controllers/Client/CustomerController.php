@@ -38,7 +38,6 @@ class CustomerController extends Controller
      *
      */
     public function exportCustomerCSV(){
-        dd("shdbfsjf");
         return $this->customerRepository->exportCustomerCSV();
 
     }
@@ -48,7 +47,6 @@ class CustomerController extends Controller
      *
      */
     public function exportSelectCustomerCSV(Request $request){
-        dd("shdbfsjf");
         return $this->customerRepository->exportSelectCustomerCSV($request);
 
     }
@@ -67,8 +65,6 @@ class CustomerController extends Controller
 
     public function update(Request $request, $customer_id)
     {
-
-        // dd("upate proe");
         $customer = $this->customerRepository->update($request, $customer_id);
 
         return response([
@@ -104,7 +100,3 @@ class CustomerController extends Controller
 
 }
 
-// /api/customer
-
-// ?list_customer=[3,6,8]
-// ?except_customer=[2,6,3]&&get_quantify_customer = 3

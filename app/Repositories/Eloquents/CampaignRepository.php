@@ -6,7 +6,6 @@ use App\Jobs\SendEmailPreview;
 use App\Models\Store;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Bus\Batch;
-
 use App\Models\Campaign;
 use App\Models\CampaignProcess;
 use App\Models\CampaignBackgroud;
@@ -22,13 +21,13 @@ use App\Events\Database\UpdatedModel;
 use App\Events\Database\DeletedModel;
 
 use App\Repositories\Contracts\CampaignRepositoryInterface;
+use DOMDocument;
 use Illuminate\Http\Request;
 use IvoPetkov\HTML5DOMDocument;
 use Throwable;
 
 class CampaignRepository implements CampaignRepositoryInterface
 {
-
     protected $customer;
     protected $campaign;
     protected $campaignProcess;
@@ -69,24 +68,24 @@ class CampaignRepository implements CampaignRepositoryInterface
 
     // nhan list user va gui sau hien tai fix cung.
     private function sendEmailCampaign($listMailCustomers,$campaignProcess){
-
-        // $batch = Bus::batch([])
-        // ->then(function (Batch $batch) {
-        // })
-        // ->finally(function (Batch $batch) use ($campaignProcess) {
-        //     event(new MailSent($batch->id,$campaignProcess->id));
-        //    $campaignProcess->update([
-        //         'status' =>'completed',
-        //         'process' => intval($batch->progress()),
-        //         'send_email_done' =>$batch->processedJobs(),
-        //         'send_email_fail' =>$batch->failedJobs,
-        //     ]);
-        // })->onQueue('jobs')->dispatch();
-        // $batchId = $batch->id;
+     
+        $batch = Bus::batch([])
+        ->then(function (Batch $batch) {
+        })
+        ->finally(function (Batch $batch) use ($campaignProcess) {
+            event(new MailSent($batch->id,$campaignProcess->id));
+           $campaignProcess->update([
+                'status' =>'completed',
+                'process' => intval($batch->progress()),
+                'send_email_done' =>$batch->processedJobs(),
+                'send_email_fail' =>$batch->failedJobs,
+            ]);
+        })->onQueue('jobs')->dispatch();
+        $batchId = $batch->id;
         foreach ($listMailCustomers as  $key => $MailCustomer) {
 
             info("key: ".  $key. "  value: ".$MailCustomer);
-            // $batch->add(new SendMail($batchId, $MailCustomer,$campaignProcess->id));
+            $batch->add(new SendMail($batchId, $MailCustomer,$campaignProcess->id));
         }
     }
 
@@ -110,7 +109,7 @@ class CampaignRepository implements CampaignRepositoryInterface
         $body = $request->preview_email;
         $store = Store::latest()->first();
 
-        $domBody = new HTML5DOMDocument();
+        $domBody = new DOMDocument();
         $domBody->loadHTML($body);
 
         $findFooter = array('<p style="text-align: center">', '</p>');
@@ -160,8 +159,6 @@ class CampaignRepository implements CampaignRepositoryInterface
             'status' => true,
         ], 200);
     }
-
-
 
     public function getCampaign()
     {

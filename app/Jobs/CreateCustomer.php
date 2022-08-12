@@ -34,9 +34,6 @@ class CreateCustomer implements ShouldQueue
         $this->myshopify_domain = $myshopify_domain;
     }
 
-
-
-
     /**
      * Execute the job.
      *

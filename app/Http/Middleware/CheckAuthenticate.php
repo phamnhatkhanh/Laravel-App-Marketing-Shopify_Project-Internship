@@ -30,7 +30,6 @@ class CheckAuthenticate
     
             return response()->json(['token_expired']);
 
-    
         } catch (TokenInvalidException $e) {
     
             return response()->json(['token_invalid']);
