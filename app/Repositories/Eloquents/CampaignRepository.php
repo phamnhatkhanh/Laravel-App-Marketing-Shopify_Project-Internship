@@ -50,7 +50,6 @@ class CampaignRepository implements CampaignRepositoryInterface
         $campaign = $this->campaign->create($request->all());
         $request['campaign_id']=$campaign->id;
 
-        // info(json_encode($request->all()));
         //create campaign process default
         $campaignProcess = $this->campaignProcess->create([
             "process" =>"0",
@@ -75,6 +74,7 @@ class CampaignRepository implements CampaignRepositoryInterface
 
         $batch = Bus::batch([])
         ->then(function (Batch $batch) {
+
         })
         ->finally(function (Batch $batch) use ($campaignProcess) {
             $campaignProcess->update([
@@ -89,8 +89,8 @@ class CampaignRepository implements CampaignRepositoryInterface
             event(new MailSent($batch->id,$campaignProcess));
         })->onQueue('jobs')->dispatch();
         $batchId = $batch->id;
-        foreach ($listMailCustomers as  $key => $MailCustomer) {
 
+        foreach ($listMailCustomers as  $key => $MailCustomer) {
             if($key >1 && $key < 5){
                 $MailCustomer =1;
                 // info("key: ".  $key. "  value: ".$MailCustomer);

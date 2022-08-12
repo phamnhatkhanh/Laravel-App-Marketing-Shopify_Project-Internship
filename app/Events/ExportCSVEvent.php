@@ -36,11 +36,11 @@ class ExportCSVEvent
     public function broadcastOn()
     {
         $headers = [
-            'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0'
-            ,   'Content-type'        => 'text/csv'
-            ,   'Content-Disposition' => 'attachment; filename=galleries.csv'
-            ,   'Expires'             => '0'
-            ,   'Pragma'              => 'public'
+             'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0'
+            ,'Content-type'        => 'text/csv'
+            ,'Content-Disposition' => 'attachment; filename=galleries.csv'
+            ,'Expires'             => '0'
+            ,'Pragma'              => 'public'
         ];
 
         $list = $this->customer->all()->toArray();

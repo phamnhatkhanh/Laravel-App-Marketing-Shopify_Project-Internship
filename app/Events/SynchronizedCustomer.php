@@ -35,14 +35,13 @@ class SynchronizedCustomer implements ShouldBroadcast
     public function sendProcess(){
         info('comleted sync customer: '. $this->batch_id);
         $batches =  JobBatch::find($this->batch_id);
-        // $this->processing =$batches->progress();
-        // $this->status = true;
-        // $this->data = Customer::simplePaginate(15);
-        return ([
+
+        return [
+            "status" => true,
+            "message" => "Success sync customer",
             'processing'=> $batches->progress(),
-            'status' =>true,
             "data" => Customer::simplePaginate(15)
-        ]);
+        ];
 
 
 
