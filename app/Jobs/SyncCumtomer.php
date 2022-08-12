@@ -49,6 +49,6 @@ class SyncCumtomer implements ShouldQueue
             //     $customer->phone,
             // ]);
         }
-        event(new SyncingCustomer($this->batch_id))->onQueue('event');
+        event(new SyncingCustomer($this->batch_id));
     }
 }

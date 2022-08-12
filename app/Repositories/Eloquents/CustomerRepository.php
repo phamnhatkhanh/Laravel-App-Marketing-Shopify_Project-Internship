@@ -47,13 +47,17 @@ class CustomerRepository implements CustomerRepositoryInterface
     public function syncCutomerFromShopify()
     {
         //get data from shopify -> chunk add job.
-        $customers = $this->customer->all();
+        $customers = $this->customer->get();
 
         $batch = Bus::batch([])
             ->then(function (Batch $batch) {
-            })->finally(function (Batch $batch) {
+
+            })->finally(function (Batch $batch)  {
+
                 event(new SynchronizedCustomer($batch->id));
+                
             })->onQueue('jobs')->dispatch();
+
         $batch_id = $batch->id;
 
         $chunksCustomer = $customers->chunk(5);
@@ -61,7 +65,14 @@ class CustomerRepository implements CustomerRepositoryInterface
             $batch->add(new SyncCumtomer($batch_id, $chunkCumtomer));
         }
 
-        return $this->customer->simplePaginate(15);
+        return response([
+            "status" => true,
+            "message" => "Start sync customer"
+        ],200);
+
+
+
+
     }
 
     public function index(Request $request)
@@ -69,16 +80,19 @@ class CustomerRepository implements CustomerRepositoryInterface
         if ($request->has('list_customer')) {
             $arr = explode(',', $request['list_customer']);
 
-            if (count($arr) > 0) {
-                $users = Customer::whereIn('id', $arr)
-                    ->simplePaginate(3);
+            if(count($arr) > 0){
+                $users = $this->customer->whereIn('id', $arr)
+                ->simplePaginate(15);
+
             }
         } elseif ($request->has('except_customer')) {
             $arr = explode(',', $request['except_customer']);
-            if (count($arr) > 0) {
-                $users = Customer::whereNotIn('id', $arr)
-                    // ->get();
-                    ->simplePaginate(3);
+
+            if(count($arr) > 0){
+                $users = $this->customer->whereNotIn('id', $arr)
+
+                // ->get();
+                ->simplePaginate(3);
             }
         } else {
             $params = $request->except('_token');
@@ -90,6 +104,7 @@ class CustomerRepository implements CustomerRepositoryInterface
                 ->date($params)
                 ->simplePaginate(15);
 
+
             $total =  $this->customer->searchcustomer($params)->count();
             $totalpage = (int)round($total / 15);
         }
@@ -99,28 +114,9 @@ class CustomerRepository implements CustomerRepositoryInterface
         return response([
             "total_customers" => $total,
             "totalPage" => $totalpage,
+            "total_customers" => $this->customer->count(),
             "data" => $users,
-            "status" => "success"
-        ], 200);
-    }
-
-    public function searchFilterCustomer(Request $request)
-    {
-        $params = $request->except('_token');
-
-        $result = $this->customer->searchcustomer($params)
-            ->order($params)
-            ->totalspent($params)
-            ->sort($params)
-            ->date($params)
-            ->simplePaginate(15);
-
-        $total =  $this->customer->searchcustomer($params)->count();
-        $totalpage = (int)round($total / 15);
-        return response([
-            'data' => $result,
-            "totalPage" => $totalpage,
-            'status' => true,
+            "status" => true
         ], 200);
     }
 
@@ -194,6 +190,7 @@ class CustomerRepository implements CustomerRepositoryInterface
     public function getCustomer()
     {
 
+        // dd( $this->customer);
         return $this->customer->get();
     }
 

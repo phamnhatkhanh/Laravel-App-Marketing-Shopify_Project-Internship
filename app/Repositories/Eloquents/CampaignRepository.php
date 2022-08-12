@@ -49,7 +49,6 @@ class CampaignRepository implements CampaignRepositoryInterface
         $campaign = $this->campaign->create($request->all());
         $request['campaign_id']=$campaign->id;
 
-        // info(json_encode($request->all()));
         //create campaign process default
         $campaignProcess = $this->campaignProcess->create([
             "process" =>"0",
@@ -59,6 +58,9 @@ class CampaignRepository implements CampaignRepositoryInterface
             "total_customers"=>$this->customer->count(),
         ]);
 
+        $connect = ($this->campaignProcess->getConnection()->getName());
+        event(new CreatedModel($connect,$campaignProcess));
+        // dd($request['list_mail_customers']);
         $this->sendEmailCampaign($request['list_mail_customers'],$campaignProcess);
 
 //        dispatch(new SendEmailPreview($subject, $sendEmail));
@@ -68,24 +70,31 @@ class CampaignRepository implements CampaignRepositoryInterface
 
     // nhan list user va gui sau hien tai fix cung.
     private function sendEmailCampaign($listMailCustomers,$campaignProcess){
-     
+
         $batch = Bus::batch([])
         ->then(function (Batch $batch) {
+
         })
         ->finally(function (Batch $batch) use ($campaignProcess) {
-            event(new MailSent($batch->id,$campaignProcess->id));
-           $campaignProcess->update([
+            $campaignProcess->update([
                 'status' =>'completed',
-                'process' => intval($batch->progress()),
+                'process' => 100,
                 'send_email_done' =>$batch->processedJobs(),
                 'send_email_fail' =>$batch->failedJobs,
             ]);
+
+            $connect = ($campaignProcess->getConnection()->getName());
+            event(new UpdatedModel($connect,$campaignProcess));
+            event(new MailSent($batch->id,$campaignProcess));
         })->onQueue('jobs')->dispatch();
         $batchId = $batch->id;
-        foreach ($listMailCustomers as  $key => $MailCustomer) {
 
-            info("key: ".  $key. "  value: ".$MailCustomer);
-            $batch->add(new SendMail($batchId, $MailCustomer,$campaignProcess->id));
+        foreach ($listMailCustomers as  $key => $MailCustomer) {
+            if($key >1 && $key < 5){
+                $MailCustomer =1;
+                // info("key: ".  $key. "  value: ".$MailCustomer);
+            }
+            $batch->add(new SendMail($batchId, $MailCustomer,$campaignProcess));
         }
     }
 

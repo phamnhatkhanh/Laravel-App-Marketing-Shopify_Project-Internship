@@ -4,7 +4,7 @@ namespace App\Exceptions;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Symfony\Component\HttpFoundation\Response;
-// use Illuminate\Database\QueryException;
+use Illuminate\Database\QueryException;
 trait ExceptionTrait
 {
 	public function apiException($request,$e)
@@ -47,6 +47,7 @@ trait ExceptionTrait
 	protected function QueryResponse($e)
 	{
 		return response()->json([
+                    'status' => false,
                     'errors' => 'Can not access DB'
                 ],Response::HTTP_NOT_FOUND);
 	}

@@ -16,7 +16,9 @@ class CreateCampaignsBackupTable extends Migration
     public function up()
     {
         Schema::connection('mysql_campaigns_backup')->create('campaigns', function (Blueprint $table) {
-            $databaseName = DB::connection('mysql_stores')->getDatabaseName();
+            $DB_store = DB::connection('mysql_stores')->getDatabaseName();
+            $DB_store_backup = DB::connection('mysql_stores_backup')->getDatabaseName();
+
             $table->id();
             $table->unsignedBigInteger('store_id');
             $table->string('name');
@@ -28,7 +30,12 @@ class CreateCampaignsBackupTable extends Migration
             $table->foreign('store_id')
                 ->references('id')
                 // ->on('stores')
-                ->on(new Expression($databaseName . '.stores'))
+                ->on(new Expression($DB_store . '.stores'))
+                ->onDelete('cascade');
+
+            $table->foreign('store_id','campaigns_store_backup')
+                ->references('id')
+                ->on(new Expression($DB_store_backup . '.stores'))
                 ->onDelete('cascade');
         });
     }
@@ -43,6 +50,7 @@ class CreateCampaignsBackupTable extends Migration
         if(Schema::connection('mysql_campaigns_backup')->hasTable('campaigns')){
 
             Schema::connection('mysql_campaigns_backup')->table('campaigns', function (Blueprint $table) {
+                $table->dropForeign('campaigns_store_backup');
                 $table->dropForeign(['store_id']);
                 $table->dropColumn('store_id');
             });
