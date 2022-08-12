@@ -24,7 +24,7 @@ use App\Http\Requests\LoginRequest;
 use App\Models\Store;
 use App\Models\User;
 
-class JwtAuthController extends Controller
+class LoginController extends Controller
 {
     /**
      * Create a new AuthController instance.
@@ -43,7 +43,6 @@ class JwtAuthController extends Controller
 
     public function login(Request $request)
     {
-        
         $getStore = $request->toArray();
 
         $data = ([

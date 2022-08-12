@@ -16,16 +16,12 @@ class isShopify
      */
     public function handle(Request $request, Closure $next)
     {
-        info("acce mdd shpify");
-        // $hmac_header = $_SERVER['HTTP_X_SHOPIFY_HMAC_SHA256'];
-        $hmac_header=   $request->header("HTTP_X_SHOPIFY_HMAC_SHA256");
+        $hmac_header =   $request->header("HTTP_X_SHOPIFY_HMAC_SHA256");
         $data = file_get_contents('php://input');
         $verified = $this->verify_webhook($data, $hmac_header);
         if ($verified) {
-            info("verify hash mac from shopify");
             return $next($request);
         } else {
-            info("cannoottt");
             http_response_code(401);
         }
     }
@@ -35,6 +31,4 @@ class isShopify
         $calculated_hmac = base64_encode(hash_hmac('sha256', $data, \env('KEY_SECRET_APP_SHOPIFY'), true));
         return hash_equals($hmac_header, $calculated_hmac);
     }
-
-
 }

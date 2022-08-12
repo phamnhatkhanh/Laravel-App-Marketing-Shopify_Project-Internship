@@ -10,13 +10,17 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 use App\Models\JobBatch;
+use App\Models\Customer;
 
 class SynchronizedCustomer implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $message;
+
     public $batch_id;
+
+
+    public $payload;
     /**
      * Create a new event instance.
      *
@@ -26,12 +30,21 @@ class SynchronizedCustomer implements ShouldBroadcast
     {
 
         $this->batch_id = $batch_id;
-        $this->message  = $this->sendProcess();
+        $this->payload  = $this->sendProcess();
     }
     public function sendProcess(){
         info('comleted sync customer: '. $this->batch_id);
         $batches =  JobBatch::find($this->batch_id);
-        return $batches->progress();
+
+        return [
+            "status" => true,
+            "message" => "Success sync customer",
+            'processing'=> $batches->progress(),
+            "data" => Customer::simplePaginate(15)
+        ];
+
+
+
         // return 'Finish: '.$batches->finished_at.
         //     ' - Processing: '.$batches->progress().'%'.
         //     ' - Send: '. $batches->processedJobs().

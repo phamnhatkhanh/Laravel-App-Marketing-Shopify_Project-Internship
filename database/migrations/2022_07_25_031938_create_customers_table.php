@@ -17,7 +17,9 @@ class CreateCustomersTable extends Migration
     {
         Schema::connection('mysql_customers')->create('customers', function (Blueprint $table) {
 
-            $databaseName = DB::connection('mysql_stores')->getDatabaseName();
+            $DB_store = DB::connection('mysql_stores')->getDatabaseName();
+            $DB_store_backup = DB::connection('mysql_stores_backup')->getDatabaseName();
+
             $table->bigInteger('id')->unsigned()->primary();
             $table->unsignedBigInteger('store_id');
             $table->string("first_name",50);
@@ -32,8 +34,12 @@ class CreateCustomersTable extends Migration
 
             $table->foreign('store_id')
                 ->references('id')
-                ->on(new Expression($databaseName . '.stores'))
-                // ->on('stores')
+                ->on(new Expression($DB_store . '.stores'))
+                ->onDelete('cascade');
+
+            $table->foreign('store_id','customers_store_backup')
+                ->references('id')
+                ->on(new Expression($DB_store_backup . '.stores'))
                 ->onDelete('cascade');
         });
     }
@@ -48,6 +54,7 @@ class CreateCustomersTable extends Migration
         if(Schema::connection('mysql_customers')->hasTable('customers')){
 
             Schema::connection('mysql_customers')->table('customers', function (Blueprint $table) {
+                $table->dropForeign('customers_store_backup');
                 $table->dropForeign(['store_id']);
                 $table->dropColumn('store_id');
             });

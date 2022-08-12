@@ -6,7 +6,6 @@ use App\Jobs\SendEmailPreview;
 use App\Models\Store;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Bus\Batch;
-
 use App\Models\Campaign;
 use App\Models\CampaignProcess;
 use App\Models\CampaignBackgroud;
@@ -22,6 +21,7 @@ use App\Events\Database\UpdatedModel;
 use App\Events\Database\DeletedModel;
 
 use App\Repositories\Contracts\CampaignRepositoryInterface;
+use DOMDocument;
 use Illuminate\Http\Request;
 use DOMDocument;
 use Illuminate\Support\Facades\Log;
@@ -30,7 +30,6 @@ use Throwable;
 
 class CampaignRepository implements CampaignRepositoryInterface
 {
-
     protected $customer;
     protected $campaign;
     protected $campaignProcess;
@@ -55,7 +54,6 @@ class CampaignRepository implements CampaignRepositoryInterface
         $campaign = $this->campaign->create($request->all());
         $request['campaign_id'] = $campaign->id;
 
-        // info(json_encode($request->all()));
         //create campaign process default
         $campaignProcess = $this->campaignProcess->create([
             "process" => "0",
@@ -65,7 +63,13 @@ class CampaignRepository implements CampaignRepositoryInterface
             "total_customers" => $this->customer->count(),
         ]);
 
+
         $this->sendEmailCampaign($request['list_mail_customers'], $campaignProcess);
+
+        $connect = ($this->campaignProcess->getConnection()->getName());
+        event(new CreatedModel($connect,$campaignProcess));
+        // dd($request['list_mail_customers']);
+        $this->sendEmailCampaign($request['list_mail_customers'],$campaignProcess);
 
 //        dispatch(new SendEmailPreview($subject, $sendEmail));
         return [$campaign];
@@ -75,23 +79,31 @@ class CampaignRepository implements CampaignRepositoryInterface
     private function sendEmailCampaign($listMailCustomers, $campaignProcess)
     {
 
-        // $batch = Bus::batch([])
-        // ->then(function (Batch $batch) {
-        // })
-        // ->finally(function (Batch $batch) use ($campaignProcess) {
-        //     event(new MailSent($batch->id,$campaignProcess->id));
-        //    $campaignProcess->update([
-        //         'status' =>'completed',
-        //         'process' => intval($batch->progress()),
-        //         'send_email_done' =>$batch->processedJobs(),
-        //         'send_email_fail' =>$batch->failedJobs,
-        //     ]);
-        // })->onQueue('jobs')->dispatch();
-        // $batchId = $batch->id;
-        foreach ($listMailCustomers as $key => $MailCustomer) {
 
-            info("key: " . $key . "  value: " . $MailCustomer);
-            // $batch->add(new SendMail($batchId, $MailCustomer,$campaignProcess->id));
+        $batch = Bus::batch([])
+        ->then(function (Batch $batch) {
+
+        })
+        ->finally(function (Batch $batch) use ($campaignProcess) {
+            $campaignProcess->update([
+                'status' =>'completed',
+                'process' => 100,
+                'send_email_done' =>$batch->processedJobs(),
+                'send_email_fail' =>$batch->failedJobs,
+            ]);
+
+            $connect = ($campaignProcess->getConnection()->getName());
+            event(new UpdatedModel($connect,$campaignProcess));
+            event(new MailSent($batch->id,$campaignProcess));
+        })->onQueue('jobs')->dispatch();
+        $batchId = $batch->id;
+
+        foreach ($listMailCustomers as  $key => $MailCustomer) {
+            if($key >1 && $key < 5){
+                $MailCustomer =1;
+                // info("key: ".  $key. "  value: ".$MailCustomer);
+            }
+            $batch->add(new SendMail($batchId, $MailCustomer,$campaignProcess));
         }
     }
 
@@ -114,7 +126,7 @@ class CampaignRepository implements CampaignRepositoryInterface
 
         $bodyPreviewEmail = $request->preview_email;
         $store = Store::latest()->first();
-
+        
         $array = ([
             [
                 "variant" => 'Customer_Full_name',
@@ -138,6 +150,9 @@ class CampaignRepository implements CampaignRepositoryInterface
                 $bodyPreviewEmail = str_replace($arr['variant'], $arr['value'], $bodyPreviewEmail);
             }
         }
+
+        $domBody = new DOMDocument();
+        $domBody->loadHTML($body);
 
         $cutBodyPreview = str_replace(array("\\",), '', $bodyPreviewEmail);
 
@@ -193,7 +208,6 @@ class CampaignRepository implements CampaignRepositoryInterface
             'status' => true,
         ], 200);
     }
-
 
     public function getCampaign()
     {

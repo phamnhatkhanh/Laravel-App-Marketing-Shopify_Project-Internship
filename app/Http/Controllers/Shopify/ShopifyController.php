@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Session;
 use phpDocumentor\Reflection\Types\This;
 
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\JwtAuthController;
+use App\Http\Controllers\LoginController;
 use App\Repositories\Shopify\ShopifyRepository;
 
 use App\Models\Customer;
@@ -18,8 +18,6 @@ class ShopifyController extends Controller
 {
 
     protected $shopifyRepository;
-
-//     protected $product;
 
     public function __construct(ShopifyRepository $shopifyRepository)
     {
@@ -39,27 +37,19 @@ class ShopifyController extends Controller
 
      public function getStore()
     {
-
-        // dd("skfbsjfhds");
         return $this->shopifyRepository->getStore();
     }
 
-
-
     public function store(Request $request)
     {
-        // dd("store prodcut");
         $store = $this->shopifyRepository->store($request);
         return response([
             'data' => $store
-            // 'data' => new customerResource($store)
         ],201);
     }
 
     public function update(Request $request, $id)
     {
-
-        // dd("upate proe");
         $store = $this->shopifyRepository->update($request, $id);
 
         return response([
@@ -68,7 +58,6 @@ class ShopifyController extends Controller
     }
     public function destroy($id)
     {
-
         $store = $this->shopifyRepository->destroy( $id);
         return response([
             'data' => $store,

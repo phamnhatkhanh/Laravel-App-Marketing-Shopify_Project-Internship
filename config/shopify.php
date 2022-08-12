@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'ngrok' => env('NGROK' , 'https://6702-113-161-32-170.ap.ngrok.io'),
+    'ngrok' => env('NGROK' , 'https://5ed0-113-161-32-170.ap.ngrok.io'),
     'shopify_api_key' => env('SHOPIFY_API_KEY', '654f376a65553734fc2003c474fabc65'),
     'shopify_secret_key' => env('SHOPIFY_SECRET_KEY', '8db2f21a512004a3b6b8d878a44573f3'),
     'shopify_domain' => env('SHOPIFY_DOMAIN','https://manh-store123.myshopify.com'),

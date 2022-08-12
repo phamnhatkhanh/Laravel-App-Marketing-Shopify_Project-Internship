@@ -10,9 +10,12 @@ if (!function_exists('getConnectDatabaseActived')) {
         info("IsConnect: prepare switcher db backup");
         $dbNames = DbStatus::where('model_name', '=', $model->getTable())->get();
         $table_model = $model->getTable();
+
+            //  dd($dbNames);
         $isSelectedDatabaseToConnect = "not_selected";
         foreach ($dbNames as  $db) {
             $db = $db->name;
+
             try {
                 info("IsConnect: connect_to_backup_database ". $db);
                 if(DB::connection($db)->getPdo()){
@@ -43,6 +46,7 @@ if (!function_exists('getConnectDatabaseActived')) {
             }
 
         }
+        // dd( $model);
         return $model;
     }
 

@@ -15,31 +15,45 @@ class SendingMail implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $message;
+
     public $batchId;
-    public $campaignProcessId;
+    public $campaignProcess;
+    public $payload;
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct($batchId,$campaignProcessId)
+    public function __construct($batchId,$campaignProcess)
     {
         $this->batchId = $batchId;
-        $this->campaignProcessId = $campaignProcessId;
-        $this->message  = $this->sendProcess($this->campaignProcessId);
+        $this->campaignProcess = $campaignProcess;
+        // $this->message  = $this->sendProcess($this->campaignProcess);
+        $this->payload  = $this->sendProcess($this->campaignProcess);
     }
 
-    public function sendProcess($campaignProcessId){
+    public function sendProcess($campaignProcess){
         info("sedding mail ". $this->batchId);
-        $batches =  JobBatch::find($this->batchId);
+        $batch =  JobBatch::find($this->batchId);
+
+        info(' mail_done_percentage: ' . ("mail_send ". $batch->processedJobs(). "totle cutstome ".$campaignProcess->total_customers));
+        info(' mail_done_percentage: ' . "mail_send ".( ($batch->processedJobs()/$campaignProcess->total_customers)*100));
+
+        $mail_done_percentage =  $campaignProcess->total_customers> 0?round(($batch->processedJobs()/$campaignProcess->total_customers) * 100):0;
+        $mail_failed_percentage = $batch->total_jobs>0? round(($batch->failed_jobs/$batch->total_jobs) * 100):0;
+
         return response()->json([
-            'campaignId' => $campaignProcessId,
-            'processing'=> $batches->progress(),
-            'mail_send_done'=> $batches->processedJobs(),
-            'mail_send_failed'=>$batches->failed_jobs,
-            'finished_at' =>$batches->finished_at
+            'campaignId' => $campaignProcess->id,
+            'status' =>'running',
+            'processing' => $batch->progress(),
+            'mail_send_done' => $batch->processedJobs(),
+            'mail_done_percentage' => $mail_done_percentage,
+            'mail_send_failed' =>$batch->failed_jobs,
+            'mail_failed_percentage' => $mail_failed_percentage,
+            'total_customer' => $campaignProcess->total_customers,
+            'finished_at' => $batch->finished_at
          ]);
+
     }
 
 
@@ -51,11 +65,5 @@ class SendingMail implements ShouldBroadcast
         return 'send_mail';
     }
 
-    // public function broadcastOn()
-    // {
-    //     return ['SendingMail'];
-    // }
-    // public function broadcastAs(){
-    //     return 'send-processing';
-    // }
+
 }

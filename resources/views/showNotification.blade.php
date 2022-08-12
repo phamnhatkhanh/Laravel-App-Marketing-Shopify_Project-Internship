@@ -90,7 +90,7 @@
                   </div>
                 </div>
                 <div class="media-body">
-                  <strong class="notification-title">`+data.message+`</strong>
+                  <strong class="notification-title">`+data.payload+`</strong>
                   <!--p class="notification-desc">Extra description can go here</p-->
                   <div class="notification-meta">
                     <small class="timestamp">about a minute ago</small>
@@ -122,7 +122,7 @@
                   </div>
                 </div>
                 <div class="media-body">
-                  <strong class="notification-title">`+data.message+`</strong>
+                  <strong class="notification-title">`+data.payload+`</strong>
                   <!--p class="notification-desc">Extra description can go here</p-->
                   <div class="notification-meta">
                     <small class="timestamp">about a minute ago</small>
@@ -157,7 +157,7 @@
                   </div>
                 </div>
                 <div class="media-body">
-                  <strong class="notification-title">`+data.message+`</strong>
+                  <strong class="notification-title">`+data.payload+`</strong>
                   <!--p class="notification-desc">Extra description can go here</p-->
                   <div class="notification-meta">
                     <small class="timestamp">about a minute ago</small>

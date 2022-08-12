@@ -72,9 +72,9 @@ class SyncDatabaseAfterDisconnect
                                     $data = json_decode(json_encode($latestData), true);
                                     if($dataNeedSync->action  == "update") {
                                         DB::connection($event->databaseSync)
-                                        ->table($dataNeedSync->table)
-                                        ->where('id', $dataNeedSync->id_row)
-                                        ->update($data);
+                                            ->table($dataNeedSync->table)
+                                            ->where('id', $dataNeedSync->id_row)
+                                            ->update($data);
                                     }else{
                                         DB::connection($event->databaseSync)
                                         ->table($dataNeedSync->table)
