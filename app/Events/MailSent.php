@@ -34,6 +34,8 @@ class MailSent implements ShouldBroadcast
     public function sendProcess($campaignProcess){
         $batch =  JobBatch::find($this->batchId);
         info('comleted send mail');
+         $batches =  JobBatch::find($this->batchId);
+         
         $mail_done_percentage =  $campaignProcess->total_customers> 0?round(($batch->processedJobs()/$campaignProcess->total_customers) * 100):0;
         $mail_failed_percentage = $batch->total_jobs>0? round(($batch->failed_jobs/$batch->total_jobs) * 100):0;
         info(' mail_done_percentage: ' . "mail_send ".$mail_done_percentage);

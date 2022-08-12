@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Http\Request;
 use GuzzleHttp\Client;
-use App\Http\Controllers\JwtAuthController;
+use App\Http\Controllers\LoginController;
 
 use Carbon\Carbon;
 use Throwable;
@@ -44,8 +44,8 @@ class ShopifyRepository implements ShopifyRepositoryInterface
                     $this->authen($request);
                 }
 
-                $JwtAuthController = new JwtAuthController;
-                return $JwtAuthController->login($request);
+                $LoginController = new LoginController;
+                return $LoginController->login($request);
             }
         } else {
             info("NO hmac Login");
