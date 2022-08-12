@@ -1,47 +1,92 @@
-<div style="width: 100%">
-    <table style="width:600px; margin:0px auto">
-        <thead>
-        <tr>
-            <th></th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-            <td>
-                <img id="bannerImage" data-v-5a45470d="" src="http://localhost:8000/uploads/3.jpg" alt=""
-                     style="width: 100%; object-fit: cover;">
-                <p><span>Hi </span>
-                    <span style="background:#003084;padding:2px;border-radius:4px;color:#ffffff"
-                          id="m_4377536313384117452Customer_Full_name">Customer_Full_name</span>
-                    <span>,<br>Fed up
-                                with
-                                hopping around between Socialwidget and Shopify admin dashboard? Well, that ends now
-                                since
-                                we’ve just switched Socialwidget into an embedded app, allowing you to get access to and
-                                use
-                                it right in your admin panel. <br><br>This is to ensure that we can provide you with the
-                                best in-app experience!</span></p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <button
-                    style="width:100%;line-height:18px;font-size:14px;font-weight:bold;padding:9px 0px;background:rgb(0,48,132);color:rgb(255,255,255);border-radius:4px">
-                    TRY FREE NOW
-                </button>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <div style="font-size:14px;font-weight:400;line-height:18px;color:rgb(85,87,112)">
-                    <div>
-                        <p style="text-align:center">Copyright 2010-2022 Firegroup, all rights reserved.</p>
-                    </div>
-                    <a href="#m_4377536313384117452_"
-                       style="display:block;text-align:center;text-decoration:underline">Unsubscribe here</a>
-                </div>
-            </td>
-        </tr>
-        </tbody>
-    </table>
+[2022-08-12 04:47:05] local.INFO:
+<div data-v-5a45470d="" class="sticky" style="top: 20px; width: unset;">
+    <div data-v-5a45470d="" style="width: 100%;">
+        <table data-v-5a45470d="" style="width: 600px; margin: 0px auto;">
+            <tbody data-v-5a45470d="">
+            <tr data-v-5a45470d="">
+                <td data-v-5a45470d="" style="border-radius: 3px 3px 0px 0px; overflow: hidden;"><img data-v-5a45470d=""
+                                                                                                      src="blob:http://localhost:8080/08886ae7-adb3-4b4b-9476-2e1bdc081bd8"
+                                                                                                      alt=""
+                                                                                                      style="width: 100%; object-fit: cover;">
+                </td>
+            </tr>
+            <tr data-v-5a45470d="" class="preview-email-content"
+                style="background-color: rgb(255, 255, 255); color: rgb(40, 41, 61);">
+                <td data-v-5a45470d="" class="email--content" style="line-break: anywhere; padding: 28px 30px 25px;"><p>
+                        asdasdsad <span style="background:#003084;padding:2px;border-radius:4px;color: #ffffff"
+                                        id="Customer_Last_name">Customer_Last_name</span> <span
+                            style="background:#003084;padding:2px;border-radius:4px;color: #ffffff"
+                            id="Customer_Full_name">Customer_Full_name</span></p></td>
+            </tr>
+            <tr data-v-5a45470d="">
+                <td data-v-5a45470d=""
+                    style="padding: 0px 30px 36px; background-color: rgb(255, 255, 255); border-radius: 0px 0px 3px 3px;">
+                    <button data-v-5a45470d=""
+                            style="width: 100%; line-height: 18px; font-size: 14px; font-weight: bold; padding: 9px 0px; cursor: pointer; background: rgb(0, 48, 132); color: rgb(255, 255, 255); border-radius: 4px;">
+                        TRY FREE NOW
+                    </button>
+                </td>
+            </tr>
+            <tr data-v-5a45470d="" style="margin-top: 20px;">
+                <td data-v-5a45470d="" class="preview--footer"
+                    style="font-size: 14px; font-weight: 400; line-height: 18px; color: rgb(85, 87, 112); display: block; margin-top: 20px;">
+                    <p style="text-align: center">Copyright 2010-2022 Firegroup, all rights reserved.</p></td>
+            </tr>
+            <tr data-v-5a45470d="">
+                <td data-v-5a45470d="" class="preview--footer"
+                    style="font-size: 14px; font-weight: 400; line-height: 18px; color: rgb(85, 87, 112);"><a
+                        data-v-5a45470d="" href="#"
+                        style="display: block; text-align: center; text-decoration: underline; color: rgb(85, 87, 112);">Unsubscribe
+                        here</a></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
 </div>
+
+[2022-08-12 04:51:23] local.INFO:
+<div data-v-5a45470d="" class="sticky" style="top: 20px; width: unset;">
+    <div data-v-5a45470d="" style="width: 100%;">
+        <table data-v-5a45470d="" style="width: 600px; margin: 0px auto;">
+            <tbody data-v-5a45470d="">
+            <tr data-v-5a45470d="">
+                <td data-v-5a45470d="" style="border-radius: 3px 3px 0px 0px; overflow: hidden;"><img data-v-5a45470d=""
+                                                                                                      src="blob:http://localhost:8080/08886ae7-adb3-4b4b-9476-2e1bdc081bd8"
+                                                                                                      alt=""
+                                                                                                      style="width: 100%; object-fit: cover;">
+                </td>
+            </tr>
+            <tr data-v-5a45470d="" class="preview-email-content"
+                style="background-color: rgb(255, 255, 255); color: rgb(40, 41, 61);">
+                <td data-v-5a45470d="" class="email--content" style="line-break: anywhere; padding: 28px 30px 25px;"><p>
+                        asdasdsad <span style="background:#003084;padding:2px;border-radius:4px;color: #ffffff"
+                                        id="Vietnam">Vietnam</span> <span
+                            style="background:#003084;padding:2px;border-radius:4px;color: #ffffff" id="Huskadian2">Huskadian2</span>
+                    </p></td>
+            </tr>
+            <tr data-v-5a45470d="">
+                <td data-v-5a45470d=""
+                    style="padding: 0px 30px 36px; background-color: rgb(255, 255, 255); border-radius: 0px 0px 3px 3px;">
+                    <button data-v-5a45470d=""
+                            style="width: 100%; line-height: 18px; font-size: 14px; font-weight: bold; padding: 9px 0px; cursor: pointer; background: rgb(0, 48, 132); color: rgb(255, 255, 255); border-radius: 4px;">
+                        TRY FREE NOW
+                    </button>
+                </td>
+            </tr>
+            <tr data-v-5a45470d="" style="margin-top: 20px;">
+                <td data-v-5a45470d="" class="preview--footer"
+                    style="font-size: 14px; font-weight: 400; line-height: 18px; color: rgb(85, 87, 112); display: block; margin-top: 20px;">
+                    <p style="text-align: center">Copyright 2010-2022 Firegroup, all rights reserved.</p></td>
+            </tr>
+            <tr data-v-5a45470d="">
+                <td data-v-5a45470d="" class="preview--footer"
+                    style="font-size: 14px; font-weight: 400; line-height: 18px; color: rgb(85, 87, 112);"><a
+                        data-v-5a45470d="" href="#"
+                        style="display: block; text-align: center; text-decoration: underline; color: rgb(85, 87, 112);">Unsubscribe
+                        here</a></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+

@@ -12,7 +12,8 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use IvoPetkov\HTML5DOMDocument;
 
-class SendEmailPreview implements ShouldQueue
+class SendEmailPreview
+//    implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -41,14 +42,13 @@ class SendEmailPreview implements ShouldQueue
     {
         $body = $this->body;
         $subject = $this->subject;
+        $store = $this->store;
         $sendEmail = $this->sendEmail;
 
-        Mail::send('mail.emailPreview', compact('body' ), function ($email) use ($subject, $sendEmail) {
-            $email->subject($subject);
-            $email->to($sendEmail);
+        Mail::send('mail.emailPreview', compact('body' ), function ($email) use ($subject, $store,$sendEmail) {
+            $email->from($store->email);
+            $email->to($sendEmail)->subject($subject);
         });
 
-//        sleep(10);
-//        unlink(public_path('uploads/' . $this->imageName));
     }
 }
