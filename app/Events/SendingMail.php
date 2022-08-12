@@ -41,17 +41,7 @@ class SendingMail implements ShouldBroadcast
 
         $mail_done_percentage =  $campaignProcess->total_customers> 0?round(($batch->processedJobs()/$campaignProcess->total_customers) * 100):0;
         $mail_failed_percentage = $batch->total_jobs>0? round(($batch->failed_jobs/$batch->total_jobs) * 100):0;
-        // return
-        //     ' campaignId: ' . $campaignProcess->id.
-        //     ' status: ' .'running'.
-        //     ' processing: ' . $batch->progress().
-        //     ' mail_send_done: ' . $batch->processedJobs().
-        //     ' mail_done_percentage: ' . $mail_done_percentage.
-        //     ' mail_send_failed: ' .$batch->failed_jobs.
-        //     ' mail_failed_percentage: ' . $mail_failed_percentage.
-        //     ' total_customer: ' . $campaignProcess->total_customers.
-        //     ' finished_at: ' .$batch->finished()
-        //  ;
+
         return response()->json([
             'campaignId' => $campaignProcess->id,
             'status' =>'running',
@@ -63,14 +53,7 @@ class SendingMail implements ShouldBroadcast
             'total_customer' => $campaignProcess->total_customers,
             'finished_at' => $batch->finished_at
          ]);
-        // return response()->json([
-        //     'campaignId' => $campaignProcess,
-        //     'status' =>'running',
-        //     'processing'=> $batches->progress(),
-        //     'mail_send_done'=> $batches->processedJobs(),
-        //     'mail_send_failed'=>$batches->failed_jobs,
-        //     'finished_at' =>$batches->finished_at
-        //  ]);
+
     }
 
 
@@ -82,11 +65,5 @@ class SendingMail implements ShouldBroadcast
         return 'send_mail';
     }
 
-    // public function broadcastOn()
-    // {
-    //     return ['SendingMail'];
-    // }
-    // public function broadcastAs(){
-    //     return 'send-processing';
-    // }
+
 }

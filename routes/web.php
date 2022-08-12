@@ -23,9 +23,7 @@ use Illuminate\Support\Facades\Schema;
 | contains the "web" middleware group. Now create something great!
 |
 */
-Route::get('/data', function(){
 
-});
 
 Route::get('/set-db',function(){
 
@@ -96,8 +94,8 @@ Route::get('/set-db',function(){
 Route::get('/getCustomer', [CustomerController::class, 'getCustomer']);
 Route::get('/getStore', [ShopifyController::class, 'getStore']);
 
-Route::get('/mail', [CampaignController::class, 'sendEmailCampaign']);
-Route::get('/test-mail', [CampaignController::class, 'sendEmailCampaign']);
+// Route::get('/mail', [CampaignController::class, 'sendEmailCampaign']);
+// Route::get('/test-mail', [CampaignController::class, 'sendEmailCampaign']);
 
 Route::get('/', function () {
     return view('showNotification');
@@ -105,9 +103,9 @@ Route::get('/', function () {
 });
 
 
-Route::get('getPusher', function () {
-    return view('form_pusher');
-});
+// Route::get('getPusher', function () {
+//     return view('form_pusher');
+// });
 
 
 //Route::get('/pusher', function (Illuminate\Http\Request $request) {
@@ -115,9 +113,9 @@ Route::get('getPusher', function () {
 //    return redirect('getPusher');
 //});
 
-Auth::routes();
+// Auth::routes();
 
-Route::get('/home', [HomeController::class, 'index'])->name('home');
+// Route::get('/home', [HomeController::class, 'index'])->name('home');
 
 
-Route::get('/home', [HomeController::class, 'index'])->name('home');
+// Route::get('/home', [HomeController::class, 'index'])->name('home');

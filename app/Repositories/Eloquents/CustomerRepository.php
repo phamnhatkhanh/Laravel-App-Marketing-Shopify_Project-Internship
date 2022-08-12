@@ -54,7 +54,9 @@ class CustomerRepository implements CustomerRepositoryInterface
             })->finally(function (Batch $batch)  {
 
                 event(new SynchronizedCustomer($batch->id));
+                
             })->onQueue('jobs')->dispatch();
+
         $batch_id = $batch->id;
 
         $chunksCustomer = $customers->chunk(5);
@@ -64,7 +66,7 @@ class CustomerRepository implements CustomerRepositoryInterface
 
         return response([
             "status" => true,
-            "message" => "Success sync customer"
+            "message" => "Start sync customer"
         ],200);
 
 
@@ -93,14 +95,23 @@ class CustomerRepository implements CustomerRepositoryInterface
             }
 
 
-        }else{
-            $users = $this->customer->simplePaginate(15);
+          }
+        else{
+            $params = $request->except('_token');
+
+            $users = $this->customer->searchcustomer($params)
+                ->order($params)
+                ->totalspent($params)
+                ->sort($params)
+                ->date($params)
+                ->simplePaginate(15);
+
         }
 
         return response([
             "total_customers" => $this->customer->count(),
             "data" => $users,
-            "status" => "success"
+            "status" => true
         ], 200);
     }
 

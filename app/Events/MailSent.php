@@ -19,6 +19,7 @@ class MailSent implements ShouldBroadcast
     public $batchId;
     public $campaignProcess;
     public $payload;
+
     /**
      * Create a new event instance.
      *
@@ -28,7 +29,6 @@ class MailSent implements ShouldBroadcast
     {
         $this->batchId = $batchId;
         $this->campaignProcess = $campaignProcess;
-        // $this->message  = $this->sendProcess($this->campaignProcess);
         $this->payload  =  $this->sendProcess($this->campaignProcess);
     }
     public function sendProcess($campaignProcess){
@@ -37,19 +37,6 @@ class MailSent implements ShouldBroadcast
         $mail_done_percentage =  $campaignProcess->total_customers> 0?round(($batch->processedJobs()/$campaignProcess->total_customers) * 100):0;
         $mail_failed_percentage = $batch->total_jobs>0? round(($batch->failed_jobs/$batch->total_jobs) * 100):0;
         info(' mail_done_percentage: ' . "mail_send ".$mail_done_percentage);
-
-        //  return
-        //     ' campaignId: ' . $campaignProcess->id.
-        //     ' status: ' .'completed'.
-        //     ' processing: '  . '100'.
-        //     ' mail_send_done: ' . $batch->processedJobs().
-        //     ' mail_done_percentage: ' . $mail_done_percentage.
-        //     ' mail_send_failed: ' .$batch->failed_jobs.
-        //     ' mail_failed_percentage: ' . $mail_failed_percentage.
-        //     ' total_customer: ' . $campaignProcess->total_customers.
-        //     ' finished_at: ' .$batch->finished_at
-
-        //  ;
 
          return response()->json([
             'campaignId' => $campaignProcess->id,
@@ -62,16 +49,6 @@ class MailSent implements ShouldBroadcast
             'total_customer' => $campaignProcess->total_customers,
             'finished_at' =>$batch->finished_at
          ]);
-        //  return response()->json([
-        //     'campaignId' => $campaignProcess,
-        //     'status' =>'completed',
-        //     'processing'=>$batches->progress(),
-        //     'processing'=>100,
-        //     'mail_send_done'=> $batches->processedJobs(),
-        //     'mail_send_failed'=>$batches->failed_jobs,
-        //     'finished_at' =>$batches->finished_at
-        //  ]);
-
 
     }
 
@@ -84,11 +61,4 @@ class MailSent implements ShouldBroadcast
         return 'send_mail';
     }
 
-    // public function broadcastOn()
-    // {
-    //     return ['MailSent'];
-    // }
-    // public function broadcastAs(){
-    //     return 'send-done';
-    // }
 }
