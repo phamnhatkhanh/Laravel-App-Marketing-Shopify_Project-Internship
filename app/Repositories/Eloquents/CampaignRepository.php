@@ -21,10 +21,7 @@ use App\Events\Database\UpdatedModel;
 use App\Events\Database\DeletedModel;
 
 use App\Repositories\Contracts\CampaignRepositoryInterface;
-use DOMDocument;
 use Illuminate\Http\Request;
-use DOMDocument;
-use Illuminate\Support\Facades\Log;
 use IvoPetkov\HTML5DOMDocument;
 use Throwable;
 
@@ -126,7 +123,7 @@ class CampaignRepository implements CampaignRepositoryInterface
 
         $bodyPreviewEmail = $request->preview_email;
         $store = Store::latest()->first();
-        
+
         $array = ([
             [
                 "variant" => 'Customer_Full_name',
@@ -150,9 +147,6 @@ class CampaignRepository implements CampaignRepositoryInterface
                 $bodyPreviewEmail = str_replace($arr['variant'], $arr['value'], $bodyPreviewEmail);
             }
         }
-
-        $domBody = new DOMDocument();
-        $domBody->loadHTML($body);
 
         $cutBodyPreview = str_replace(array("\\",), '', $bodyPreviewEmail);
 
