@@ -20,26 +20,26 @@ class CheckAuthenticate
     public function handle(Request $request, Closure $next)
     {
         try {
-            
+            info("check acces token ");
             if (!$user = JWTAuth::parseToken()->authenticate()) {
                 return response()->json(['user_not_found'], 404);
             }
             $request->user = $user;
             return $next($request);
         } catch (TokenExpiredException $e) {
-    
+
             return response()->json(['token_expired']);
 
         } catch (TokenInvalidException $e) {
-    
+
             return response()->json(['token_invalid']);
-    
+
         } catch (JWTException $e) {
-    
+
             return response()->json(['token_absent']);
-    
+
         }
-    
+
         return response()->json(compact('user'));
     }
 }

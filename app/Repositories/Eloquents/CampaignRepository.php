@@ -21,9 +21,9 @@ use App\Events\Database\UpdatedModel;
 use App\Events\Database\DeletedModel;
 
 use App\Repositories\Contracts\CampaignRepositoryInterface;
-use DOMDocument;
+
 use Illuminate\Http\Request;
-use DOMDocument;
+
 use Illuminate\Support\Facades\Log;
 use IvoPetkov\HTML5DOMDocument;
 use Throwable;
@@ -69,7 +69,7 @@ class CampaignRepository implements CampaignRepositoryInterface
         $connect = ($this->campaignProcess->getConnection()->getName());
         event(new CreatedModel($connect,$campaignProcess));
         // dd($request['list_mail_customers']);
-        $this->sendEmailCampaign($request['list_mail_customers'],$campaignProcess);
+        // $this->sendEmailCampaign($request['list_mail_customers'],$campaignProcess);
 
 //        dispatch(new SendEmailPreview($subject, $sendEmail));
         return [$campaign];
@@ -78,8 +78,6 @@ class CampaignRepository implements CampaignRepositoryInterface
     // nhan list user va gui sau hien tai fix cung.
     private function sendEmailCampaign($listMailCustomers, $campaignProcess)
     {
-
-
         $batch = Bus::batch([])
         ->then(function (Batch $batch) {
 
@@ -95,14 +93,16 @@ class CampaignRepository implements CampaignRepositoryInterface
             $connect = ($campaignProcess->getConnection()->getName());
             event(new UpdatedModel($connect,$campaignProcess));
             event(new MailSent($batch->id,$campaignProcess));
+
         })->onQueue('jobs')->dispatch();
+
         $batchId = $batch->id;
 
         foreach ($listMailCustomers as  $key => $MailCustomer) {
             if($key >1 && $key < 5){
                 $MailCustomer =1;
-                // info("key: ".  $key. "  value: ".$MailCustomer);
             }
+
             $batch->add(new SendMail($batchId, $MailCustomer,$campaignProcess));
         }
     }
@@ -126,7 +126,7 @@ class CampaignRepository implements CampaignRepositoryInterface
 
         $bodyPreviewEmail = $request->preview_email;
         $store = Store::latest()->first();
-        
+
         $array = ([
             [
                 "variant" => 'Customer_Full_name',
@@ -145,14 +145,13 @@ class CampaignRepository implements CampaignRepositoryInterface
                 "value" => $store->domain
             ],
         ]);
+
         if (!empty($bodyPreviewEmail)) {
             foreach ($array as $arr) {
                 $bodyPreviewEmail = str_replace($arr['variant'], $arr['value'], $bodyPreviewEmail);
             }
         }
 
-        $domBody = new DOMDocument();
-        $domBody->loadHTML($body);
 
         $cutBodyPreview = str_replace(array("\\",), '', $bodyPreviewEmail);
 
@@ -185,7 +184,7 @@ class CampaignRepository implements CampaignRepositoryInterface
         foreach ($array as $arr) {
             $arrayJoinElements = str_replace($arr['variant'], $arr['value'], $arrayJoinElements);
         }
-
+        
         dispatch(new SendEmailPreview($bodyEmail, $arrayJoinElements, $imageName, $store, $request->send_email));
 
         return response([

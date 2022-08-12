@@ -9,7 +9,7 @@ use App\Http\Controllers\LoginController;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\ProductRequest;
 
-Route::prefix('campaign')->group(function (){
+Route::middleware("CheckAuthenticate")->prefix('campaign')->group(function (){
 
     Route::get('/filterCampaign', [CampaignController::class, 'searchFilterCampaign']);
 
