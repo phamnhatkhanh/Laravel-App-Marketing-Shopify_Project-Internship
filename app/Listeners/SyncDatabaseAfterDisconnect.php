@@ -8,7 +8,7 @@ use App\Models\ObserveModel;
 use App\Models\DbStatus;
 use DB;
 use Throwable;
-class SyncDatabaseAfterDisconnect
+class SyncDatabaseAfterDisconnect  implements ShouldQueue
 {
     /**
      * Create the event listener.
@@ -28,25 +28,27 @@ class SyncDatabaseAfterDisconnect
      */
     public function handle($event)
     {
-        // dd($event->model);
+
         $dbNames = DbStatus::where('model_name', '=', $event->model)->get();
 
         $listDataNeedSync = ObserveModel::where('database',$event->databaseSync)->get();
         info("SyncDatabaseAfterDisconnect list item sync: ".json_encode($listDataNeedSync));
         foreach ($dbNames as $dbName) {
-            $dbName = $dbName->name;
-            info("DB: ".$dbName);
+             info("find db active: ".$dbName->name. " " .$dbName->status);
+            // $dbName = $dbName->name;
+
             // info("SyncDatabaseAfterDisconnect: find DB activing base on sync ");
             try {
-                // info("find db active: ".$dbName);
-                if(DB::connection($dbName)->getPdo()){
-                    $dbConnect = DbStatus::where('name',$dbName)->first();
-                    // info("SyncDatabaseAfterDisconnect: find db connect ".$dbName);
-                    if(
-                        ($dbConnect->status == 'actived')){
-                        info("SyncDatabaseAfterDisconnect: get DB is active in DB ".$dbName);
-                        // info($listDataNeedSync);
 
+                if(($dbName->status =="db_sync")  || DB::connection($dbName->name)->getPdo()){
+                    info("SyncDatabaseAfterDisconnect: ". $dbName->status);
+
+                    $dbConnect = DbStatus::where("name",$dbName->name)->first();
+                    // info("SyncDatabaseAfterDisconnect: find db connect ".$dbName);
+                    if(($dbConnect->status == "actived") ||  ($dbConnect->status =="db_sync")){
+                        // && ($dbName != $event->databaseSync)
+                        info("SyncDatabaseAfterDisconnect: get DB is active in DB ".$dbName->name);
+                        // info($listDataNeedSync);
                         foreach ($listDataNeedSync as $dataNeedSync) {
                             info($dataNeedSync);
                             if($dataNeedSync->action  == "delete") {
@@ -59,7 +61,6 @@ class SyncDatabaseAfterDisconnect
                             }else{
                                 // have exist row in DB
                                 info("SyncDatabaseAfterDisconnect: ".$dataNeedSync->action." product ".$dataNeedSync->id_row);
-
                                 // get row_data in DB connect
                                 $latestData = DB::connection($dbConnect->name)
                                     ->table($dataNeedSync->table)
@@ -82,22 +83,17 @@ class SyncDatabaseAfterDisconnect
                                         ->insert($data);
                                     }
                                 }
-
-
                             }
                             $dataNeedSync->delete();
                         }
-
                         info("SyncDatabaseAfterDisconnect: update stattus and delte observer");
                         DbStatus::where('name',$event->databaseSync)->update([ "status" =>"actived"]);
                         break;
                     }
-                }else{
-                    info("SyncDatabaseAfterDisconnect: can not connect".$dbName);
                 }
             } catch (Throwable $th ) {
                 // info($th);
-                info("SyncDatabaseAfterDisconnect: try other db active");
+                info("SyncDatabaseAfterDisconnect: try other db active ". $dbName->name);
                 continue;
             }
         }

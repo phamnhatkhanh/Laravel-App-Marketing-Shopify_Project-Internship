@@ -85,8 +85,7 @@ Route::get('/set-db',function(){
     DbStatus::where('model_name', '=', null)
         ->orWhereNull('model_name')->delete();
     //from model base on driver defautl -> get list driver -> check table -> add.
-
-
+    
     return  "done set db";
     // return $listNameConnectionMysql;
 });
@@ -102,16 +101,6 @@ Route::get('/', function () {
     // return view('welcome');
 });
 
-
-// Route::get('getPusher', function () {
-//     return view('form_pusher');
-// });
-
-
-//Route::get('/pusher', function (Illuminate\Http\Request $request) {
-//    event(new App\Events\HelloPusherEvent($request));
-//    return redirect('getPusher');
-//});
 
 // Auth::routes();
 

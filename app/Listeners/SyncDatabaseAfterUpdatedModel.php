@@ -4,13 +4,13 @@ namespace App\Listeners;
 
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
-use App\Models\Product;
+
 use App\Models\ObserveModel;
 use App\Models\DbStatus;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
-class SyncDatabaseAfterUpdatedModel
+class SyncDatabaseAfterUpdatedModel  implements ShouldQueue
 // UpdatedProductListener
 {
     /**

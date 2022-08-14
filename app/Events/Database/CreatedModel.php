@@ -17,12 +17,14 @@ class CreatedModel
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $db_server;
+    public $data;
     public $model;
 
 
-    public function __construct($db_server,$model)
+    public function __construct($db_server,$data,$model)
     {
         $this->db_server = $db_server;
+        $this->data = $data;
         $this->model = $model;
 
     }

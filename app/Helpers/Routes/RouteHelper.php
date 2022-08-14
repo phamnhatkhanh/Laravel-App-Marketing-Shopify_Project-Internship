@@ -18,7 +18,6 @@ if (!function_exists('includeRouteFiles')) {
                 && $it->current()->getExtension() === 'php')
             {
                 require $it->key();
-        // require $it->current()->getPathname();
             }
             $it->next();
         }

@@ -23,13 +23,13 @@ class CreateCustomersBackup1 extends Migration
             $table->unsignedBigInteger('store_id');
             $table->string("first_name",50);
             $table->string("last_name",50);
-            $table->string("email",50);
-            $table->string("phone",20);
+            $table->string("email",50)->nullable();
+            $table->string("phone",20)->nullable();
             $table->string("country",100)->nullable();
             $table->string("orders_count");
             $table->string("total_spent");
-            $table->dateTime('created_at')->nullable();
-            $table->dateTime('updated_at')->nullable();
+            $table->dateTime('created_at');
+            $table->dateTime('updated_at');
 
 
             $table->foreign('store_id')

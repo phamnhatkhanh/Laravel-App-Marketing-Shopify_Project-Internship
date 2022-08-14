@@ -34,7 +34,7 @@
             "Database\\Seeders\\": "database/seeders/"
         },
         "files": [
-            "app/Helpers/Factory/FactoryHelper.php",
+
             "app/Helpers/JsonRespone/formatJson.php",
             "app/Helpers/Routes/RouteHelper.php",
             "app/Helpers/Database/Connection.php"
