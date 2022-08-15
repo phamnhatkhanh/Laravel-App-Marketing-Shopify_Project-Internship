@@ -58,7 +58,6 @@ class SyncDatabaseAfterUpdatedModel  implements ShouldQueue
                         // }
                     }
                 } catch (Throwable $th ) {
-
                     $dataObserveModel = [
                         "database" => $dbName,
                         "table" => $event->model->getTable(),

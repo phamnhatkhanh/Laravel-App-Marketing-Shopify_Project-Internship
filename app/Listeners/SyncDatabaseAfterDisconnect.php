@@ -30,16 +30,13 @@ class SyncDatabaseAfterDisconnect  implements ShouldQueue
     {
 
         $dbNames = DbStatus::where('model_name', '=', $event->model)->get();
-
         $listDataNeedSync = ObserveModel::where('database',$event->databaseSync)->get();
         info("SyncDatabaseAfterDisconnect list item sync: ".json_encode($listDataNeedSync));
         foreach ($dbNames as $dbName) {
              info("find db active: ".$dbName->name. " " .$dbName->status);
             // $dbName = $dbName->name;
-
             // info("SyncDatabaseAfterDisconnect: find DB activing base on sync ");
             try {
-
                 if(($dbName->status =="db_sync")  || DB::connection($dbName->name)->getPdo()){
                     info("SyncDatabaseAfterDisconnect: ". $dbName->status);
 

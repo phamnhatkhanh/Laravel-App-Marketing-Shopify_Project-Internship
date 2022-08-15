@@ -3,6 +3,8 @@
 namespace App\Jobs;
 
 use App\Models\Customer;
+use App\Events\Database\UpdatedModel;
+use App\Events\Database\DeletedModel;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -26,7 +28,7 @@ class UpdateCustomer implements ShouldQueue
     public function __construct($data_customer)
     {
         $this->data_customer = $data_customer;
-        $this->customer = getConnectDatabaseActived(new Customer());
+        // $this->customer = getConnectDatabaseActived(new Customer());
 
     }
 
@@ -37,7 +39,8 @@ class UpdateCustomer implements ShouldQueue
      */
     public function handle()
     {
-        $data_customer = $this->customer;
+        info("UpdateCustomer: inside function ");
+        $data_customer = $this->data_customer;
         $data_customer_id = $data_customer['id'];
 
         $findCreateAT = array('T', '+07:00');
@@ -48,9 +51,12 @@ class UpdateCustomer implements ShouldQueue
 
         $created_at = str_replace($findCreateAT, $replaceCreateAT, $data_customer['created_at']);
         $updated_at = str_replace($findUpdateAT, $replaceUpdateAT, $data_customer['updated_at']);
+        info("UpdateCustomer: id ".$data_customer_id);
+        info("UpdateCustomer: ".$data_customer['last_name']);
 
-
-        $this->customer->where('id', $data_customer_id)->update([
+        $customer = Customer::where('id', $data_customer_id)->first();
+        $customer->update([
+        // $this->customer->where('id', $data_customer_id)->update([
             'email' => $data_customer['email'],
             'first_name' => $data_customer['first_name'],
             'last_name' => $data_customer['last_name'],
@@ -60,5 +66,8 @@ class UpdateCustomer implements ShouldQueue
             'created_at' => $created_at,
             'updated_at' => $updated_at,
         ]);
+        $connect = ($customer->getConnection()->getName());
+            // dd($connect);
+        event(new UpdatedModel($connect, $customer));
     }
 }
