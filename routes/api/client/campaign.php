@@ -12,6 +12,7 @@ use App\Http\Requests\ProductRequest;
 // Route::middleware("CheckAuthenticate")->prefix('campaign')->group(function (){
 Route::prefix('campaign')->group(function (){
 
+
     Route::get('/filterCampaign', [CampaignController::class, 'searchFilterCampaign']);
 
     Route::get('/getCampaign', [CampaignController::class, 'getCampaign']);

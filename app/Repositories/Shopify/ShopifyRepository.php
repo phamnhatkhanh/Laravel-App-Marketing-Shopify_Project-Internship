@@ -39,7 +39,7 @@ class ShopifyRepository implements ShopifyRepositoryInterface
         if ($request->header("HTTP_X_SHOPIFY_HMAC_SHA256")) {
             info("have hash mac ");
             if ($this->verifyHmacAppInstall($request)) {
-                info("check store ");
+
                 $shop = $this->store->where("myshopify_domain",$request->shop)->first();
 
                 if(empty($shop)){

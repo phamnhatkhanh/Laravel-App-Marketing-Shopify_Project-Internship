@@ -15,13 +15,12 @@ use App\Models\Customer;
 use Carbon\Carbon;
 use App\Jobs\SendMail;
 use App\Events\MailSent;
-
 use App\Events\Database\CreatedModel;
 use App\Events\Database\UpdatedModel;
 use App\Events\Database\DeletedModel;
-
 use App\Repositories\Contracts\CampaignRepositoryInterface;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use IvoPetkov\HTML5DOMDocument;
 use Throwable;
 
@@ -252,9 +251,7 @@ class CampaignRepository implements CampaignRepositoryInterface
 
     public function getCampaign()
     {
-        // dd("skfbsjfhds");
         return $this->campaign->get();
-
     }
 
     public function store($request)
