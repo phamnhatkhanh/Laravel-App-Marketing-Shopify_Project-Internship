@@ -19,10 +19,11 @@ class WebhookRepository
 
     protected $store;
      public function __construct(){
-        
+
         $this->store = new Store();
 
     }
+
     function webhook(Request $request){
         $topic = $request->header('X-Shopify-Topic');
         $myshopify_domain = $request->header('X-Shopify-Shop-Domain');
@@ -48,37 +49,14 @@ class WebhookRepository
         }
     }
 
-//    public function registerCustomerWebhookService($shop, $access_token){
-//        $topic_access = [
-//            'customers/create',
-//            'customers/update',
-//            'customers/delete',
-//            'app/uninstalled',
-//        ];
-//        $client = new Client();
-//        $url = 'https://' . $shop . '/admin/api/2022-07/webhooks.json';
-//        foreach ($topic_access as $topic){
-//            $resShop = $client->request('post', $url, [
-//                'headers' => [
-//                    'X-Shopify-Access-Token' => $access_token,
-//                ],
-//                'form_params' => [
-//                    'webhook' => [
-//                        'topic' => $topic,
-//                        'format' => 'json',
-//                        'address' => config('shopify.ngrok').'/api/shopify/webhook',
-//                    ],
-//                ]
-//            ]);
-//        }
-//
-//    }
+
 
     public function createFromShopify($payload, $myshopify_domain){
         $data =  dispatch(new CreateCustomer($payload, $myshopify_domain));
     }
 
     public function updateFromShopify($payload){
+        info("WebhookRepository: update customer from shopify");
         $data =  dispatch(new UpdateCustomer($payload));
     }
 

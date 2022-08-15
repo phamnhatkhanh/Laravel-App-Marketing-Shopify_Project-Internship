@@ -25,7 +25,13 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-// Route::apiResource('products',ProductController::class);
+Route::prefix('auth')->group(function () {
+    includeRouteFiles(__DIR__ . '/api/login');
+});
+
+// Route::prefix('client')->group(function () {
+
+// });
 
 includeRouteFiles(__DIR__ . '/api/client');
 
@@ -33,13 +39,10 @@ Route::prefix('shopify')->group(function () {
     includeRouteFiles(__DIR__ . '/api/shopify');
 });
 
-Route::prefix('auth')->group(function () {
-    includeRouteFiles(__DIR__ . '/api/login');
-});
 
 
-// ?list_customer=[3,6,8]
-// ?except_customer=[2,6,3]&&get_quantify_customer = 3
+
+
 
 Route::get('/redis', function (Request $request) {
 

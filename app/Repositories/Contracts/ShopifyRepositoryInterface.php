@@ -13,7 +13,8 @@ interface ShopifyRepositoryInterface
     public static function registerCustomerWebhookService($shop, $access_token);
     public function getDataLogin($shop, $access_token);
      public function countDataCustomer($shop, $access_token);
-     public function createDataCustomer($shop, $access_token);
+     public function createDataCustomer($shop, $access_token,$store_id);
+    //  public function createDataCustomer($shop, $access_token);
      public function setParam(array $headers, $params);
 //     public function saveDataStore($res, $access_token);
 //     public function saveDataCustomer($getCustomer);

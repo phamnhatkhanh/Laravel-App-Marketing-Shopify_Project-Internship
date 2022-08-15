@@ -1,30 +1,27 @@
 <div class="task">
 
-
-Improve code:
-    - Clean code: cách đặt tên
-    - Tổ chức: file, comment cho rõ ràng.
-
-DB: build template event.
-
-
-Viết function format respone:
-
-Exception.
-
-
 g/s xog hết task project thì.
 Inprove code:
     1. Test code: xem chạy ổn + có lỗi nào không.
-    4. Run tests.
-    2. Customer err,EX respone về FE.
 
-    3. Viết doc api.
+        - Shopify -> attach event data.
+        - Login: refresh token.
+        - Clean code(set name, structure function, comment code) -- Validation -- Exception .
+        - Filter.
+        - Optimize.
 
-    5. Send-test: thay data vào biến variant.
+    2. Viết doc api.
+    3. Docker.
+    4. Viết unit tests.
+    5. Send sms.
+
+
+T7: real code project + read book -> handel failed job
+CN: learn test.
 
 
 Đào sâu về server:
+
 Optimize:
     DB:query -- Eloquent -- Class.
         Class: chỉ cần new 1 lần sử dụng lại thay vì new nhiều lần.
@@ -38,11 +35,6 @@ Optimize:
         - FE: Customer,Campaign show list lưu Redis -> truy xuất cho nhanh.
         - Shopify cập nhật customer: chỉ cập nhật khi email, phone,  orders_count, total_spent thay đổi.
             - Cập nhật ở Redis sau đó vào DB cập nhật.
-
-
-
-Docker
-
 
 Queue: xử lý job failed.
 
