@@ -74,6 +74,7 @@ class CustomerRepository implements CustomerRepositoryInterface
 
     public function index(Request $request)
     {
+        $totalpage = 0;
         if ($request->has('list_customer')) {
             $arr = explode(',', $request['list_customer']);
 
@@ -110,7 +111,7 @@ class CustomerRepository implements CustomerRepositoryInterface
 
         return response([
             "total_customers" => $total,
-            "totalPage" => $totalpage,
+            "totalPage" => $totalpage ? $totalpage : 0 ,
             "total_customers" => $this->customer->count(),
             "data" => $users,
             "status" => true

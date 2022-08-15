@@ -30,6 +30,7 @@ class CampaignProcess extends Model
         'total_customers',
         'created_at'
     ];
+    
     public function campaign()
     {
         return $this->belongsTo(Campaign::class);

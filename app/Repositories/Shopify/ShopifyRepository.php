@@ -36,7 +36,7 @@ class ShopifyRepository implements ShopifyRepositoryInterface
     public function login(Request $request)
     {
 
-        if ($request->header("HTTP_X_SHOPIFY_HMAC_SHA256")) {
+        if (isset($request->hmac)) {
             info("have hash mac ");
             if ($this->verifyHmacAppInstall($request)) {
 
@@ -56,12 +56,12 @@ class ShopifyRepository implements ShopifyRepositoryInterface
             // $apiKey = config('shopify.shopify_api_key');
             $scope = 'read_customers,write_customers';
             $shop = $request->myshopify_domain;
-            $redirect_uri = 'http://localhost:8000/api/auth/authen';
-            // $redirect_uri = 'http://192.168.101.83:8080/login';
+            // $redirect_uri = 'http://localhost:8000/api/auth/authen';
+            $redirect_uri = 'http://192.168.101.83:8080/login';
 
             $url = 'https://' . $shop . '/admin/oauth/authorize?client_id=' . $apiKey . '&scope=' . $scope . '&redirect_uri=' . $redirect_uri;
             info($url);
-            return ["data" =>$url];
+            return$url;
         }
     }
 
