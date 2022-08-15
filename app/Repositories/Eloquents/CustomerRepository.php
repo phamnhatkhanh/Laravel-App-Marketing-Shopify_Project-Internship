@@ -55,7 +55,7 @@ class CustomerRepository implements CustomerRepositoryInterface
             })->finally(function (Batch $batch)  {
 
                 event(new SynchronizedCustomer($batch->id));
-                
+
             })->onQueue('jobs')->dispatch();
 
         $batch_id = $batch->id;
@@ -103,7 +103,6 @@ class CustomerRepository implements CustomerRepositoryInterface
                 ->sort($params)
                 ->date($params)
                 ->simplePaginate(15);
-
 
             $total =  $this->customer->searchcustomer($params)->count();
             $totalpage = (int)round($total / 15);
@@ -198,14 +197,16 @@ class CustomerRepository implements CustomerRepositoryInterface
     public function store($request)
     {
         $request['id'] = $this->customer->max('id') + 1;
+        // dd($request['id'] );
         $request['created_at'] = Carbon::now()->format('Y-m-d H:i:s');;
         $request['updated_at'] = Carbon::now()->format('Y-m-d H:i:s');;
 
-        $this->customer->create($request->all());
-        $customer = $this->customer->where('id', $request['id'])->first();
         $connect = ($this->customer->getConnection()->getName());
-        event(new CreatedModel($connect, $customer));
-        return $customer;
+        event(new CreatedModel($connect,$request->all(),$this->customer->getModel()->getTable()));
+        // $this->customer->create($request->all());
+        // $customer = $this->customer->where('id', $request['id'])->first();
+        // event(new CreatedModel($connect, $customer));
+        return "create successfully customer";
     }
 
 
@@ -214,28 +215,26 @@ class CustomerRepository implements CustomerRepositoryInterface
 
         // dd($this->customer->getConnection()->getName());
         // dd("update function ".$customer_id);
-
         // info("Repostty: inside update");
+        $customer = $this->customer->where('id', $customer_id)->first();
+        if (!empty($customer)) {
+            $customer->update($request->all());
+            $connect = ($this->customer->getConnection()->getName());
+            // dd($connect);
+            event(new UpdatedModel($connect, $customer));
+        }
 
-        $this->customer->where('id', $customer_id)->update($request->all());
-        $customer  = ($this->customer->where('id', $customer_id)->first());
-        $connect = ($this->customer->getConnection()->getName());
-        // dd($connect);
-        event(new UpdatedModel($connect, $customer));
         // info("pass connect");
-
         // $this->customer;
         return $customer;
     }
 
-
     public function destroy($customer_id)
     {
-
         // dd("dleete function ".$customer_id);
         $customer = $this->customer->where('id', $customer_id)->first();
         if (!empty($customer)) {
-            $customer->delete();
+            // $customer->delete();
             $connect = ($this->customer->getConnection()->getName());
             event(new DeletedModel($connect, $customer));
             return $customer;

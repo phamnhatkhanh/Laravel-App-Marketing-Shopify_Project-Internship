@@ -47,65 +47,68 @@ class CampaignRepository implements CampaignRepositoryInterface
 
     public function saveCampaign(Request $request)
     {
+        // dd("saveCampaign");
         //save campaign
         $campaign = $this->campaign->create($request->all());
+
         $request['campaign_id'] = $campaign->id;
 
         //create campaign process default
         $campaignProcess = $this->campaignProcess->create([
             "process" => "0",
             "status" => "running",
-            "campaign_id" => $campaign->id,
+            "campaign_id" => 1,
             "name" => $campaign->name,
             "total_customers" => $this->customer->count(),
         ]);
 
 
-        $this->sendEmailCampaign($request['list_mail_customers'], $campaignProcess);
+
+        $this->sendEmailPreview($request, $campaignProcess);
 
         $connect = ($this->campaignProcess->getConnection()->getName());
-        event(new CreatedModel($connect,$campaignProcess));
-        // dd($request['list_mail_customers']);
-        $this->sendEmailCampaign($request['list_mail_customers'],$campaignProcess);
+        event(new CreatedModel($connect, $campaignProcess));
 
-//        dispatch(new SendEmailPreview($subject, $sendEmail));
         return [$campaign];
     }
 
     // nhan list user va gui sau hien tai fix cung.
     private function sendEmailCampaign($listMailCustomers, $campaignProcess)
     {
-
-
         $batch = Bus::batch([])
-        ->then(function (Batch $batch) {
+            ->then(function (Batch $batch) {
 
-        })
-        ->finally(function (Batch $batch) use ($campaignProcess) {
-            $campaignProcess->update([
-                'status' =>'completed',
-                'process' => 100,
-                'send_email_done' =>$batch->processedJobs(),
-                'send_email_fail' =>$batch->failedJobs,
-            ]);
+            })
+            ->finally(function (Batch $batch) use ($campaignProcess) {
+                $campaignProcess->update([
+                    'status' => 'completed',
+                    'process' => 100,
+                    'send_email_done' => $batch->processedJobs(),
+                    'send_email_fail' => $batch->failedJobs,
+                ]);
 
-            $connect = ($campaignProcess->getConnection()->getName());
-            event(new UpdatedModel($connect,$campaignProcess));
-            event(new MailSent($batch->id,$campaignProcess));
-        })->onQueue('jobs')->dispatch();
+                $connect = ($campaignProcess->getConnection()->getName());
+                event(new UpdatedModel($connect, $campaignProcess));
+                event(new MailSent($batch->id, $campaignProcess));
+            })->onQueue('jobs')->dispatch();
         $batchId = $batch->id;
 
-        foreach ($listMailCustomers as  $key => $MailCustomer) {
-            if($key >1 && $key < 5){
-                $MailCustomer =1;
+        foreach ($listMailCustomers as $key => $MailCustomer) {
+            if ($key > 1 && $key < 5) {
+                $MailCustomer = 1;
                 // info("key: ".  $key. "  value: ".$MailCustomer);
             }
-            $batch->add(new SendMail($batchId, $MailCustomer,$campaignProcess));
+            $batch->add(new SendMail($batchId, $MailCustomer, $campaignProcess));
+
         }
     }
 
-    public function sendEmailPreview(Request $request)
+    public function sendEmailPreview(Request $request, $campaignProcess)
     {
+
+        // dd("sendEmailPreview");
+        info("inside sendEmailPreview");
+        // dd($request->list_mail_customers);
         if ($request->hasFile('background_banner')) {
             if ($request->file('background_banner')->isValid()) {
                 $request->validate(
@@ -122,7 +125,9 @@ class CampaignRepository implements CampaignRepositoryInterface
         }
 
         $bodyPreviewEmail = $request->preview_email;
-        $store = Store::latest()->first();
+
+        $store = Store::where('id',1)->first();
+
 
         $array = ([
             [
@@ -149,7 +154,6 @@ class CampaignRepository implements CampaignRepositoryInterface
         }
 
         $cutBodyPreview = str_replace(array("\\",), '', $bodyPreviewEmail);
-
         $domBody = new HTML5DOMDocument();
         $domBody->loadHTML($cutBodyPreview);
 
@@ -159,7 +163,6 @@ class CampaignRepository implements CampaignRepositoryInterface
         }
 
         $bodyEmail = $domBody->saveHTML();
-
         $domSubject = new HTML5DOMDocument();
         $domSubject->loadHTML($request->subject);
         $querySelectorSubject = $domSubject->querySelector('p')->childNodes;
@@ -173,19 +176,63 @@ class CampaignRepository implements CampaignRepositoryInterface
                 array_push($arraySubject, $aa);
             }
         }
-
         $arrayJoinElements = implode(' ', $arraySubject);
-
         foreach ($array as $arr) {
             $arrayJoinElements = str_replace($arr['variant'], $arr['value'], $arrayJoinElements);
         }
+        try{
+            $batch = Bus::batch([])
+                ->then(function (Batch $batch) {
+                })
+                ->finally(function (Batch $batch) use ($campaignProcess) {
+                    $campaignProcess->update([
+                        'status' => 'completed',
+                        'process' => 100,
+                        'send_email_done' => $batch->processedJobs(),
+                        'send_email_fail' => $batch->failedJobs,
+                    ]);
 
-        dispatch(new SendEmailPreview($bodyEmail, $arrayJoinElements, $imageName, $store, $request->send_email));
+                    $connect = ($campaignProcess->getConnection()->getName());
+                    event(new UpdatedModel($connect, $campaignProcess));
+                    event(new MailSent($batch->id, $campaignProcess));
 
-        return response([
-            'message' => 'Send Email Test Success',
-            'status' => 204,
-        ], 204);
+                })->onQueue('jobs')->dispatch();
+            $batchId = $batch->id;
+            info("inside sendEmailPreview: handel templete mail ". $batchId);
+            $listCustomersId =  json_decode($request->list_mail_customers, true);
+            // $listCustomersId =  $request->list_mail_customers;
+            $listCustomers = Customer::whereIn('id', $listCustomersId)->get();
+            // dd($listCustomers);
+            // info(json_encode($listCustomers));
+            foreach ($listCustomers as $key => $value) {
+                // if($key  >1 && $key < 5){
+                //     $value->email=1;
+                //     // dd([$bodyEmail, $arrayJoinElements, $imageName, $store, $value->email, $batchId, $campaignProcess]);
+                // }
+                $batch->add(new SendEmailPreview( $value->email, $batchId, $campaignProcess,$bodyEmail, $arrayJoinElements, $imageName, $store));
+
+            }
+            info("inside sendEmailPreview:group jobs");
+        }catch(Throwable $e){
+            info($e);
+        }
+        // info("list_customer: ".$request->list_mail_customers);
+
+
+        // foreach ($listMailCustomers as $key => $MailCustomer) {
+        //    if ($key > 1 && $key < 5) {
+        //        $MailCustomer = 1;
+        //    }
+
+        //     $batch->add(new SendMail($batchId, $MailCustomer,$campaignProcess));
+
+        // }
+
+
+        // return [
+        //     'message' => 'send mail custome in campaign process',
+        //     'status' => true,
+        // ];
     }
 
     public function searchFilterCampaign(Request $request)
@@ -228,10 +275,14 @@ class CampaignRepository implements CampaignRepositoryInterface
 
     public function update($request, $campaign_id)
     {
-        $this->campaign->where('id', $campaign_id)->update($request->all());
         $campaign = ($this->campaign->where('id', $campaign_id)->first());
-        $connect = ($this->campaign->getConnection()->getName());
-        event(new UpdatedModel($connect, $campaign));
+        if(!empty($campaign)){
+
+            $campaign->update($request->all());
+
+            $connect = ($this->campaign->getConnection()->getName());
+            event(new UpdatedModel($connect, $campaign));
+        }
 
         return $campaign;
     }
@@ -241,7 +292,7 @@ class CampaignRepository implements CampaignRepositoryInterface
         // dd("dleete function ".$campaign_id);
         $campaign = $this->campaign->where('id', $campaign_id)->first();
         if (!empty($campaign)) {
-            $campaign->delete();
+            // $campaign->delete();
             $connect = ($this->campaign->getConnection()->getName());
             event(new DeletedModel($connect, $campaign));
             return $campaign;
