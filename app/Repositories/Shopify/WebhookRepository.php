@@ -56,6 +56,7 @@ class WebhookRepository
     }
 
     public function updateFromShopify($payload){
+        info("WebhookRepository: update customer from shopify");
         $data =  dispatch(new UpdateCustomer($payload));
     }
 

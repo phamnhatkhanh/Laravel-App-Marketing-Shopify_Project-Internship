@@ -34,7 +34,6 @@ class SyncDatabaseAfterCreatedModel implements ShouldQueue
         // dd($event->data);
         $dataCreatedModel = $event->data;
         // info("SyncDatabaseAfterCreatedModel: ".json_encode($dataCreatedModel));
-
         $dataCreatedModel['created_at'] =  Carbon::parse($dataCreatedModel['created_at'])->format('Y-m-d H:i:s');
         $dataCreatedModel['updated_at'] =  Carbon::parse($dataCreatedModel['updated_at'])->format('Y-m-d H:i:s');
         // dd($dataCreatedModel);
@@ -56,14 +55,12 @@ class SyncDatabaseAfterCreatedModel implements ShouldQueue
                     "id_row" => $event->data['id'],
                     "action" => "create"
                 ];
-
                 DbStatus::where('name',$dbName)->update([ "status" =>"disconnected"]);
                 ObserveModel::where('id_row', $event->data['id'])->updateOrCreate($dataObserveModel);
 
                 continue;
             }
         }
-
         // info($event->db_server);
         // info($event->product);
     }

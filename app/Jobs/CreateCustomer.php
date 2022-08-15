@@ -11,7 +11,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Session;
-
+use App\Events\Database\CreatedModel;
 use App\Models\Customer;
 use App\Models\Store;
 
@@ -29,8 +29,8 @@ class CreateCustomer implements ShouldQueue
     public function __construct($data_customer,$myshopify_domain)
     {
         $this->data_customer = $data_customer;
-        $this->customer = getConnectDatabaseActived(new Customer());
-        $this->store = getConnectDatabaseActived(new Store());
+        // $this->customer = getConnectDatabaseActived(new Customer());
+        // $this->store = getConnectDatabaseActived(new Store());
         $this->myshopify_domain = $myshopify_domain;
     }
 
@@ -55,7 +55,8 @@ class CreateCustomer implements ShouldQueue
 
         $store = $this->store->where('myshopify_domain', $myshopify_domain)->first();
 
-        $this->customer->create([
+        info("Job CreatedModel: ".$store->id);
+        $data = [
             'id' => $data_customer['id'],
             'store_id' => $store->id,
             'email' => $data_customer['email'],
@@ -66,6 +67,23 @@ class CreateCustomer implements ShouldQueue
             'phone' => $data_customer['phone'],
             'created_at' => $created_at,
             'updated_at' => $updated_at,
-        ]);
+        ];
+
+        info("Job CreatedModel: first_name ".$data_customer['first_name']);
+        $connect = ($this->customer->getConnection()->getName());
+        event(new CreatedModel($connect,$data,$this->customer->getModel()->getTable()));
+
+        // $this->customer->create([
+        //     'id' => $data_customer['id'],
+        //     'store_id' => $store->id,
+        //     'email' => $data_customer['email'],
+        //     'first_name' => $data_customer['first_name'],
+        //     'last_name' => $data_customer['last_name'],
+        //     'orders_count' => $data_customer['orders_count'],
+        //     'total_spent' => $data_customer['total_spent'],
+        //     'phone' => $data_customer['phone'],
+        //     'created_at' => $created_at,
+        //     'updated_at' => $updated_at,
+        // ]);
     }
 }

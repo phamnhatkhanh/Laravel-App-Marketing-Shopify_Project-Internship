@@ -13,7 +13,6 @@ use Throwable;
 class SyncDatabaseAfterDeletedModel implements ShouldQueue
 // implements ShouldQueue
 // DeletedProductListener
-
 {
     /**
      * Create the event listener.
@@ -52,6 +51,7 @@ class SyncDatabaseAfterDeletedModel implements ShouldQueue
                         "id_row" => $event->model->id,
                         "action" => "delete"
                     ];
+
                     // info("Event updateproudct: change status ".$dbName);
                     DbStatus::where('name',$dbName)->update([ "status" =>"disconnected"]);
                     ObserveModel::where('id_row', $event->model->id)->updateOrCreate($dataObserveModel);

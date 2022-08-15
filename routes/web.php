@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 use App\Models\DbStatus;
 use App\Models\Store;
 use App\Models\ObserveModel;
-use App\Models\Review;
+use App\Models\Customer;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Schema;
 /*
@@ -23,7 +23,22 @@ use Illuminate\Support\Facades\Schema;
 | contains the "web" middleware group. Now create something great!
 |
 */
-
+Route::get('/cnn', function (){
+    $customer = Customer::where('id', 1)->first();
+        // $customer->update([
+        // // $this->customer->where('id', $data_customer_id)->update([
+        //     'email' => $data_customer['email'],
+        //     'first_name' => $data_customer['first_name'],
+        //     'last_name' => $data_customer['last_name'],
+        //     'orders_count' => $data_customer['orders_count'],
+        //     'total_spent' => $data_customer['total_spent'],
+        //     'phone' => $data_customer['phone'],
+        //     'created_at' => $created_at,
+        //     'updated_at' => $updated_at,
+        // ]);
+        $connect = ($customer->getConnection()->getName());
+        return $connect;
+});
 
 Route::get('/set-db',function(){
 
@@ -85,7 +100,7 @@ Route::get('/set-db',function(){
     DbStatus::where('model_name', '=', null)
         ->orWhereNull('model_name')->delete();
     //from model base on driver defautl -> get list driver -> check table -> add.
-    
+
     return  "done set db";
     // return $listNameConnectionMysql;
 });
