@@ -125,7 +125,9 @@ class CampaignRepository implements CampaignRepositoryInterface
         }
 
         $bodyPreviewEmail = $request->preview_email;
+
         $store = Store::where('id',1)->first();
+
 
         $array = ([
             [
