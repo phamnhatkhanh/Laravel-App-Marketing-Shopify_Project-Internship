@@ -9,11 +9,9 @@
         "fruitcake/laravel-cors": "^2.0",
         "guzzlehttp/guzzle": "^7.0.1",
         "ivopetkov/html5-dom-document-php": "2.*",
-        "laravel-frontend-presets/tailwindcss": "^4.3",
         "laravel/framework": "^8.75",
         "laravel/sanctum": "^2.11",
         "laravel/tinker": "^2.5",
-        "maatwebsite/excel": "^3.1",
         "nao-pon/flysystem-google-drive": "~1.1",
         "predis/predis": "^2.0",
         "pusher/pusher-php-server": "^7.0",
@@ -75,3 +73,6 @@
     "minimum-stability": "dev",
     "prefer-stable": true
 }
+
+
+
