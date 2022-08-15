@@ -10,7 +10,7 @@ use App\Http\Requests\ProductRequest;
 
 
 
-Route::prefix('customer')->group(function () {
+Route::prefix('customer')->middleware("CheckAuthenticate")->group(function () {
 
     Route::get('sync', [CustomerController::class, 'syncCutomerFromShopify']);
 

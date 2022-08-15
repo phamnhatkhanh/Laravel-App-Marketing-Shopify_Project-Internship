@@ -39,8 +39,8 @@ class SendingMail implements ShouldBroadcast
         info(' mail_done_percentage: ' . ("mail_send ". $batch->processedJobs(). "totle cutstome ".$campaignProcess->total_customers));
         info(' mail_done_percentage: ' . "mail_send ".( ($batch->processedJobs()/$campaignProcess->total_customers)*100));
 
-        $mail_done_percentage =  $campaignProcess->total_customers> 0?round(($batch->processedJobs()/$campaignProcess->total_customers) * 100):0;
-        $mail_failed_percentage = $batch->total_jobs>0? round(($batch->failed_jobs/$batch->total_jobs) * 100):0;
+        $mail_done_percentage =  $campaignProcess->total_customers > 0 ?round(($batch->processedJobs()/$campaignProcess->total_customers) * 100):0;
+        $mail_failed_percentage = $batch->total_jobs > 0 ? round(($batch->failed_jobs/$batch->total_jobs) * 100):0;
 
         return response()->json([
             'campaignId' => $campaignProcess->id,

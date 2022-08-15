@@ -70,9 +70,6 @@ class CustomerRepository implements CustomerRepositoryInterface
             "message" => "Start sync customer"
         ],200);
 
-
-
-
     }
 
     public function index(Request $request)
@@ -106,10 +103,11 @@ class CustomerRepository implements CustomerRepositoryInterface
 
 
             $total =  $this->customer->searchcustomer($params)->count();
-            $totalpage = (int)round($total / 15);
+            // $totalpage = (int)round($total / 15);
+            $totalpage = (int)ceil($total / 15);
         }
         $total = Customer::count();
-        $totalpage = (int)round($total / 15);
+        // $totalpage = (int)round($total / 15);
 
         return response([
             "total_customers" => $total,

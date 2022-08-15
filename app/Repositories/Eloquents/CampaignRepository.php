@@ -15,15 +15,12 @@ use App\Models\Customer;
 use Carbon\Carbon;
 use App\Jobs\SendMail;
 use App\Events\MailSent;
-
 use App\Events\Database\CreatedModel;
 use App\Events\Database\UpdatedModel;
 use App\Events\Database\DeletedModel;
-
 use App\Repositories\Contracts\CampaignRepositoryInterface;
 use DOMDocument;
 use Illuminate\Http\Request;
-use DOMDocument;
 use Illuminate\Support\Facades\Log;
 use IvoPetkov\HTML5DOMDocument;
 use Throwable;
@@ -78,8 +75,6 @@ class CampaignRepository implements CampaignRepositoryInterface
     // nhan list user va gui sau hien tai fix cung.
     private function sendEmailCampaign($listMailCustomers, $campaignProcess)
     {
-
-
         $batch = Bus::batch([])
         ->then(function (Batch $batch) {
 
@@ -151,9 +146,6 @@ class CampaignRepository implements CampaignRepositoryInterface
             }
         }
 
-        $domBody = new DOMDocument();
-        $domBody->loadHTML($body);
-
         $cutBodyPreview = str_replace(array("\\",), '', $bodyPreviewEmail);
 
         $domBody = new HTML5DOMDocument();
@@ -211,9 +203,7 @@ class CampaignRepository implements CampaignRepositoryInterface
 
     public function getCampaign()
     {
-        // dd("skfbsjfhds");
         return $this->campaign->get();
-
     }
 
     public function store($request)

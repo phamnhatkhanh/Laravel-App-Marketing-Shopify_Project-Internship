@@ -55,17 +55,18 @@ class Customer extends Model
     {
         if (isset($params['orders_from']) && isset($params['orders_to'])) {
 
-            $query->where('orders_count', '>=', $params['orders_from'])
-                ->where('orders_count', '<=', $params['orders_to']);
+           
+            $query->where('orders_count', '>=', (int)$params['orders_from'])
+                ->where('orders_count', '<=', (int)$params['orders_to']);
         }
 
         if (isset($params['orders_from']) && trim($params['orders_from'])) {
-            $query->whereNotBetween('orders_count', [0, $params['orders_from']-1]);
+            $query->whereNotBetween('orders_count', [0, (int)$params['orders_from']-1]);
         }
 
         if (isset($params['orders_to']) && trim($params['orders_to'])) {
-            $query->whereBetween('orders_count', [0, $params['orders_to']])
-            ->where('orders_count', '<=', $params['orders_to']);
+            $query->whereBetween('orders_count', [0, (int)$params['orders_to']])
+            ->where('orders_count', '<=', (int)$params['orders_to']);
         }
 
         return $query;
@@ -75,17 +76,17 @@ class Customer extends Model
     {
         if (isset($params['spent_from']) && isset($params['spent_to'])) {
             info('from-to');
-            $query->where('total_spent', '>=', $params['spent_from'])
-                ->where('total_spent', '<=', $params['spent_to']);
+            $query->where('total_spent', '>=', (int)$params['spent_from'])
+                ->where('total_spent', '<=', (int)$params['spent_to']);
         }
 
         if (isset($params['spent_from']) && trim($params['spent_from'])) {
-            $query->whereNotBetween('total_spent', [0, $params['spent_from']-1]);
+            $query->whereNotBetween('total_spent', [0, (int)$params['spent_from']-1]);
         }
 
         if (isset($params['spent_to']) && trim($params['spent_to'])) {
-            $query->whereBetween('total_spent', [0, $params['spent_to']])
-                ->where('total_spent', '<=', $params['spent_to']);
+            $query->whereBetween('total_spent', [0, (int)$params['spent_to']])
+                ->where('total_spent', '<=', (int)$params['spent_to']);
         }
 
         return $query;

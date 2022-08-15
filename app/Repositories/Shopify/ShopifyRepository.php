@@ -39,7 +39,7 @@ class ShopifyRepository implements ShopifyRepositoryInterface
 
             if ($this->verifyHmacAppInstall($request)) {
                 $shop = Store::where("myshopify_domain",$request->shop)->first();
-
+                
                 if(empty($shop)){
                     $this->authen($request);
                 }
