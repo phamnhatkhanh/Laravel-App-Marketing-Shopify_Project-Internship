@@ -37,12 +37,12 @@ class CampaignRepository implements CampaignRepositoryInterface
         $this->campaign = getConnectDatabaseActived(new Campaign());
     }
 
-    public function getCampaignProceess()
-    {
-        $campaignProcess = $this->campaignProcess->get();
+    // public function getCampaignProceess()
+    // {
+    //     $campaignProcess = $this->campaignProcess->get();
 
-        return $campaignProcess;
-    }
+    //     return $campaignProcess;
+    // }
 
     public function saveCampaign(Request $request)
     {
@@ -76,7 +76,6 @@ class CampaignRepository implements CampaignRepositoryInterface
     {
         $batch = Bus::batch([])
             ->then(function (Batch $batch) {
-
             })
             ->finally(function (Batch $batch) use ($campaignProcess) {
                 $campaignProcess->update([
@@ -98,7 +97,6 @@ class CampaignRepository implements CampaignRepositoryInterface
                 // info("key: ".  $key. "  value: ".$MailCustomer);
             }
             $batch->add(new SendMail($batchId, $MailCustomer, $campaignProcess));
-
         }
     }
 
@@ -125,7 +123,7 @@ class CampaignRepository implements CampaignRepositoryInterface
 
         $bodyPreviewEmail = $request->preview_email;
 
-        $store = Store::where('id',1)->first();
+        $store = Store::where('id', 1)->first();
 
 
         $array = ([
@@ -179,7 +177,7 @@ class CampaignRepository implements CampaignRepositoryInterface
         foreach ($array as $arr) {
             $arrayJoinElements = str_replace($arr['variant'], $arr['value'], $arrayJoinElements);
         }
-        try{
+        try {
             $batch = Bus::batch([])
                 ->then(function (Batch $batch) {
                 })
@@ -194,10 +192,9 @@ class CampaignRepository implements CampaignRepositoryInterface
                     $connect = ($campaignProcess->getConnection()->getName());
                     event(new UpdatedModel($connect, $campaignProcess));
                     event(new MailSent($batch->id, $campaignProcess));
-
                 })->onQueue('jobs')->dispatch();
             $batchId = $batch->id;
-            info("inside sendEmailPreview: handel templete mail ". $batchId);
+            info("inside sendEmailPreview: handel templete mail " . $batchId);
             $listCustomersId =  json_decode($request->list_mail_customers, true);
             // $listCustomersId =  $request->list_mail_customers;
             $listCustomers = Customer::whereIn('id', $listCustomersId)->get();
@@ -208,11 +205,10 @@ class CampaignRepository implements CampaignRepositoryInterface
                 //     $value->email=1;
                 //     // dd([$bodyEmail, $arrayJoinElements, $imageName, $store, $value->email, $batchId, $campaignProcess]);
                 // }
-                $batch->add(new SendEmailPreview( $value->email, $batchId, $campaignProcess,$bodyEmail, $arrayJoinElements, $imageName, $store));
-
+                $batch->add(new SendEmailPreview($value->email, $batchId, $campaignProcess, $bodyEmail, $arrayJoinElements, $imageName, $store));
             }
             info("inside sendEmailPreview:group jobs");
-        }catch(Throwable $e){
+        } catch (Throwable $e) {
             info($e);
         }
         // info("list_customer: ".$request->list_mail_customers);
@@ -234,17 +230,22 @@ class CampaignRepository implements CampaignRepositoryInterface
         // ];
     }
 
-    public function searchFilterCampaign(Request $request)
+    public function index(Request $request)
     {
+        $totalpage = 0;
         $params = $request->except('_token');
         $data = $this->campaignProcess->searchcampaign($params)
             ->sort($params)
             ->name($params)
             ->status($params)
-            ->get();
+            ->simplePaginate(15);
 
+        $total = $this->campaignProcess->searchcampaign($params)->count();
+        $totalpage = (int)ceil($total / 15);
         return response([
             'data' => $data,
+            "totalPage" => $totalpage ? $totalpage : 0,
+            "total_campaignProcess" => $this->campaignProcess->count(),
             'status' => true,
         ], 200);
     }
@@ -273,7 +274,7 @@ class CampaignRepository implements CampaignRepositoryInterface
     public function update($request, $campaign_id)
     {
         $campaign = ($this->campaign->where('id', $campaign_id)->first());
-        if(!empty($campaign)){
+        if (!empty($campaign)) {
 
             $campaign->update($request->all());
 
@@ -298,7 +299,5 @@ class CampaignRepository implements CampaignRepositoryInterface
 
     public function show($id)
     {
-
     }
-
 }
