@@ -39,7 +39,7 @@ class ShopifyRepository implements ShopifyRepositoryInterface
     public function login(Request $request)
     {
 
-        if (isset($request->hmac)) {
+        if (isset($request["hmac"])) {
             info("have hash mac ");
             if ($this->verifyHmacAppInstall($request)) {
 
