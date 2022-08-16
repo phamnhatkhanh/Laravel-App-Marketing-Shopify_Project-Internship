@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Route;
 
 
 //Input Name Shop
-Route::any('/login', [ShopifyController::class, 'login'])->name('login');
-Route::any('/authen', [ShopifyController::class, 'authen'])->name('authen');
+Route::post('/login', [ShopifyController::class, 'login'])->name('login');
+Route::post('/authen', [ShopifyController::class, 'authen'])->name('authen');
 
 Route::get('/getUser', [LoginController::class, 'user'])->middleware('CheckAuthenticate');

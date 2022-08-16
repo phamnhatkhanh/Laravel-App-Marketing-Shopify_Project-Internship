@@ -37,12 +37,12 @@ class CampaignRepository implements CampaignRepositoryInterface
         $this->campaign = getConnectDatabaseActived(new Campaign());
     }
 
-    // public function getCampaignProceess()
-    // {
-    //     $campaignProcess = $this->campaignProcess->get();
+    public function getCampaignProceess()
+    {
+        $campaignProcess = $this->campaignProcess->get();
 
-    //     return $campaignProcess;
-    // }
+        return $campaignProcess;
+    }
 
     public function saveCampaign(Request $request)
     {
@@ -242,7 +242,7 @@ class CampaignRepository implements CampaignRepositoryInterface
         } catch (Throwable $e) {
             info($e);
         }
-        
+
         // info("list_customer: ".$request->list_mail_customers);
 
 

@@ -17,8 +17,8 @@ class CustomerSeeder extends Seeder
 
 
 
-        $customers = Customer::factory()->times(1)->create();
-        // $customers = Customer::factory()->times(2000)->create();
+        // $customers = Customer::factory()->times(1)->create();
+        $customers = Customer::factory()->times(200)->create();
 
 
 
