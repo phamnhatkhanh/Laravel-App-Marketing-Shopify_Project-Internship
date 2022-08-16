@@ -18,10 +18,12 @@ Route::prefix('campaign')->group(function (){
     Route::get('/getCampaign', [CampaignController::class, 'getCampaign']);
 
     Route::post('/save-campaign', [CampaignController::class, 'saveCampaign']);
-    
+
     Route::get('/get-campaigns-process',[CampaignController::class, 'getCampaignProceess']);
 
     Route::post('/send-email-preview',[CampaignController::class, 'sendEmailPreview']);
+
+    Route::post('/send-email',[CampaignController::class, 'sendEmail']);
 });
 
 Route::apiResource('/campaign',CampaignController::class);

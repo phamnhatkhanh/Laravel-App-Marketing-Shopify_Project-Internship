@@ -7,8 +7,7 @@ interface CustomerRepositoryInterface
     public function syncCutomerFromShopify();
     public function index(Request $request);
     public function getCustomer();
-    public function exportCustomerCSV();
-    public function exportSelectCustomerCSV(Request $request);
+    public function exportCustomerCSV(Request $request);
 }
 
 

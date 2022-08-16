@@ -43,14 +43,8 @@ class UpdateCustomer implements ShouldQueue
         $data_customer = $this->data_customer;
         $data_customer_id = $data_customer['id'];
 
-        $findCreateAT = array('T', '+07:00');
-        $replaceCreateAT = array(' ', '');
-
-        $findUpdateAT = array('T', '+07:00');
-        $replaceUpdateAT = array(' ', '');
-
-        $created_at = str_replace($findCreateAT, $replaceCreateAT, $data_customer['created_at']);
-        $updated_at = str_replace($findUpdateAT, $replaceUpdateAT, $data_customer['updated_at']);
+        $created_at = str_replace(array('T', '+07:00'), array(' ', ''), $data_customer['created_at']);
+        $updated_at = str_replace(array('T', '+07:00'), array(' ', ''), $data_customer['updated_at']);
         info("UpdateCustomer: id ".$data_customer_id);
         info("UpdateCustomer: ".$data_customer['last_name']);
 
