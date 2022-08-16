@@ -21,7 +21,7 @@ use App\Events\Database\UpdatedModel;
 use App\Events\Database\DeletedModel;
 use App\Repositories\Contracts\CampaignRepositoryInterface;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use IvoPetkov\HTML5DOMDocument;
 use Throwable;
 
@@ -115,7 +115,9 @@ class CampaignRepository implements CampaignRepositoryInterface
 
     public function previewEmail($request, $array)
     {
+        info('previewEmail: inside Fisrt');
         if ($request->hasFile('background_banner')) {
+            info('---- previewEmail: hasFile Banner');
             if ($request->file('background_banner')->isValid()) {
                 $request->validate(
                     [
@@ -124,12 +126,17 @@ class CampaignRepository implements CampaignRepositoryInterface
                 );
 
                 $imageName = time() . '.' . $request->background_banner->extension();
+                info('----- previewEmail: Image success '.$imageName);
                 $request->background_banner->move(public_path('uploads'), $imageName);
+            }else{
+                info('KS');
+                $imageName = '1660638627.jpg';
             }
         } else {
             $imageName = '';
         }
 
+        info('previewEmail: Handle Image');
         $bodyPreviewEmail = $request->preview_email;
 
         if (!empty($bodyPreviewEmail)) {
@@ -141,14 +148,15 @@ class CampaignRepository implements CampaignRepositoryInterface
         $cutBodyPreview = str_replace(array("\\",), '', $bodyPreviewEmail);
         $domBody = new HTML5DOMDocument();
         $domBody->loadHTML($cutBodyPreview);
+        info('previewEmail: handle Body');
 
-        info('kinh' . $imageName);
         if (!empty($imageName)) {
             $img = $domBody->getElementsByTagName('img')[0];
             $img->setAttribute('src', asset('uploads/' . $imageName));
         }
 
         $bodyEmail = $domBody->saveHTML();
+        info('previewEmail: save body');
 
         return [
             'image' => $imageName,
@@ -212,19 +220,14 @@ class CampaignRepository implements CampaignRepositoryInterface
         dispatch(new SendTestPreview($bodyEmail, $subject, $imageName, $store, $sendEmail));
 
         return [
-             'message' => 'Send Test Success',
-             'status' => 204,
-         ];
+            'message' => 'Send Test Success',
+            'status' => true,
+        ];
     }
 
     public function sendEmailPreview(Request $request, $campaignProcess)
     {
-
-
-
         try{
-
-
             $batch = Bus::batch([])
                 ->then(function (Batch $batch) {
                 })
@@ -244,29 +247,22 @@ class CampaignRepository implements CampaignRepositoryInterface
 
 
             info("inside sendEmailPreview: handel templete mail ". $batchId);
+            info("inside sendEmailPreview: lsit customer ". $request->list_mail_customers);
 
-            if($request->has("list_customer")){
+
+            if($request->has("list_mail_customers")){
 
                 $listCustomersId =  json_decode($request->list_mail_customers, true);
                 $listCustomers = Customer::whereIn('id', $listCustomersId)->get();
             }elseif($request->has("except_customer")){
+                $listCustomersId =  $request->list_mail_customers;
                 $listCustomersId =  json_decode($request->list_mail_customers, true);
                 $listCustomers = Customer::whereNotIn('id', $listCustomersId)->get();
             }else{
                 $listCustomers = Customer::get();
             }
 
-            // info(json_encode($listCustomersId,true));
-
-
             foreach ($listCustomers as $key => $value) {
-                // if($key  >1 && $key < 5){
-                //     $value->email=1;
-                //     // dd([$bodyEmail, $arrayJoinElements, $imageName, $store, $value->email, $batchId, $campaignProcess]);
-                // }
-
-
-                // dd("sendEmailPreview");
                 info("inside sendEmailPreview");
                 // dd($request->list_mail_customers);
                 if ($request->hasFile('background_banner')) {
@@ -325,47 +321,15 @@ class CampaignRepository implements CampaignRepositoryInterface
 
                 $bodyEmail = $domBody->saveHTML();
 
+                $subject = $this->subject($request->subject, $array);
 
-                $domSubject = new HTML5DOMDocument();
-                $domSubject->loadHTML($request->subject);
-                $querySelectorSubject = $domSubject->querySelector('p')->childNodes;
-
-                $arraySubject = [];
-                foreach ($querySelectorSubject as $item) {
-                    if ($item->nodeName == '#text') {
-                        array_push($arraySubject, $item->data);
-                    } else {
-                        $aa = $item->childNodes[0]->data;
-                        array_push($arraySubject, $aa);
-                    }
-                }
-                $arrayJoinElements = implode(' ', $arraySubject);
-                foreach ($array as $arr) {
-                    $arrayJoinElements = str_replace($arr['variant'], $arr['value'], $arrayJoinElements);
-                }
-
-                $batch->add(new SendEmailPreview( $value->email, $batchId, $campaignProcess,$bodyEmail, $arrayJoinElements, $imageName, $store));
-
-
+                $batch->add(new SendEmailPreview( $value->email, $batchId, $campaignProcess,$bodyEmail, $subject, $imageName, $store));
 
             }
             info("inside sendEmailPreview:group jobs");
         } catch (Throwable $e) {
             info($e);
         }
-
-        // info("list_customer: ".$request->list_mail_customers);
-
-
-        // foreach ($listMailCustomers as $key => $MailCustomer) {
-        //    if ($key > 1 && $key < 5) {
-        //        $MailCustomer = 1;
-        //    }
-
-        //     $batch->add(new SendMail($batchId, $MailCustomer,$campaignProcess));
-
-        // }
-
 
         return [
             'message' => 'Prepare save campaign and send mail',
