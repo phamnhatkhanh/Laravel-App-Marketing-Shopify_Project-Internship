@@ -8,9 +8,10 @@ use App\Http\Controllers\LoginController;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\ProductRequest;
 
-Route::middleware("CheckAuthenticate")->prefix('customer')->group(function () {
-
+Route::prefix('customer')->group(function () {
+// Route::middleware("CheckAuthenticate")->prefix('customer')->group(function () {
     Route::get('sync', [CustomerController::class, 'syncCutomerFromShopify']);
+
 
     Route::get('export', [CustomerController::class, 'exportCustomerCSV']);
 

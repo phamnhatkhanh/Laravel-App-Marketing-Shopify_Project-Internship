@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Bus;
 use Illuminate\Bus\Batch;
 use Carbon\Carbon;
 use App\Repositories\Contracts\CustomerRepositoryInterface;
+use App\Repositories\Shopify\ShopifyRepository;
 use App\Exports\CustomerExport;
 
 use App\Http\Controllers\Controller;
@@ -44,26 +45,34 @@ class CustomerRepository implements CustomerRepositoryInterface
         $this->store = getConnectDatabaseActived(new Store());
     }
 
-    public function syncCutomerFromShopify()
+    public function syncCutomerFromShopify(Request $request)
     {
+
+        $store = $this->store->where('myshopify_domain', $request->shop)->first();
+        // dd([$store->myshopify_domain,$store->access_token,$store->id]);
+
+        $shopifyRepository = new ShopifyRepository();
+        $shopifyRepository->syncCustomer($store->myshopify_domain,$store->access_token,$store );
+        //just call funcitno
         //get data from shopify -> chunk add job.
-        $customers = $this->customer->get();
+        // info($reqeust->all());
+        // $customers = $this->customer->get();
 
-        $batch = Bus::batch([])
-            ->then(function (Batch $batch) {
+        // $batch = Bus::batch([])
+        //     ->then(function (Batch $batch) {
 
-            })->finally(function (Batch $batch)  {
+        //     })->finally(function (Batch $batch)  {
 
-                event(new SynchronizedCustomer($batch->id));
+        //         event(new SynchronizedCustomer($batch->id));
 
-            })->onQueue('jobs')->dispatch();
+        //     })->onQueue('jobs')->dispatch();
 
-        $batch_id = $batch->id;
+        // $batch_id = $batch->id;
 
-        $chunksCustomer = $customers->chunk(5);
-        foreach ($chunksCustomer as  $chunkCumtomer) {
-            $batch->add(new SyncCumtomer($batch_id, $chunkCumtomer));
-        }
+        // $chunksCustomer = $customers->chunk(5);
+        // foreach ($chunksCustomer as  $chunkCumtomer) {
+        //     $batch->add(new SyncCumtomer($batch_id, $chunkCumtomer));
+        // }
 
         return response([
             "status" => true,
@@ -74,6 +83,7 @@ class CustomerRepository implements CustomerRepositoryInterface
 
     public function index(Request $request)
     {
+        $totalpage =0;
         if ($request->has('list_customer')) {
             $arr = explode(',', $request['list_customer']);
 
