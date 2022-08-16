@@ -37,12 +37,12 @@ class CampaignRepository implements CampaignRepositoryInterface
         $this->campaign = getConnectDatabaseActived(new Campaign());
     }
 
-    public function getCampaignProceess()
-    {
-        $campaignProcess = $this->campaignProcess->get();
+    // public function getCampaignProceess()
+    // {
+    //     $campaignProcess = $this->campaignProcess->get();
 
-        return $campaignProcess;
-    }
+    //     return $campaignProcess;
+    // }
 
     public function saveCampaign(Request $request)
     {
@@ -87,7 +87,6 @@ class CampaignRepository implements CampaignRepositoryInterface
     {
         $batch = Bus::batch([])
             ->then(function (Batch $batch) {
-
             })
             ->finally(function (Batch $batch) use ($campaignProcess) {
                 $campaignProcess->update([
@@ -109,12 +108,12 @@ class CampaignRepository implements CampaignRepositoryInterface
                 // info("key: ".  $key. "  value: ".$MailCustomer);
             }
             $batch->add(new SendMail($batchId, $MailCustomer, $campaignProcess));
-
         }
     }
 
     public function sendEmailPreview(Request $request, $campaignProcess)
     {
+
 
 
         try{
@@ -133,9 +132,9 @@ class CampaignRepository implements CampaignRepositoryInterface
                     $connect = ($campaignProcess->getConnection()->getName());
                     event(new UpdatedModel($connect, $campaignProcess));
                     event(new MailSent($batch->id, $campaignProcess));
-
                 })->onQueue('jobs')->dispatch();
             $batchId = $batch->id;
+
             info("inside sendEmailPreview: handel templete mail ". $batchId);
 
             if($request->has("list_customer")){
@@ -150,11 +149,13 @@ class CampaignRepository implements CampaignRepositoryInterface
             }
 
             // info(json_encode($listCustomersId,true));
+
             foreach ($listCustomers as $key => $value) {
                 // if($key  >1 && $key < 5){
                 //     $value->email=1;
                 //     // dd([$bodyEmail, $arrayJoinElements, $imageName, $store, $value->email, $batchId, $campaignProcess]);
                 // }
+
                 // dd("sendEmailPreview");
                 info("inside sendEmailPreview");
                 // dd($request->list_mail_customers);
@@ -235,11 +236,13 @@ class CampaignRepository implements CampaignRepositoryInterface
 
                 $batch->add(new SendEmailPreview( $value->email, $batchId, $campaignProcess,$bodyEmail, $arrayJoinElements, $imageName, $store));
 
+
             }
             info("inside sendEmailPreview:group jobs");
-        }catch(Throwable $e){
+        } catch (Throwable $e) {
             info($e);
         }
+        
         // info("list_customer: ".$request->list_mail_customers);
 
 
@@ -259,17 +262,22 @@ class CampaignRepository implements CampaignRepositoryInterface
         ];
     }
 
-    public function searchFilterCampaign(Request $request)
+    public function index(Request $request)
     {
+        $totalpage = 0;
         $params = $request->except('_token');
         $data = $this->campaignProcess->searchcampaign($params)
             ->sort($params)
             ->name($params)
             ->status($params)
-            ->get();
+            ->simplePaginate(15);
 
+        $total = $this->campaignProcess->searchcampaign($params)->count();
+        $totalpage = (int)ceil($total / 15);
         return response([
             'data' => $data,
+            "totalPage" => $totalpage ? $totalpage : 0,
+            "total_campaignProcess" => $this->campaignProcess->count(),
             'status' => true,
         ], 200);
     }
@@ -298,7 +306,7 @@ class CampaignRepository implements CampaignRepositoryInterface
     public function update($request, $campaign_id)
     {
         $campaign = ($this->campaign->where('id', $campaign_id)->first());
-        if(!empty($campaign)){
+        if (!empty($campaign)) {
 
             $campaign->update($request->all());
 
@@ -323,7 +331,5 @@ class CampaignRepository implements CampaignRepositoryInterface
 
     public function show($id)
     {
-
     }
-
 }

@@ -8,8 +8,10 @@ use App\Http\Controllers\LoginController;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\ProductRequest;
 
+
 Route::prefix('customer')->group(function () {
 // Route::middleware("CheckAuthenticate")->prefix('customer')->group(function () {
+
     Route::get('sync', [CustomerController::class, 'syncCutomerFromShopify']);
 
 
@@ -18,6 +20,5 @@ Route::prefix('customer')->group(function () {
     Route::get('export-selected', [CustomerController::class, 'exportSelectCustomerCSV']);
 });
 
-
-Route::apiResource('/customer', CustomerController::class);
+Route::apiResource('/customer', CustomerController::class)->middleware("CheckAuthenticate");
 
