@@ -53,13 +53,13 @@ class SendEmailPreview implements ShouldQueue
         info("SendEmailPreview: batch id". $this->batchId);
         info("SendEmailPreview: send mail ". $this->sendEmail);
 
-        $body = $this->body;
+        $bodyEmail = $this->body;
         $subject = $this->subject;
         $store = $this->store;
         $sendEmail = $this->sendEmail;
         info("SendEmailPreview: send mail......");
         // info("body ".$this->batchId ."  processed". $this->campaignProcess->id);
-        Mail::send('mail.emailPreview', compact('body' ), function ($email) use ($subject, $store,$sendEmail) {
+        Mail::send('mail.emailPreview', compact('bodyEmail' ), function ($email) use ($subject, $store,$sendEmail) {
             $email->from("giakinh451@gmail.com");
             $email->to($this->sendEmail)->subject($subject);
         });

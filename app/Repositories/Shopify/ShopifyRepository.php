@@ -1,34 +1,26 @@
 <?php
-// app/Repositories/Eloquents/ProductRepository.php
+
 
 namespace App\Repositories\Shopify;
 
-use App\Models\Types;
 use Illuminate\Support\Facades\DB;
-use Symfony\Component\HttpFoundation\Response;
-
-use Illuminate\Support\Facades\Session;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Bus\Batch;
 use Carbon\Carbon;
 use Throwable;
-use DB;
 use GuzzleHttp\Client;
 use App\Http\Controllers\LoginController;
-
-
 use App\Repositories\Contracts\ShopifyRepositoryInterface;
-
 use App\Models\Customer;
 use App\Models\Store;
-
 use App\Events\Database\CreatedModel;
 use App\Events\Database\UpdatedModel;
 use App\Events\Database\DeletedModel;
 use App\Events\SyncDatabase;
 use App\Events\SynchronizedCustomer;
 use App\Jobs\SyncCumtomer;
+
 class ShopifyRepository implements ShopifyRepositoryInterface
 {
     protected $customer;
@@ -64,12 +56,14 @@ class ShopifyRepository implements ShopifyRepositoryInterface
             // $apiKey = config('shopify.shopify_api_key');
             $scope = 'read_customers,write_customers';
             $shop = $request->myshopify_domain;
+
             // $redirect_uri = 'http://localhost:8000/api/auth/authen';
             $redirect_uri = 'http://192.168.101.83:8080/login';
 
             $url = 'https://' . $shop . '/admin/oauth/authorize?client_id=' . $apiKey . '&scope=' . $scope . '&redirect_uri=' . $redirect_uri;
             info($url);
             return $url;
+
         }
     }
 

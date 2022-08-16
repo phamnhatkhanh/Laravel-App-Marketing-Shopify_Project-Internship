@@ -32,15 +32,15 @@ class CreateCustomersTable extends Migration
             $table->dateTime('created_at')->nullable();
             $table->dateTime('updated_at')->nullable();
 
-//            $table->foreign('store_id')
-//                ->references('id')
-//                ->on(new Expression($DB_store . '.stores'))
-//                ->onDelete('cascade');
-//
-//            $table->foreign('store_id','customers_store_backup')
-//                ->references('id')
-//                ->on(new Expression($DB_store_backup . '.stores'))
-//                ->onDelete('cascade');
+            $table->foreign('store_id')
+                ->references('id')
+                ->on(new Expression($DB_store . '.stores'))
+                ->onDelete('cascade');
+
+            $table->foreign('store_id','customers_store_backup')
+                ->references('id')
+                ->on(new Expression($DB_store_backup . '.stores'))
+                ->onDelete('cascade');
         });
     }
 

@@ -41,16 +41,12 @@ class CustomerController extends Controller
 
     }
 
-    public function searchFilterCustomer(Request $request)
-    {
-        return $this->customerRepository->searchFilterCustomer($request);
-
-    }
 
     public function getCustomer()
     {
         return $this->customerRepository->getCustomer();
     }
+
 
     public function update(Request $request, $customer_id)
     {
