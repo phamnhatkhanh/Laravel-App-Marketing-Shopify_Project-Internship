@@ -3,6 +3,8 @@
 
 namespace App\Repositories\Shopify;
 
+use App\Models\Types;
+use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\Response;
 
 use Illuminate\Support\Facades\Session;
@@ -31,11 +33,14 @@ class ShopifyRepository implements ShopifyRepositoryInterface
 {
     protected $customer;
     protected $store;
-    public function __construct(){
+
+    public function __construct()
+    {
         $this->customer = getConnectDatabaseActived(new Customer());
         $this->store = getConnectDatabaseActived(new Store());
 
     }
+
     public function login(Request $request)
     {
 
@@ -43,9 +48,9 @@ class ShopifyRepository implements ShopifyRepositoryInterface
             info("have hash mac ");
             if ($this->verifyHmacAppInstall($request)) {
 
-                $shop = $this->store->where("myshopify_domain",$request->shop)->first();
+                $shop = $this->store->where("myshopify_domain", $request->shop)->first();
 
-                if(empty($shop)){
+                if (empty($shop)) {
                     info("get acces token ");
                     $this->authen($request);
                 }
@@ -64,7 +69,7 @@ class ShopifyRepository implements ShopifyRepositoryInterface
 
             $url = 'https://' . $shop . '/admin/oauth/authorize?client_id=' . $apiKey . '&scope=' . $scope . '&redirect_uri=' . $redirect_uri;
             info($url);
-            return$url;
+            return $url;
         }
     }
 
@@ -95,30 +100,32 @@ class ShopifyRepository implements ShopifyRepositoryInterface
     public function authen(Request $request)
     {
         $code = $request->code;
-        info("in functino authen ". $code);
+        info("in functino authen " . $code);
         $shopName = $request->shop;
         // dd($request->all());
         //Lấy Access_token gọi về từ WebhookService
         $getAccess_token = $this->getAccessToken($code, $shopName);
         $access_token = $getAccess_token->access_token;
 
+        //Lưu thông tin shop ở Shopify vào DB
         $store_id = $this->getDataLogin($shopName, $access_token);
 
 
         //Lưu thông tin khách hàng ở Shopify vào DB
-        $this->createDataCustomer($shopName, $access_token,$store_id);
-            info("save store");
+        $this->createDataCustomer($shopName, $access_token, $store_id);
+        info("save store");
 
         //Đăng kí CustomerWebhooks thêm, xóa, sửa
         $this->registerCustomerWebhookService($shopName, $access_token);
         info("registerCustomerWebhookService");
+        return 'lalalalalallalalal';
     }
 
     public function getAccessToken(string $code, string $domain)
     {
         info("ShopifyRepository getAccessToken: get token");
-        $client2 = new Client();
-        $response = $client2->post(
+        $client = new Client();
+        $response = $client->post(
             "https://" . $domain . "/admin/oauth/access_token",
             [
                 'form_params' => [
@@ -185,13 +192,8 @@ class ShopifyRepository implements ShopifyRepositoryInterface
             return false;
         }
 
-        $findCreateAT = array('T', '+07:00');
-        $replaceCreateAT = array(' ', '');
-        $findUpdateAT = array('T', '+07:00');
-        $replaceUpdateAT = array(' ', '');
-
-        $created_at = str_replace($findCreateAT, $replaceCreateAT, $store['shop']['created_at']);
-        $updated_at = str_replace($findUpdateAT, $replaceUpdateAT, $store['shop']['updated_at']);
+        $created_at = str_replace(array('T', '+07:00'), array(' ', ''), $store['shop']['created_at']);
+        $updated_at = str_replace(array('T', '+07:00'), array(' ', ''), $store['shop']['updated_at']);
 
         $storeData = [
             "password" => bcrypt($password),
@@ -218,14 +220,16 @@ class ShopifyRepository implements ShopifyRepositoryInterface
             'updated_at' => $updated_at,
         ];
 
-        // if (!$this->store->find($data['id'])) {
-        //     $this->store->insert($data);
-        //    info("store id: ".$store);
-        //    $store =$this->store->where('id', $data['id'])->first();
-        //    dd($store);
-        // }
-        $connect = ($this->store->getConnection()->getName());
-        event(new CreatedModel($connect,$data,$this->store->getModel()->getTable()));
+        $findStore = $this->store->where('id',$data['id'])->first();
+        if (empty($findStore)) {
+            $this->store->create($data);
+        }else{
+            $findStore->access_token = $data['access_token'];
+            $findStore->update($data);
+        }
+//        $connect = ($this->store->getConnection()->getName());
+//        event(new CreatedModel($connect, $data, $this->store->getModel()->getTable()));
+
         return $getData['id'];
     }
 
@@ -243,7 +247,7 @@ class ShopifyRepository implements ShopifyRepositoryInterface
         return $countCustomer;
     }
 
-    public function createDataCustomer($shop, $access_token,$store_id)
+    public function createDataCustomer($shop, $access_token, $store_id)
     {
         $limit = 250;
         $countCustomer = $this->countDataCustomer($shop, $access_token);
@@ -251,7 +255,7 @@ class ShopifyRepository implements ShopifyRepositoryInterface
         $numberRequest = $countCustomer > $limit ? $ceilRequest : 1;
         $log = [];
         $params = [
-            'fields' => 'id, first_name, last_name, email, phone, addresses, orders_count, total_spent, created_at, updated_at',
+            'fields' => 'id, first_name, last_name, email, phone, orders_count, total_spent, addresses, created_at, updated_at',
             'limit' => $limit,
         ];
         for ($i = 0; $i < $numberRequest; $i++) {
@@ -268,23 +272,19 @@ class ShopifyRepository implements ShopifyRepositoryInterface
             $headers = $request->getHeaders();
             $params = $this->setParam($headers, $params);
 
-            $responseCustomer = json_decode($request->getBody(), true);
+            $responseCustomer = (array)json_decode($request->getBody(), true);
             $customers = !empty($responseCustomer['customers']) ? $responseCustomer['customers'] : [];
-
-            $findCreateAT = array('T', '+07:00');
-            $replaceCreateAT = array(' ', '');
-            $findUpdateAT = array('T', '+07:00');
-            $replaceUpdateAT = array(' ', '');
 
             // $store = $this->store->latest()->first();
             data_set($customers, '*.store_id', $store_id);
+            info("Shopify: save customers");
+            $getCustomer = $this->customer->get();
+            foreach ($customers as $customer) {
+                $created_at = str_replace(array('T', '+07:00'), array(' ', ''), $customer['created_at']);
+                $updated_at = str_replace(array('T', '+07:00'), array(' ', ''), $customer['updated_at']);
 
-            info("Sho pify: save customers");
-            foreach ($customers as $customer){
-                $created_at = str_replace($findCreateAT, $replaceCreateAT, $customer['created_at']);
-                $updated_at = str_replace($findUpdateAT, $replaceUpdateAT, $customer['updated_at']);
 
-                foreach ($customer['addresses'] as $item){
+                foreach ($customer['addresses'] as $item) {
                     $country = $item['country'];
 
                     $data = [
@@ -300,14 +300,17 @@ class ShopifyRepository implements ShopifyRepositoryInterface
                         'created_at' => $created_at,
                         'updated_at' => $updated_at,
                     ];
+                    $findCustomer = $getCustomer->where('id',$data['id'])->first();
 
-                    $connect = ($this->customer->getConnection()->getName());
-                    event(new CreatedModel($connect,$data,$this->customer->getModel()->getTable()));
-                    // $this->customer->insert($data);
+                    if (empty($findCustomer)) {
+                        $this->customer->create($data);
+                    } else {
+                        $findCustomer->update($data);
+                    }
+
+//                    $connect = ($this->customer->getConnection()->getName());
+//                    event(new CreatedModel($connect, $data, $this->customer->getModel()->getTable()));
                 }
-
-                // if (!$this->customer->find($data['id'])){
-                // }
             }
         }
 
@@ -421,15 +424,16 @@ class ShopifyRepository implements ShopifyRepositoryInterface
         return $params;
     }
 
-
-
-    public function getStore(){
+    public function getStore()
+    {
         return $this->store->get();
     }
-    public function store($request){
+
+    public function store($request)
+    {
         // dd();
         // dd($this->store->getConnection()->getName());
-        $request['id'] =$this->store->max('id')+1;
+        $request['id'] = $this->store->max('id') + 1;
         $request['created_at'] = Carbon::now()->format('Y-m-d H:i:s');;
         $request['updated_at'] = Carbon::now()->format('Y-m-d H:i:s');;
 
@@ -438,34 +442,37 @@ class ShopifyRepository implements ShopifyRepositoryInterface
         // $this->store->create($request->all());
         // $store =$this->store->where('id', $request['id'])->first();
         $connect = ($this->store->getConnection()->getName());
-        event(new CreatedModel($connect,$request->all(),$this->store->getModel()->getTable()));
+        event(new CreatedModel($connect, $request->all(), $this->store->getModel()->getTable()));
         return "add successfully store";
     }
 
-     public function update( $request, $store_id){
+    public function update($request, $store_id)
+    {
         // dd("repo: update");
 
-        $store = $this->store->where('id',$store_id)->first();
-        if(!empty($store)){
+        $store = $this->store->where('id', $store_id)->first();
+        if (!empty($store)) {
 
             $store->update($request->all());
             $connect = ($this->store->getConnection()->getName());
 
-            event(new UpdatedModel($connect,$store));
+            event(new UpdatedModel($connect, $store));
         }
         // info("pass connect");
 
         // $this->store;
         return $store;
     }
-    public function destroy( $store_id){
 
-        $store = $this->store->where('id',$store_id)->first();
-        if(!empty($store)){
+    public function destroy($store_id)
+    {
+
+        $store = $this->store->where('id', $store_id)->first();
+        if (!empty($store)) {
             // dd("dleete function ".$store_id);
             // $store->delete();
             $connect = ($this->store->getConnection()->getName());
-            event(new DeletedModel($connect,$store));
+            event(new DeletedModel($connect, $store));
             return $store;
         }
     }
