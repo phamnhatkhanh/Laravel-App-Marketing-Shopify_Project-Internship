@@ -29,18 +29,18 @@ class CreateCustomersTable extends Migration
             $table->string("country",100)->nullable();
             $table->string("orders_count");
             $table->string("total_spent");
-            $table->dateTime('created_at');
-            $table->dateTime('updated_at');
+            $table->dateTime('created_at')->nullable();
+            $table->dateTime('updated_at')->nullable();
 
-            $table->foreign('store_id')
-                ->references('id')
-                ->on(new Expression($DB_store . '.stores'))
-                ->onDelete('cascade');
-
-            $table->foreign('store_id','customers_store_backup')
-                ->references('id')
-                ->on(new Expression($DB_store_backup . '.stores'))
-                ->onDelete('cascade');
+//            $table->foreign('store_id')
+//                ->references('id')
+//                ->on(new Expression($DB_store . '.stores'))
+//                ->onDelete('cascade');
+//
+//            $table->foreign('store_id','customers_store_backup')
+//                ->references('id')
+//                ->on(new Expression($DB_store_backup . '.stores'))
+//                ->onDelete('cascade');
         });
     }
 

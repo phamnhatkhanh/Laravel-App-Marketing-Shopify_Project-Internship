@@ -55,7 +55,7 @@ class Customer extends Model
     {
         if (isset($params['orders_from']) && isset($params['orders_to'])) {
 
-           
+
             $query->where('orders_count', '>=', (int)$params['orders_from'])
                 ->where('orders_count', '<=', (int)$params['orders_to']);
         }
