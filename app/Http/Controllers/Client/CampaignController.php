@@ -55,10 +55,14 @@ class CampaignController extends Controller
         return $this->campaignRepository->saveCampaign($request);
     }
 
-    // public function sendEmailPreview(Request $request)
-    // {
-    //     return $this->campaignRepository->sendEmailPreview($request);
-    // }
+    public function SendEmail(Request $request){
+        return $this->campaignRepository->sendEmail($request);
+    }
+
+    public function sendEmailPreview(Request $request)
+    {
+        return $this->campaignRepository->sendEmailPreview($request);
+    }
 
     public function getCampaign()
     {

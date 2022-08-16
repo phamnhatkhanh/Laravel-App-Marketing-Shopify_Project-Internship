@@ -129,44 +129,7 @@ class CustomerRepository implements CustomerRepositoryInterface
         ], 200);
     }
 
-    public function exportCustomerCSV()
-    {
-        $locationExport = 'backup/customers/';
-        $dateExport = date('d-m-Y_H-i-s');
-
-        $fileName = $locationExport . 'customer_' . $dateExport . '.csv';
-
-        $store = $this->store->latest()->first();
-        Excel::store(new CustomerExport(), $fileName);
-
-        dispatch(new SendEmail($fileName, $store));
-
-        return response([
-            'message' => 'Export CSV Done',
-            'status' => 204,
-        ], 204);
-    }
-
-    public function exportSelectCustomerCSV(Request $request)
-    {
-        $list_customers = $request->list_customer;
-        $except_customer = $request->except_customer;
-        $limit = $request->limit;
-
-        if ($request->has('list_customer')) {
-            $users = $this->customer->whereIn('id', $list_customers)->get();
-        } elseif ($request->has('except_customer')) {
-            $users = $this->customer->whereNotIn('id',  $except_customer)
-                ->take($limit)
-                ->get();
-        } else {
-            $users = $this->customer->simplePaginate(15);
-        }
-
-        $locationExport = storage_path('app/backup/customers/');
-        $dateExport = date('d-m-Y_H-i-s');
-        $fileName = $locationExport . 'customer_' . $dateExport . '.csv';
-
+    public function exportCustomer($fileName, $users){
         $handle = fopen($fileName, 'w');
 
         fputcsv($handle, array(
@@ -186,14 +149,47 @@ class CustomerRepository implements CustomerRepositoryInterface
         $headers = array(
             'Content-Type' => 'text/csv',
         );
+    }
 
-        $store = $this->store->latest()->first();
-        dispatch(new SendEmailSelectedCustomer($fileName, $store));
+    public function exportCustomerCSV(Request $request)
+    {
+        info($request->all());
+        $locationExport = storage_path('app/backup/customers/');
+        $dateExport = date('d-m-Y_H-i-s');
 
-        return response([
-            'message' => 'Export Selected Customers CSV Done',
+        $fileName = $locationExport . 'customer_' . $dateExport . '.csv';
+        if (!empty($request->list_customer)) {
+            if ($request->has('list_customer')) {
+                $listCustomers = explode(',', $request->list_customer);
+                $users = $this->customer->whereIn('id', $listCustomers)->get();
+            } elseif ($request->has('except_customer')) {
+                $except_customer = (array)$request->except_customer;
+                $limit = $request->limit;
+                $users = $this->customer->whereNotIn('id', $except_customer)
+                    ->take($limit)
+                    ->get();
+            } else {
+                $users = $this->customer->simplePaginate(15);
+            }
+            $this->exportCustomer($fileName, $users);
+
+            $store = $this->store->latest()->first();
+            dispatch(new SendEmail($fileName, $store));
+        } else {
+            $users = $this->customer->get();
+            $this->exportCustomer($fileName, $users);
+
+            $store = $this->store->latest()->first();
+
+//            Excel::store(new CustomerExport(), $fileName);
+
+            dispatch(new SendEmail($fileName, $store));
+        }
+
+        return [
+            'message' => 'Export CSV Done',
             'status' => 204,
-        ], 204);
+        ];
     }
 
     public function getCustomer()
