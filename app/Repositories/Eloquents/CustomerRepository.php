@@ -91,7 +91,7 @@ class CustomerRepository implements CustomerRepositoryInterface
 
             if(count($arr) > 0){
                 $users = $this->customer->whereIn('id', $arr)
-                ->simplePaginate(15);
+                ->simplePaginate(3);
 
             }
         } elseif ($request->has('except_customer')) {

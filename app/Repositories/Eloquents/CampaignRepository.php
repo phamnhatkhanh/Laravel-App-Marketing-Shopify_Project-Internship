@@ -70,7 +70,7 @@ class CampaignRepository implements CampaignRepositoryInterface
 
 
 
-        // $this->sendEmailPreview($request, $campaignProcess);
+        $this->sendEmailPreview($request, $campaignProcess);
 
 
         //    $connect = ($this->campaignProcess->getConnection()->getName());
@@ -85,6 +85,7 @@ class CampaignRepository implements CampaignRepositoryInterface
     // nhan list user va gui sau hien tai fix cung.
     private function sendEmailCampaign($listMailCustomers, $campaignProcess)
     {
+
         $batch = Bus::batch([])
             ->then(function (Batch $batch) {
             })
@@ -115,8 +116,8 @@ class CampaignRepository implements CampaignRepositoryInterface
     {
 
 
-
         try{
+
 
             $batch = Bus::batch([])
                 ->then(function (Batch $batch) {
@@ -136,17 +137,23 @@ class CampaignRepository implements CampaignRepositoryInterface
             $batchId = $batch->id;
 
             info("inside sendEmailPreview: handel templete mail ". $batchId);
+            info("inside sendEmailPreview: lsit customer ". $request->list_mail_customers);
 
-            if($request->has("list_customer")){
+
+            if($request->has("list_mail_customers")){
 
                 $listCustomersId =  json_decode($request->list_mail_customers, true);
                 $listCustomers = Customer::whereIn('id', $listCustomersId)->get();
             }elseif($request->has("except_customer")){
+                $listCustomersId =  $request->list_mail_customers;
                 $listCustomersId =  json_decode($request->list_mail_customers, true);
                 $listCustomers = Customer::whereNotIn('id', $listCustomersId)->get();
             }else{
                 $listCustomers = Customer::get();
             }
+
+            // dd( $listCustomers);
+
 
             // info(json_encode($listCustomersId,true));
 

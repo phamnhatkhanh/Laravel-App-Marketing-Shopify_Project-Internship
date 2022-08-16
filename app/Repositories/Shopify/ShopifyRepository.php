@@ -315,8 +315,6 @@ class ShopifyRepository implements ShopifyRepositoryInterface
     }
     public  function syncCustomer($shop, $access_token,$store)
     {
-
-
         // get store.
         DB::beginTransaction();
         try {
@@ -328,13 +326,9 @@ class ShopifyRepository implements ShopifyRepositoryInterface
 
             $batch = Bus::batch([])
                 ->then(function (Batch $batch) {
-
                 })->finally(function (Batch $batch)  {
-
                     event(new SynchronizedCustomer($batch->id));
-
                 })->onQueue('jobs')->dispatch();
-
             $batch_id = $batch->id;
 
             $limit = 250;
@@ -364,10 +358,9 @@ class ShopifyRepository implements ShopifyRepositoryInterface
                 $responseCustomer = json_decode($request->getBody(), true);
                 $customers = !empty($responseCustomer['customers']) ? $responseCustomer['customers'] : [];
 
+                //if -> event
 
                 $batch->add(new SyncCumtomer($batch_id,$store_id, $customers));
-
-
 
             }
 

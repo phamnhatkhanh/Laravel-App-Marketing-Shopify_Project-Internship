@@ -40,7 +40,8 @@ class SynchronizedCustomer implements ShouldBroadcast
             "status" => true,
             "message" => "Success sync customer",
             'processing'=> $batches->progress(),
-            "data" => Customer::simplePaginate(15)
+            "data" => json_encode(Customer::get(),true)
+            // "data" => Customer::simplePaginate(15)
         ];
 
 
