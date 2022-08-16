@@ -13,6 +13,9 @@ use App\Models\ObserveModel;
 use App\Models\Customer;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Mail;
+
+use App\Mail\WelcomeMail;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -23,6 +26,21 @@ use Illuminate\Support\Facades\Schema;
 | contains the "web" middleware group. Now create something great!
 |
 */
+
+Route::post("/req",function(Request $request){
+if($request->has("khanh")){
+    return "have att";
+}else{
+    return "not have att";
+}
+});
+Route::get("/mail",function(){
+    // dd("sdfhbsjfk");
+    info(date("y-m-d H:i:s"));
+Customer::query()->delete();
+info("delte all customer");
+info(date("y-m-d H:i:s"));
+});
 Route::get('/cnn', function (){
     $customer = Customer::where('id', 1)->first();
         // $customer->update([

@@ -17,9 +17,9 @@ class CustomerController extends Controller
         $this->customerRepository = $customerRepository;
     }
 
-    public function syncCutomerFromShopify()
+    public function syncCutomerFromShopify(Request $request)
     {
-        return $this->customerRepository->syncCutomerFromShopify();
+        return $this->customerRepository->syncCutomerFromShopify($request);
     }
 
     /**

@@ -49,6 +49,7 @@ class CampaignProcessController extends Controller
         // dd($campaignProcess);
         // $campaignProcess = $this->campaignProcess->where('id', $request['id'])->first();
         $connect = ($this->campaignProcess->getConnection()->getName());
+        
         event(new CreatedModel($connect,$campaignProcess));
         return response([
             'data' => $campaignProcess
