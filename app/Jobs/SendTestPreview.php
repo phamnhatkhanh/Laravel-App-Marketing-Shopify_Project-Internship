@@ -44,7 +44,7 @@ class SendTestPreview implements ShouldQueue
         $sendEmail = $this->sendEmail;
 
         Mail::send('mail.emailPreview', compact('bodyEmail' ), function ($email) use ($subject, $store,$sendEmail) {
-            $email->from($store->email);
+            $email->from("khanhhcm4@gmail.com");
             $email->to($sendEmail)->subject($subject);
         });
     }

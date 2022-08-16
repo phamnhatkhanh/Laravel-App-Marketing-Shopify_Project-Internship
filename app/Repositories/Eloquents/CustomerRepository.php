@@ -123,7 +123,7 @@ class CustomerRepository implements CustomerRepositoryInterface
         return response([
             "total_customers" => $total,
             "totalPage" => $totalpage ? $totalpage : 0 ,
-            "total_customers" => $this->customer->count(),
+            // "total_customers" => $this->customer->count(),s
             "data" => $users,
             "status" => true
         ], 200);

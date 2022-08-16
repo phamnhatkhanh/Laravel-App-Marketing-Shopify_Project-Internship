@@ -182,7 +182,7 @@ class CampaignRepository implements CampaignRepositoryInterface
 
     public function SendEmail(Request $request)
     {
-        $store = Store::latest()->first();
+        $store = Store::where('id',1)->first();
         $array = ([
             [
                 "variant" => 'Customer_Full_name',
