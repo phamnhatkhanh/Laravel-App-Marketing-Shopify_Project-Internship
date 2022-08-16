@@ -9,11 +9,14 @@ use Symfony\Component\HttpFoundation\Response;
 
 use Illuminate\Support\Facades\Session;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Bus;
+use Illuminate\Bus\Batch;
+use Carbon\Carbon;
+use Throwable;
+use DB;
 use GuzzleHttp\Client;
 use App\Http\Controllers\LoginController;
 
-use Carbon\Carbon;
-use Throwable;
 
 use App\Repositories\Contracts\ShopifyRepositoryInterface;
 
@@ -25,7 +28,7 @@ use App\Events\Database\UpdatedModel;
 use App\Events\Database\DeletedModel;
 use App\Events\SyncDatabase;
 use App\Events\SynchronizedCustomer;
-
+use App\Jobs\SyncCumtomer;
 class ShopifyRepository implements ShopifyRepositoryInterface
 {
     protected $customer;
@@ -41,7 +44,7 @@ class ShopifyRepository implements ShopifyRepositoryInterface
     public function login(Request $request)
     {
 
-        if ($request->header("HTTP_X_SHOPIFY_HMAC_SHA256")) {
+        if (isset($request["hmac"])) {
             info("have hash mac ");
             if ($this->verifyHmacAppInstall($request)) {
 
@@ -61,11 +64,14 @@ class ShopifyRepository implements ShopifyRepositoryInterface
             // $apiKey = config('shopify.shopify_api_key');
             $scope = 'read_customers,write_customers';
             $shop = $request->myshopify_domain;
-             $redirect_uri = 'http://192.168.101.83:8080/login';
+
+            // $redirect_uri = 'http://localhost:8000/api/auth/authen';
+            $redirect_uri = 'http://192.168.101.83:8080/login';
 
             $url = 'https://' . $shop . '/admin/oauth/authorize?client_id=' . $apiKey . '&scope=' . $scope . '&redirect_uri=' . $redirect_uri;
             info($url);
             return $url;
+
         }
     }
 
@@ -311,6 +317,79 @@ class ShopifyRepository implements ShopifyRepositoryInterface
         }
 
         return $log;
+    }
+    public  function syncCustomer($shop, $access_token,$store)
+    {
+
+
+        // get store.
+        DB::beginTransaction();
+        try {
+            $store_id = $store->id;
+            $store->customers()->delete();
+
+            // $store->query()->delete();
+            // dd(["sfjnskfs",$shop, $access_token,$store_id]);
+
+            $batch = Bus::batch([])
+                ->then(function (Batch $batch) {
+
+                })->finally(function (Batch $batch)  {
+
+                    event(new SynchronizedCustomer($batch->id));
+
+                })->onQueue('jobs')->dispatch();
+
+            $batch_id = $batch->id;
+
+            $limit = 250;
+            $countCustomer = $this->countDataCustomer($shop, $access_token);
+            $ceilRequest = (int)ceil($countCustomer['count'] / $limit);
+            $numberRequest = $countCustomer > $limit ? $ceilRequest : 1;
+            $log = [];
+            $params = [
+                'fields' => 'id, first_name, last_name, email, phone, addresses, orders_count, total_spent, created_at, updated_at',
+                'limit' => $limit,
+            ];
+            info("syncCustomer get customer from shopify");
+            for ($i = 0; $i < $numberRequest; $i++) {
+                $client = new Client();
+                $url = 'https://' . $shop . '/admin/api/2022-07/customers.json';
+                $request = $client->request('get', $url, [
+                    'headers' => [
+                        'X-Shopify-Access-Token' => $access_token,
+                        'Content-Type' => 'application/json',
+                    ],
+                    'query' => $params
+                ]);
+
+                $headers = $request->getHeaders();
+                $params = $this->setParam($headers, $params);
+
+                $responseCustomer = json_decode($request->getBody(), true);
+                $customers = !empty($responseCustomer['customers']) ? $responseCustomer['customers'] : [];
+
+
+                $batch->add(new SyncCumtomer($batch_id,$store_id, $customers));
+
+
+
+            }
+
+            info("syncCustomer done sycn customer");
+            DB::commit();
+        } catch (Throwable $e) {
+            info($e);
+            DB::rollback();
+            // report($e);
+        }
+
+
+
+
+
+
+        return "successfully sycn customers";
     }
 
     public function setParam(array $headers, $params)

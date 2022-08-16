@@ -21,10 +21,17 @@ class CreateCampaignsBackupTable extends Migration
 
             $table->id();
             $table->unsignedBigInteger('store_id');
-            $table->string('name');
-            $table->string('subject');
-            $table->string('content');
-            $table->string('footer');
+            $table->string('name',255);
+            $table->longText('subject');
+            $table->longText('content');
+            $table->string('footer',200);
+            $table->string('background_banner',255)->nullable();
+            $table->string('background_color',255)->nullable();
+            $table->string('background_radius',255)->nullable();
+            $table->string('button_label',255)->nullable();
+            $table->string('button_radius',255)->nullable();
+            $table->string('button_background_color',255)->nullable();
+            $table->string('button_text_color',255)->nullable();
             $table->timestamps();
 
             $table->foreign('store_id')

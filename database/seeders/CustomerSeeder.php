@@ -16,8 +16,10 @@ class CustomerSeeder extends Seeder
     {
 
 
-        $customers = Customer::factory()->times(5)->create();
-        // $customers = Customer::factory()->times(20)->create();
+
+        // $customers = Customer::factory()->times(1)->create();
+        $customers = Customer::factory()->times(200)->create();
+
 
 
         foreach ($customers as  $customer) {

@@ -17,9 +17,9 @@ class CustomerController extends Controller
         $this->customerRepository = $customerRepository;
     }
 
-    public function syncCutomerFromShopify()
+    public function syncCutomerFromShopify(Request $request)
     {
-        return $this->customerRepository->syncCutomerFromShopify();
+        return $this->customerRepository->syncCutomerFromShopify($request);
     }
 
     /**
@@ -29,7 +29,6 @@ class CustomerController extends Controller
      */
     public function index(Request $request)
     {
-
        return $this->customerRepository->index($request);
     }
 
@@ -42,16 +41,12 @@ class CustomerController extends Controller
 
     }
 
-    public function searchFilterCustomer(Request $request)
-    {
-        return $this->customerRepository->searchFilterCustomer($request);
-
-    }
 
     public function getCustomer()
     {
         return $this->customerRepository->getCustomer();
     }
+
 
     public function update(Request $request, $customer_id)
     {
@@ -64,7 +59,6 @@ class CustomerController extends Controller
 
     public function store(Request $request)
     {
-        // dd("store prodcut");
         $customer = $this->customerRepository->store($request);
         return response([
             'data' => $customer
@@ -74,7 +68,6 @@ class CustomerController extends Controller
 
     public function destroy($customer_id)
     {
-
         $customer = $this->customerRepository->destroy( $customer_id);
         return response([
             'data' => $customer,

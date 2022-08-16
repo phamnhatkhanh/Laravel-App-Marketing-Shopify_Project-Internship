@@ -39,11 +39,6 @@ Route::prefix('shopify')->group(function () {
     includeRouteFiles(__DIR__ . '/api/shopify');
 });
 
-
-
-
-
-
 Route::get('/redis', function (Request $request) {
 
     $redis = Redis::connection();

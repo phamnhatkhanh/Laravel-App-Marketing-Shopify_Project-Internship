@@ -20,7 +20,14 @@ class Campaign extends Model
         'name',
         'subject',
         'content',
-        'footer'
+        'footer',
+        'background_banner',
+        'background_color',
+        'background_radius',
+        'button_label',
+        'button_radius',
+        'button_background_color',
+        'button_text_color'
     ];
     public function background()
     {
