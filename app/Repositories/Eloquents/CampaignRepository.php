@@ -40,7 +40,7 @@ class CampaignRepository implements CampaignRepositoryInterface
 
     public function getCampaignProceess()
     {
-        $campaignProcess = $this->campaignProcess->get();
+        $campaignProcess = $this->campaignProcess->orderBy('created_at', 'desc')->get();
 
         return $campaignProcess;
     }
@@ -53,14 +53,7 @@ class CampaignRepository implements CampaignRepositoryInterface
 
         $request['campaign_id'] = $campaign->id;
 
-        //create campaign process default
-        // $data_campaignProcess =  [
-        //     "process" => "0",
-        //     "status" => "running",
-        //     "campaign_id" => 1,
-        //     "name" => $campaign->name,
-        //     "total_customers" => $this->customer->count(),
-        // ];
+
         $campaignProcess = $this->campaignProcess->create([
             "process" => "0",
             "status" => "running",
@@ -87,6 +80,7 @@ class CampaignRepository implements CampaignRepositoryInterface
     // nhan list user va gui sau hien tai fix cung.
     private function sendEmailCampaign($listMailCustomers, $campaignProcess)
     {
+
         $batch = Bus::batch([])
             ->then(function (Batch $batch) {
             })
@@ -189,7 +183,7 @@ class CampaignRepository implements CampaignRepositoryInterface
 
     public function SendEmail(Request $request)
     {
-        $store = Store::latest()->first();
+        $store = Store::where('id',1)->first();
         $array = ([
             [
                 "variant" => 'Customer_Full_name',
@@ -227,6 +221,7 @@ class CampaignRepository implements CampaignRepositoryInterface
 
     public function sendEmailPreview(Request $request, $campaignProcess)
     {
+
         try{
             $batch = Bus::batch([])
                 ->then(function (Batch $batch) {
@@ -345,6 +340,7 @@ class CampaignRepository implements CampaignRepositoryInterface
             ->sort($params)
             ->name($params)
             ->status($params)
+            ->orderBy('created_at', 'desc')
             ->simplePaginate(15);
 
         $total = $this->campaignProcess->searchcampaign($params)->count();
@@ -359,7 +355,7 @@ class CampaignRepository implements CampaignRepositoryInterface
 
     public function getCampaign()
     {
-        return $this->campaign->get();
+        return $this->campaign->orderBy('created_at', 'desc')->get();
     }
 
     public function store($request)

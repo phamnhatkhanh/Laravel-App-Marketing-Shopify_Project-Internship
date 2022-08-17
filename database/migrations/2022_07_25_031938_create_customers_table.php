@@ -32,6 +32,7 @@ class CreateCustomersTable extends Migration
             $table->dateTime('created_at')->nullable();
             $table->dateTime('updated_at')->nullable();
 
+
             $table->foreign('store_id')
                 ->references('id')
                 ->on(new Expression($DB_store . '.stores'))
@@ -41,6 +42,7 @@ class CreateCustomersTable extends Migration
                 ->references('id')
                 ->on(new Expression($DB_store_backup . '.stores'))
                 ->onDelete('cascade');
+
         });
     }
 

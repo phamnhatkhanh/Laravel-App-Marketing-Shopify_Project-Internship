@@ -27,12 +27,8 @@ use App\Mail\WelcomeMail;
 |
 */
 
-Route::post("/req",function(Request $request){
-if($request->has("khanh")){
-    return "have att";
-}else{
-    return "not have att";
-}
+Route::get("/test",function(Request $request){
+return Customer::simplePaginate(15);
 });
 Route::get("/mail",function(){
     // dd("sdfhbsjfk");

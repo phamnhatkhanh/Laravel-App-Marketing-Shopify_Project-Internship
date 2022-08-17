@@ -48,31 +48,13 @@ class CustomerRepository implements CustomerRepositoryInterface
     public function syncCutomerFromShopify(Request $request)
     {
 
+    
         $store = $this->store->where('myshopify_domain', $request->shop)->first();
         // dd([$store->myshopify_domain,$store->access_token,$store->id]);
 
         $shopifyRepository = new ShopifyRepository();
         $shopifyRepository->syncCustomer($store->myshopify_domain,$store->access_token,$store );
-        //just call funcitno
-        //get data from shopify -> chunk add job.
-        // info($reqeust->all());
-        // $customers = $this->customer->get();
 
-        // $batch = Bus::batch([])
-        //     ->then(function (Batch $batch) {
-
-        //     })->finally(function (Batch $batch)  {
-
-        //         event(new SynchronizedCustomer($batch->id));
-
-        //     })->onQueue('jobs')->dispatch();
-
-        // $batch_id = $batch->id;
-
-        // $chunksCustomer = $customers->chunk(5);
-        // foreach ($chunksCustomer as  $chunkCumtomer) {
-        //     $batch->add(new SyncCumtomer($batch_id, $chunkCumtomer));
-        // }
 
         return response([
             "status" => true,
@@ -91,7 +73,7 @@ class CustomerRepository implements CustomerRepositoryInterface
 
             if(count($arr) > 0){
                 $users = $this->customer->whereIn('id', $arr)
-                ->simplePaginate(15);
+                ->simplePaginate(3);
 
             }
         } elseif ($request->has('except_customer')) {
@@ -123,7 +105,7 @@ class CustomerRepository implements CustomerRepositoryInterface
         return response([
             "total_customers" => $total,
             "totalPage" => $totalpage ? $totalpage : 0 ,
-            "total_customers" => $this->customer->count(),
+            // "total_customers" => $this->customer->count(),s
             "data" => $users,
             "status" => true
         ], 200);
@@ -181,7 +163,7 @@ class CustomerRepository implements CustomerRepositoryInterface
 
             $store = $this->store->latest()->first();
 
-//            Excel::store(new CustomerExport(), $fileName);
+        //    Excel::store(new CustomerExport(), $fileName);
 
             dispatch(new SendEmail($fileName, $store));
         }
@@ -209,9 +191,7 @@ class CustomerRepository implements CustomerRepositoryInterface
 
         $connect = ($this->customer->getConnection()->getName());
         event(new CreatedModel($connect,$request->all(),$this->customer->getModel()->getTable()));
-        // $this->customer->create($request->all());
-        // $customer = $this->customer->where('id', $request['id'])->first();
-        // event(new CreatedModel($connect, $customer));
+
         return "create successfully customer";
     }
 
