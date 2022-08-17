@@ -35,7 +35,8 @@
 
             "app/Helpers/JsonRespone/formatJson.php",
             "app/Helpers/Routes/RouteHelper.php",
-            "app/Helpers/Database/Connection.php"
+            "app/Helpers/Database/Connection.php",
+            "app/Helpers/Database/SyncDatabase.php"
 
         ]
     },

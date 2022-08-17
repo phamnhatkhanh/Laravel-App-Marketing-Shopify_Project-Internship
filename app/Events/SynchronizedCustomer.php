@@ -32,6 +32,7 @@ class SynchronizedCustomer implements ShouldBroadcast
         $this->batch_id = $batch_id;
         $this->payload  = $this->sendProcess();
     }
+
     public function sendProcess(){
         info('comleted sync customer: '. $this->batch_id);
         $batches =  JobBatch::find($this->batch_id);
@@ -40,16 +41,13 @@ class SynchronizedCustomer implements ShouldBroadcast
             "status" => true,
             "message" => "Success sync customer",
             'processing'=> $batches->progress(),
-            // "data" => json_encode(Customer::get(),true)
+            "totat" => $customer->count(),
             "data" => $customer->simplePaginate(15)
         ];
 
 
 
-        // return 'Finish: '.$batches->finished_at.
-        //     ' - Processing: '.$batches->progress().'%'.
-        //     ' - Send: '. $batches->processedJobs().
-        //     ' - Fail: '.$batches->failed_jobs;
+
     }
 
 

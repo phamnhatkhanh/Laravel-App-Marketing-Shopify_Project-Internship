@@ -40,6 +40,7 @@ class SyncCumtomer implements ShouldQueue
      */
     public function handle()
     {
+
         $customer_model = new Customer();
         $findCreateAT = array('T', '+07:00');
         $replaceCreateAT = array(' ', '');
@@ -49,7 +50,7 @@ class SyncCumtomer implements ShouldQueue
         // $store = $this->store->latest()->first();
         data_set($customers, '*.store_id', $this->store_id);
 
-        info("Sho pify: save customers");
+        info("Sho pify: save customers......");
         foreach ($this->customers as $customer){
             $created_at = str_replace($findCreateAT, $replaceCreateAT, $customer['created_at']);
             $updated_at = str_replace($findUpdateAT, $replaceUpdateAT, $customer['updated_at']);
@@ -71,8 +72,11 @@ class SyncCumtomer implements ShouldQueue
                 ];
 
                 $connect = ($customer_model->getConnection()->getName());
-                event(new CreatedModel($connect,$data,$customer_model->getTable()));
-                // $this->customer->insert($data);
+                SyncDatabaseAfterCreatedModel($connect,$data,$customer_model->getTable());
+                // event(new CreatedModel($connect,$data,$customer_model->getTable()));
+                 info("CreatedModel: show log in function sycn custoemr: ");
+                showLog();
+                // $model->create($data);
             }
 
             // if (!$this->customer->find($data['id'])){

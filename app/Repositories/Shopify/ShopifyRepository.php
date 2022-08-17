@@ -316,6 +316,9 @@ class ShopifyRepository implements ShopifyRepositoryInterface
     }
     public  function syncCustomer($shop, $access_token,$store)
     {
+
+        // dd($shop);
+
         // get store.
         DB::beginTransaction();
         try {
@@ -332,7 +335,7 @@ class ShopifyRepository implements ShopifyRepositoryInterface
                 })->onQueue('jobs')->dispatch();
             $batch_id = $batch->id;
 
-            $limit = 250;
+            $limit = 10;
             $countCustomer = $this->countDataCustomer($shop, $access_token);
             $ceilRequest = (int)ceil($countCustomer['count'] / $limit);
             $numberRequest = $countCustomer > $limit ? $ceilRequest : 1;

@@ -2,17 +2,19 @@
 
 DB: setup place in shopify.
     adjust event.
-Campaign:
-    mail: adjust template + struce function.
-    # adjust: function save campaign -> sync DB.
-    - 2 status: resopone send, send test
-    - merge sub table -> campaign table.
 
 Customer:
-    - manual sync: need function
+    # manual sync: control flow queue.
 
 Shopify:
   # webhook: customer(create,update,delete) sync DB
+
+Doc api:
+
+Project:
+    clean code
+    Respone + Exception.
+
 
 
 DONE ALL: change sync DB.
@@ -22,52 +24,15 @@ Project:
 ngrok http --host-header=rewrite 8000
 
 
+=====================
 
 
-public function sendEmailPreview(Request $request, $campaignProcess)
-    {
 
-        try{
-         
-            $store = Store::where('id', 1)->first();
 
-            foreach ($listCustomers as $key => $value) {
-                info("inside sendEmailPreview");
 
-                $array = ([
-                    [
-                        "variant" => 'Customer_Full_name',
-                        "value" =>  $value->first_name.' ' . $value->last_name
-                    ],
-                    [
-                        "variant" => 'Customer_First_name',
-                        "value" => $value->first_name
-                    ],
-                    [
-                        "variant" => 'Customer_Last_name',
-                        "value" => $value->last_name
-                    ],
-                    [
-                        "variant" => 'Shop_name',
-                        "value" => $store->domain
-                    ],
-                ]);
 
-                $previewEmail = $this->previewEmail($request, $array);
-                $imageName = 'kdsaksa';
-                $bodyEmail = $previewEmail['previewEmail'];
 
-                $subject = $this->subject($request->subject, $array);
 
-                $batch->add(new SendEmailPreview( $value->email, $batchId, $campaignProcess,$bodyEmail, $subject, $imageName, $store));
-            }
-            info("inside sendEmailPreview:group jobs");
-        } catch (Throwable $e) {
-            info($e);
-        }
 
-        return [
-            'message' => 'Prepare save campaign and send mail',
-            'status' => true,
-        ];
-    }
+
+
