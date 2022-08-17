@@ -18,10 +18,8 @@ class WebhookRepository
 {
 
     protected $store;
-     public function __construct(){
-
+    public function __construct(){
         $this->store = new Store();
-
     }
 
     function webhook(Request $request){
@@ -48,8 +46,6 @@ class WebhookRepository
 //                //Unistall App
         }
     }
-
-
 
     public function createFromShopify($payload, $myshopify_domain){
         $data =  dispatch(new CreateCustomer($payload, $myshopify_domain));

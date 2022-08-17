@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Client;
-use App\Jobs\SendEmailPreview;
+// use App\Jobs\SendEmailPreview;
 use App\Mail\SendMailPreview;
 use App\Models\Store;
 use Illuminate\Support\Facades\Log;

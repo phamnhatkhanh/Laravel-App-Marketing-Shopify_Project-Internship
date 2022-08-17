@@ -41,13 +41,15 @@ class CreateCustomer implements ShouldQueue
      */
     public function handle()
     {
+        $customer_model = new Customer();
+        $store_model = new Store();
         $data_customer = $this->data_customer;
         $myshopify_domain = $this->myshopify_domain;
 
         $created_at = str_replace(array('T', '+07:00'), array(' ', ''), $data_customer['created_at']);
         $updated_at = str_replace(array('T', '+07:00'), array(' ', ''), $data_customer['updated_at']);
 
-        $store = $this->store->where('myshopify_domain', $myshopify_domain)->first();
+        $store = $store_model->where('myshopify_domain', $myshopify_domain)->first();
 
         info("Job CreatedModel: ".$store->id);
         $data = [
@@ -64,8 +66,8 @@ class CreateCustomer implements ShouldQueue
         ];
 
         info("Job CreatedModel: first_name ".$data_customer['first_name']);
-        $connect = ($this->customer->getConnection()->getName());
-        event(new CreatedModel($connect,$data,$this->customer->getModel()->getTable()));
+        $connect = ($customer_model->getConnection()->getName());
+        event(new CreatedModel($connect,$data,$customer_model->getModel()->getTable()));
 
         // $this->customer->create([
         //     'id' => $data_customer['id'],

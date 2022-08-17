@@ -3,6 +3,9 @@
 
 namespace App\Repositories\Shopify;
 
+
+use Symfony\Component\HttpFoundation\Response;
+
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Bus;
@@ -10,6 +13,7 @@ use Illuminate\Bus\Batch;
 use Carbon\Carbon;
 use phpDocumentor\Reflection\Types\This;
 use Throwable;
+
 use GuzzleHttp\Client;
 use App\Http\Controllers\LoginController;
 use App\Repositories\Contracts\ShopifyRepositoryInterface;
@@ -26,14 +30,11 @@ class ShopifyRepository implements ShopifyRepositoryInterface
 {
     protected $customer;
     protected $store;
-
-    public function __construct()
-    {
+    public function __construct(){
         $this->customer = getConnectDatabaseActived(new Customer());
         $this->store = getConnectDatabaseActived(new Store());
 
     }
-
     public function login(Request $request)
     {
 
@@ -41,9 +42,9 @@ class ShopifyRepository implements ShopifyRepositoryInterface
             info("have hash mac ");
             if ($this->verifyHmacAppInstall($request)) {
 
-                $shop = $this->store->where("myshopify_domain", $request->shop)->first();
+                $shop = $this->store->where("myshopify_domain",$request->shop)->first();
 
-                if (empty($shop)) {
+                if(empty($shop)){
                     info("get acces token ");
                     $this->authen($request);
                 }
@@ -58,13 +59,12 @@ class ShopifyRepository implements ShopifyRepositoryInterface
             $scope = 'read_customers,write_customers';
             $shop = $request->myshopify_domain;
 
-            $redirect_uri = 'http://localhost:8000/api/auth/authen';
-//            $redirect_uri = 'http://192.168.101.83:8080/login';
+            // $redirect_uri = 'http://localhost:8000/api/auth/authen';
+            $redirect_uri = 'http://192.168.101.83:8080/login';
 
             $url = 'https://' . $shop . '/admin/oauth/authorize?client_id=' . $apiKey . '&scope=' . $scope . '&redirect_uri=' . $redirect_uri;
             info($url);
-            return $url;
-
+            return$url;
         }
     }
 
@@ -95,38 +95,32 @@ class ShopifyRepository implements ShopifyRepositoryInterface
     public function authen(Request $request)
     {
         $code = $request->code;
-        info("in functino authen " . $code);
+        info("in functino authen ". $code);
         $shopName = $request->shop;
 
         //Lấy Access_token gọi về từ WebhookService
         $getAccess_token = $this->getAccessToken($code, $shopName);
         $access_token = $getAccess_token->access_token;
 
-        //Lưu thông tin shop ở Shopify vào DB
         $store_id = $this->getDataLogin($shopName, $access_token);
 
 
         //Lưu thông tin khách hàng ở Shopify vào DB
-        $this->createDataCustomer($shopName, $access_token, $store_id);
-        info("save store");
+        $this->createDataCustomer($shopName, $access_token,$store_id);
+            info("save store");
 
         $getWebhook = $this->getTopicWebhook($shopName, $access_token);
 
         //Đăng kí CustomerWebhooks thêm, xóa, sửa
         $this->registerCustomerWebhookService($shopName, $access_token, $getWebhook);
         info("registerCustomerWebhookService");
-
-        return response()->json([
-            'status' => true,
-            "message" => 'Success'
-        ]);
     }
 
     public function getAccessToken(string $code, string $domain)
     {
         info("ShopifyRepository getAccessToken: get token");
-        $client = new Client();
-        $response = $client->post(
+        $client2 = new Client();
+        $response = $client2->post(
             "https://" . $domain . "/admin/oauth/access_token",
             [
                 'form_params' => [
@@ -210,8 +204,13 @@ class ShopifyRepository implements ShopifyRepositoryInterface
             return false;
         }
 
-        $created_at = str_replace(array('T', '+07:00'), array(' ', ''), $store['shop']['created_at']);
-        $updated_at = str_replace(array('T', '+07:00'), array(' ', ''), $store['shop']['updated_at']);
+        $findCreateAT = array('T', '+07:00');
+        $replaceCreateAT = array(' ', '');
+        $findUpdateAT = array('T', '+07:00');
+        $replaceUpdateAT = array(' ', '');
+
+        $created_at = str_replace($findCreateAT, $replaceCreateAT, $store['shop']['created_at']);
+        $updated_at = str_replace($findUpdateAT, $replaceUpdateAT, $store['shop']['updated_at']);
 
         $storeData = [
             "password" => bcrypt($password),
@@ -265,7 +264,7 @@ class ShopifyRepository implements ShopifyRepositoryInterface
         return $countCustomer;
     }
 
-    public function createDataCustomer($shop, $access_token, $store_id)
+    public function createDataCustomer($shop, $access_token,$store_id)
     {
         $limit = 250;
         $countCustomer = $this->countDataCustomer($shop, $access_token);
@@ -273,7 +272,7 @@ class ShopifyRepository implements ShopifyRepositoryInterface
         $numberRequest = $countCustomer > $limit ? $ceilRequest : 1;
         $log = [];
         $params = [
-            'fields' => 'id, first_name, last_name, email, phone, orders_count, total_spent, addresses, created_at, updated_at',
+            'fields' => 'id, first_name, last_name, email, phone, addresses, orders_count, total_spent, created_at, updated_at',
             'limit' => $limit,
         ];
         for ($i = 0; $i < $numberRequest; $i++) {
@@ -290,18 +289,22 @@ class ShopifyRepository implements ShopifyRepositoryInterface
             $headers = $request->getHeaders();
             $params = $this->setParam($headers, $params);
 
-            $responseCustomer = (array)json_decode($request->getBody(), true);
+            $responseCustomer = json_decode($request->getBody(), true);
             $customers = !empty($responseCustomer['customers']) ? $responseCustomer['customers'] : [];
 
+            $findCreateAT = array('T', '+07:00');
+            $replaceCreateAT = array(' ', '');
+            $findUpdateAT = array('T', '+07:00');
+            $replaceUpdateAT = array(' ', '');
+
             data_set($customers, '*.store_id', $store_id);
-            info("Shopify: save customers");
-            $getCustomer = $this->customer->get();
-            foreach ($customers as $customer) {
-                $created_at = str_replace(array('T', '+07:00'), array(' ', ''), $customer['created_at']);
-                $updated_at = str_replace(array('T', '+07:00'), array(' ', ''), $customer['updated_at']);
 
+            info("Sho pify: save customers");
+            foreach ($customers as $customer){
+                $created_at = str_replace($findCreateAT, $replaceCreateAT, $customer['created_at']);
+                $updated_at = str_replace($findUpdateAT, $replaceUpdateAT, $customer['updated_at']);
 
-                foreach ($customer['addresses'] as $item) {
+                foreach ($customer['addresses'] as $item){
                     $country = $item['country'];
 
                     $data = [
@@ -330,6 +333,9 @@ class ShopifyRepository implements ShopifyRepositoryInterface
                         event(new UpdatedModel($connect, $findCustomer));
                     }
                 }
+
+                // if (!$this->customer->find($data['id'])){
+                // }
             }
         }
 
@@ -349,12 +355,10 @@ class ShopifyRepository implements ShopifyRepositoryInterface
                 })->finally(function (Batch $batch) {
 
                     event(new SynchronizedCustomer($batch->id));
-
                 })->onQueue('jobs')->dispatch();
-
             $batch_id = $batch->id;
 
-            $limit = 250;
+            $limit = 10;
             $countCustomer = $this->countDataCustomer($shop, $access_token);
             $ceilRequest = (int)ceil($countCustomer['count'] / $limit);
             $numberRequest = $countCustomer > $limit ? $ceilRequest : 1;
@@ -381,6 +385,7 @@ class ShopifyRepository implements ShopifyRepositoryInterface
                 $customers = !empty($responseCustomer['customers']) ? $responseCustomer['customers'] : [];
                 info('Lay duoc bao nhieu: '. count($customers));
                 // $store = $this->store->latest()->first();
+
 
                 $batch->add(new SyncCumtomer($batch_id, $store_id, $customers));
             }
@@ -427,18 +432,19 @@ class ShopifyRepository implements ShopifyRepositoryInterface
         return $params;
     }
 
-    public function getStore()
-    {
+
+
+    public function getStore(){
         return $this->store->get();
     }
-
+    
     public function store($request)
     {
         $request['id'] = $this->store->max('id') + 1;
         $request['created_at'] = Carbon::now()->format('Y-m-d H:i:s');;
         $request['updated_at'] = Carbon::now()->format('Y-m-d H:i:s');;
         $connect = ($this->store->getConnection()->getName());
-        event(new CreatedModel($connect, $request->all(), $this->store->getModel()->getTable()));
+        event(new CreatedModel($connect,$request->all(),$this->store->getModel()->getTable()));
         return "add successfully store";
     }
 
@@ -450,11 +456,12 @@ class ShopifyRepository implements ShopifyRepositoryInterface
             $store->update($request->all());
             $connect = ($this->store->getConnection()->getName());
 
-            event(new UpdatedModel($connect, $store));
+            event(new UpdatedModel($connect,$store));
         }
 
         return $store;
     }
+    public function destroy( $store_id){
 
     public function destroy($store_id)
     {
@@ -462,7 +469,7 @@ class ShopifyRepository implements ShopifyRepositoryInterface
         $store = $this->store->where('id', $store_id)->first();
         if (!empty($store)) {
             $connect = ($this->store->getConnection()->getName());
-            event(new DeletedModel($connect, $store));
+            event(new DeletedModel($connect,$store));
             return $store;
         }
     }

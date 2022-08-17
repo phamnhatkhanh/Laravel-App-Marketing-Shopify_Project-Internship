@@ -36,6 +36,7 @@ class SyncingCustomer implements ShouldBroadcast
         // $this->processing =$batches->progress();
         // $this->status = false;
 
+        info("customer syncing ................");
         return ([
         'processing'=> $batches->progress(),
         'status' =>false
