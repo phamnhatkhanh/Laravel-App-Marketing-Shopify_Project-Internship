@@ -53,6 +53,10 @@ Route::get('/cnn', function (){
         $connect = ($customer->getConnection()->getName());
         return $connect;
 });
+Route::get('/husky', function (){
+    $get = Customer::get();
+    return $get;
+});
 
 Route::get('/set-db',function(){
     $listNameConnectionMysql = config('database.connections');

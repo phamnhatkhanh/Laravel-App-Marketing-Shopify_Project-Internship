@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Events\Database\UpdatedModel;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -13,6 +14,8 @@ use Illuminate\Queue\SerializesModels;
 use App\Events\Database\CreatedModel;
 use App\Events\SyncingCustomer;
 use App\Models\Customer;
+use Illuminate\Support\Facades\DB;
+
 class SyncCumtomer implements ShouldQueue
 {
 
@@ -42,24 +45,25 @@ class SyncCumtomer implements ShouldQueue
     {
 
         $customer_model = new Customer();
-        $findCreateAT = array('T', '+07:00');
-        $replaceCreateAT = array(' ', '');
-        $findUpdateAT = array('T', '+07:00');
-        $replaceUpdateAT = array(' ', '');
+        $store_id = $this->store_id;
 
-        // $store = $this->store->latest()->first();
-        data_set($customers, '*.store_id', $this->store_id);
+        $customers = $this->customers;
 
-        info("Sho pify: save customers......");
-        foreach ($this->customers as $customer){
-            $created_at = str_replace($findCreateAT, $replaceCreateAT, $customer['created_at']);
-            $updated_at = str_replace($findUpdateAT, $replaceUpdateAT, $customer['updated_at']);
+        data_set($customers, '*.store_id', $store_id);
+        info("Shopify: save customers");
+        $getCustomer = $customer_model::get();
+        info('All customer: '. json_encode($getCustomer, true));
+        
+        foreach ($customers as $customer) {
+            $created_at = str_replace(array('T', '+07:00'), array(' ', ''), $customer['created_at']);
+            $updated_at = str_replace(array('T', '+07:00'), array(' ', ''), $customer['updated_at']);
 
-            foreach ($customer['addresses'] as $item){
+            foreach ($customer['addresses'] as $item) {
                 $country = $item['country'];
+
                 $data = [
                     'id' => $customer['id'],
-                    'store_id' => $this->store_id,
+                    'store_id' => $store_id,
                     'email' => $customer['email'],
                     'first_name' => $customer['first_name'],
                     'last_name' => $customer['last_name'],
@@ -70,6 +74,21 @@ class SyncCumtomer implements ShouldQueue
                     'created_at' => $created_at,
                     'updated_at' => $updated_at,
                 ];
+                $findCustomer = $getCustomer->where('id', $data['id'])->first();
+                info('Id cua Customer:'.json_encode($findCustomer, true));
+
+
+              //  if (empty($findCustomer)) {
+                    info('Create Customer');
+//                        $this->customer->create($data);
+                 //   $connect = ($customer_model->getConnection()->getName());
+                //    event(new CreatedModel($connect, $data, $customer_model->getModel()->getTable()));
+                //} else {
+                  //  info('Update Customer');
+                 //   $findCustomer->update($data);
+                 //   $connect = ($customer_model->getConnection()->getName());
+                  //  event(new UpdatedModel($connect, $findCustomer));
+               // }
 
                 $connect = ($customer_model->getConnection()->getName());
                 SyncDatabaseAfterCreatedModel($connect,$data,$customer_model->getTable());
@@ -77,10 +96,8 @@ class SyncCumtomer implements ShouldQueue
                  info("CreatedModel: show log in function sycn custoemr: ");
                 showLog();
                 // $model->create($data);
-            }
 
-            // if (!$this->customer->find($data['id'])){
-            // }
+            }
         }
         event(new SyncingCustomer($this->batch_id));
     }

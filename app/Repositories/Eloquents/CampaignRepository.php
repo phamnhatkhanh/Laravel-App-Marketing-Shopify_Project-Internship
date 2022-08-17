@@ -30,6 +30,7 @@ class CampaignRepository implements CampaignRepositoryInterface
     protected $customer;
     protected $campaign;
     protected $campaignProcess;
+    protected $imageNameTemp = null;
 
     public function __construct()
     {
@@ -110,52 +111,92 @@ class CampaignRepository implements CampaignRepositoryInterface
     public function previewEmail($request, $array)
     {
         info('previewEmail: inside Fisrt');
-        if ($request->hasFile('background_banner')) {
-            info('---- previewEmail: hasFile Banner');
-            if ($request->file('background_banner')->isValid()) {
-                $request->validate(
-                    [
-                        'background_banner' => 'required|image|mimes:jpeg,png,jpg,gif|max:5120',
-                    ]
-                );
+        $imageName = $this->imageNameTemp;
+        if (empty($imageName) && $request->hasFile('background_banner')){
+            $request->validate(
+                [
+                    'background_banner' => 'required|image|mimes:jpeg,png,jpg,gif|max:5120',
+                ]
+            );
 
-                $imageName = time() . '.' . $request->background_banner->extension();
-                info('----- previewEmail: Image success '.$imageName);
-                $request->background_banner->move(public_path('uploads'), $imageName);
-            }else{
-                info('KS');
-                $imageName = '1660638627.jpg';
-            }
-        } else {
-            $imageName = '';
+            $name = time() . '.' . $request->background_banner->extension();
+            $request->background_banner->move(public_path('uploads'), $name);
+            $this->imageNameTemp = $name;
         }
+        $image = $this->imageNameTemp;
 
-        info('previewEmail: Handle Image');
         $bodyPreviewEmail = $request->preview_email;
-
-        if (!empty($bodyPreviewEmail)) {
-            foreach ($array as $arr) {
-                $bodyPreviewEmail = str_replace($arr['variant'], $arr['value'], $bodyPreviewEmail);
-            }
-        }
-
         $cutBodyPreview = str_replace(array("\\",), '', $bodyPreviewEmail);
         $domBody = new HTML5DOMDocument();
         $domBody->loadHTML($cutBodyPreview);
+
+        $querySelectorSubject = $domBody->querySelectorAll('.tiptap_variant');
+        for ($i = 0; $i < count( $querySelectorSubject ); $i++){
+            $nameVariant = $querySelectorSubject[$i]->attributes[2]->value;
+            foreach ($array as $arr) {
+                if ($nameVariant == $arr['variant']){
+                    $querySelectorSubject[$i]->textContent = $arr['value'];
+                    $querySelectorSubject[$i]->attributes[0]->value = "color: rgb(40, 41, 61); font-weight: 600; margin: 0px 3px;";
+                }
+            }
+        }
         info('previewEmail: handle Body');
 
-        if (!empty($imageName)) {
+        if (!empty($image)) {
             $img = $domBody->getElementsByTagName('img')[0];
-            $img->setAttribute('src', asset('uploads/' . $imageName));
+            $img->setAttribute('src', asset('uploads/' . $image));
+        }
+        info('previewEmail: Handle Image');
+
+        $bodyEmail = $domBody->saveHTML();
+        info('previewEmail: save body');
+
+        return $bodyEmail;
+    }
+
+    public function previewEmail1($request, $array)
+    {
+        info('previewEmail: inside Fisrt');
+        $imageName = $this->imageNameTemp;
+        if (empty($imageName) && $request->hasFile('background_banner')){
+            $request->validate(
+                [
+                    'background_banner' => 'required|image|mimes:jpeg,png,jpg,gif|max:5120',
+                ]
+            );
+
+            $name = time() . '.' . $request->background_banner->extension();
+            $request->background_banner->move(public_path('uploads'), $name);
+            $this->imageNameTemp = $name;
+        }
+        $image = $this->imageNameTemp;
+
+        info('previewEmail: Handle Image');
+        $bodyPreviewEmail = $request->preview_email;
+        $cutBodyPreview = str_replace(array("\\",), '', $bodyPreviewEmail);
+        $domBody = new HTML5DOMDocument();
+        $domBody->loadHTML($cutBodyPreview);
+        $querySelectorSubject = $domBody->querySelectorAll('.tiptap_variant');
+        for ($i = 0; $i < count( $querySelectorSubject ); $i++){
+           $nameVariant = $querySelectorSubject[$i]->attributes[2]->value;
+            foreach ($array as $arr) {
+                if ($nameVariant == $arr['variant']){
+                    $querySelectorSubject[$i]->textContent = $arr['value'];
+                    $querySelectorSubject[$i]->attributes[0]->value = "color: rgb(40, 41, 61); font-weight: 600; margin: 0px 3px;";
+                }
+            }
+        }
+        info('previewEmail: handle Body');
+
+        if (!empty($image)) {
+            $img = $domBody->getElementsByTagName('img')[0];
+            $img->setAttribute('src', asset('uploads/' . $image));
         }
 
         $bodyEmail = $domBody->saveHTML();
         info('previewEmail: save body');
 
-        return [
-            'image' => $imageName,
-            'previewEmail' => $bodyEmail
-        ];
+        return $bodyEmail;
     }
 
     public function subject($request, $array)
@@ -203,9 +244,9 @@ class CampaignRepository implements CampaignRepositoryInterface
             ],
         ]);
 
-        $previewEmail = $this->previewEmail($request, $array);
-        $imageName = $previewEmail['image'];
-        $bodyEmail = $previewEmail['previewEmail'];
+        $bodyEmail = $this->previewEmail($request, $array);
+        $imageName = $this->imageNameTemp;
+
 
         $subject = $this->subject($request->subject, $array);
 
@@ -246,7 +287,6 @@ class CampaignRepository implements CampaignRepositoryInterface
 
 
             if($request->has("list_mail_customers")){
-
                 $listCustomersId =  json_decode($request->list_mail_customers, true);
                 $listCustomers = Customer::whereIn('id', $listCustomersId)->get();
             }elseif($request->has("except_customer")){
@@ -257,28 +297,10 @@ class CampaignRepository implements CampaignRepositoryInterface
                 $listCustomers = Customer::get();
             }
 
-            foreach ($listCustomers as $key => $value) {
+            $store = Store::where('id',1)->first();
+            foreach ($listCustomers as  $value) {
                 info("inside sendEmailPreview");
                 // dd($request->list_mail_customers);
-                if ($request->hasFile('background_banner')) {
-                    if ($request->file('background_banner')->isValid()) {
-                        $request->validate(
-                            [
-                                'background_banner' => 'required|image|mimes:jpeg,png,jpg,gif|max:5120',
-                            ]
-                        );
-
-                        $imageName = time() . '.' . $request->background_banner->extension();
-                        $request->background_banner->move(public_path('uploads'), $imageName);
-                    }
-                } else {
-                    $imageName = '';
-                }
-
-                $bodyPreviewEmail = $request->preview_email;
-
-                $store = Store::where('id',1)->first();
-
 
                 $array = ([
                     [
@@ -299,22 +321,9 @@ class CampaignRepository implements CampaignRepositoryInterface
                     ],
                 ]);
 
-                if (!empty($bodyPreviewEmail)) {
-                    foreach ($array as $arr) {
-                        $bodyPreviewEmail = str_replace($arr['variant'], $arr['value'], $bodyPreviewEmail);
-                    }
-                }
 
-                $cutBodyPreview = str_replace(array("\\",), '', $bodyPreviewEmail);
-                $domBody = new HTML5DOMDocument();
-                $domBody->loadHTML($cutBodyPreview);
-
-                if (!empty($imageName)) {
-                    $img = $domBody->getElementsByTagName('img')[0];
-                    $img->setAttribute('src', asset('uploads/' . $imageName));
-                }
-
-                $bodyEmail = $domBody->saveHTML();
+                $bodyEmail = $this->previewEmail($request, $array);
+                $imageName = $this->imageNameTemp;
 
                 $subject = $this->subject($request->subject, $array);
 
