@@ -47,7 +47,6 @@ class CustomerRepository implements CustomerRepositoryInterface
 
     public function syncCutomerFromShopify(Request $request)
     {
-
         $store = $this->store->where('myshopify_domain', $request->shop)->first();
         // dd([$store->myshopify_domain,$store->access_token,$store->id]);
 
