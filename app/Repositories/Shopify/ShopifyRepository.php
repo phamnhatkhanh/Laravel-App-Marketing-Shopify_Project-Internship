@@ -1,11 +1,11 @@
 <?php
-// app/Repositories/Eloquents/ProductRepository.php
+
 
 namespace App\Repositories\Shopify;
 
+
 use Symfony\Component\HttpFoundation\Response;
 
-use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Bus;
@@ -15,19 +15,16 @@ use Throwable;
 
 use GuzzleHttp\Client;
 use App\Http\Controllers\LoginController;
-
-
 use App\Repositories\Contracts\ShopifyRepositoryInterface;
-
 use App\Models\Customer;
 use App\Models\Store;
-
 use App\Events\Database\CreatedModel;
 use App\Events\Database\UpdatedModel;
 use App\Events\Database\DeletedModel;
 use App\Events\SyncDatabase;
 use App\Events\SynchronizedCustomer;
 use App\Jobs\SyncCumtomer;
+
 class ShopifyRepository implements ShopifyRepositoryInterface
 {
     protected $customer;

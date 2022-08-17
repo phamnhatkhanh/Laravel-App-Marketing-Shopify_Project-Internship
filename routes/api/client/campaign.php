@@ -16,9 +16,7 @@ Route::prefix('campaign')->group(function (){
 
     Route::get('/get-campaigns-process',[CampaignController::class, 'getCampaignProceess']);
 
-    Route::post('/send-email-preview',[CampaignController::class, 'sendEmailPreview']);
-
-    Route::post('/send-email',[CampaignController::class, 'sendEmail']);
+    Route::post('/send-test',[CampaignController::class, 'sendEmail']);
 });
 
 Route::apiResource('/campaign',CampaignController::class);
