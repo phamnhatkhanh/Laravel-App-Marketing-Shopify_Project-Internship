@@ -390,10 +390,8 @@ class CampaignRepository implements CampaignRepositoryInterface
 
     public function destroy($campaign_id)
     {
-        // dd("dleete function ".$campaign_id);
         $campaign = $this->campaign->where('id', $campaign_id)->first();
         if (!empty($campaign)) {
-            // $campaign->delete();
             $connect = ($this->campaign->getConnection()->getName());
             event(new DeletedModel($connect, $campaign));
             return $campaign;

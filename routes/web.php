@@ -55,7 +55,6 @@ Route::get('/cnn', function (){
 });
 
 Route::get('/set-db',function(){
-
     $listNameConnectionMysql = config('database.connections');
     foreach ($listNameConnectionMysql as $key => $value) {
         DbStatus::create(['name' => $key,'status' => 'actived']);
