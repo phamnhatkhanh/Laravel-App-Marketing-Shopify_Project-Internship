@@ -14,13 +14,8 @@ class CustomerSeeder extends Seeder
     private static $id = 1;
     public function run()
     {
-
-
-
         // $customers = Customer::factory()->times(1)->create();
         $customers = Customer::factory()->times(5)->create();
-
-
 
         foreach ($customers as  $customer) {
             $customer->id = self::$id++;

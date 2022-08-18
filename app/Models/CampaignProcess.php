@@ -42,6 +42,11 @@ class CampaignProcess extends Model
             $keywords = trim($params['keywords']);
             $query->where('name', 'LIKE', "%$keywords%");
         }
+
+        if (isset($params['sort']) && isset($params['key_sort']) && trim($params['key_sort'] !== '' && trim($params['sort'] !== ''))) {
+            $query->orderBy($params['key_sort'], $params['sort']);
+        }
+
         return $query;
     }
 

@@ -14,7 +14,7 @@ use App\Models\Customer;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Mail;
-
+use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Mail\WelcomeMail;
 /*
 |--------------------------------------------------------------------------
@@ -27,31 +27,29 @@ use App\Mail\WelcomeMail;
 |
 */
 
-Route::get("/test",function(Request $request){
-return Customer::simplePaginate(15);
 });
-Route::get("/mail",function(){
+Route::get("/mail", function () {
     // dd("sdfhbsjfk");
     info(date("y-m-d H:i:s"));
-Customer::query()->delete();
-info("delte all customer");
-info(date("y-m-d H:i:s"));
+    Customer::query()->delete();
+    info("delte all customer");
+    info(date("y-m-d H:i:s"));
 });
-Route::get('/cnn', function (){
+Route::get('/cnn', function () {
     $customer = Customer::where('id', 1)->first();
-        // $customer->update([
-        // // $this->customer->where('id', $data_customer_id)->update([
-        //     'email' => $data_customer['email'],
-        //     'first_name' => $data_customer['first_name'],
-        //     'last_name' => $data_customer['last_name'],
-        //     'orders_count' => $data_customer['orders_count'],
-        //     'total_spent' => $data_customer['total_spent'],
-        //     'phone' => $data_customer['phone'],
-        //     'created_at' => $created_at,
-        //     'updated_at' => $updated_at,
-        // ]);
-        $connect = ($customer->getConnection()->getName());
-        return $connect;
+    // $customer->update([
+    // // $this->customer->where('id', $data_customer_id)->update([
+    //     'email' => $data_customer['email'],
+    //     'first_name' => $data_customer['first_name'],
+    //     'last_name' => $data_customer['last_name'],
+    //     'orders_count' => $data_customer['orders_count'],
+    //     'total_spent' => $data_customer['total_spent'],
+    //     'phone' => $data_customer['phone'],
+    //     'created_at' => $created_at,
+    //     'updated_at' => $updated_at,
+    // ]);
+    $connect = ($customer->getConnection()->getName());
+    return $connect;
 });
 Route::get('/husky', function (){
     $get = Customer::get();
@@ -61,11 +59,12 @@ Route::get('/husky', function (){
 Route::get('/set-db',function(){
     $listNameConnectionMysql = config('database.connections');
     foreach ($listNameConnectionMysql as $key => $value) {
-        DbStatus::create(['name' => $key,'status' => 'actived']);
+        DbStatus::create(['name' => $key, 'status' => 'actived']);
     }
 
     $path = app_path() . "/Models";
-    function getModels($path){
+    function getModels($path)
+    {
         $out = [];
         $results = scandir($path);
         foreach ($results as $result) {
@@ -73,21 +72,21 @@ Route::get('/set-db',function(){
             $filename = $path . '/' . $result;
             if (is_dir($filename)) {
                 $out = array_merge($out, getModels($filename));
-            }else{
-                $model  = str_replace(app_path(),"App",substr($filename,0,-4));
-                $model  = str_replace("/","\\",$model );
+            } else {
+                $model  = str_replace(app_path(), "App", substr($filename, 0, -4));
+                $model  = str_replace("/", "\\", $model);
                 // dd(new $model());
                 $out[] = $model;
                 //hello
             }
-
         }
         return $out;
     }
-    function getDiverDafault($model){
+    function getDiverDafault($model)
+    {
         $diverCurrent = $model->getConnection()->getName();
-        if(strpos($diverCurrent,"_backup")){
-            $diverCurrent =substr($diverCurrent,0,strpos($diverCurrent,"_backup"));
+        if (strpos($diverCurrent, "_backup")) {
+            $diverCurrent = substr($diverCurrent, 0, strpos($diverCurrent, "_backup"));
         }
         return $diverCurrent;
     }
@@ -97,20 +96,19 @@ Route::get('/set-db',function(){
         $model = new $pathModel();
         // dd($model);
         $driverDefaultModel = getDiverDafault($model);
-        if($driverDefaultModel!="mysql"){
+        if ($driverDefaultModel != "mysql") {
             //  dd($driverDefaultModel);
-            $get_list_driver =  DbStatus::where(function ($query) use ($driverDefaultModel){
-                $query->where('name','like',$driverDefaultModel.'%')
-                        ->where('model_name', '=', null);
+            $get_list_driver =  DbStatus::where(function ($query) use ($driverDefaultModel) {
+                $query->where('name', 'like', $driverDefaultModel . '%')
+                    ->where('model_name', '=', null);
             })->get();
             // dd($get_list_driver);
             foreach ($get_list_driver as $driver) {
                 // info($driver->name);
-                if(Schema::connection($driver->name)->hasTable($model->getTable())){
-                    DbStatus::create(['name' => $driver->name,'status' => 'actived','model_name' => $model->getTable()]);
+                if (Schema::connection($driver->name)->hasTable($model->getTable())) {
+                    DbStatus::create(['name' => $driver->name, 'status' => 'actived', 'model_name' => $model->getTable()]);
                 }
             }
-
         }
     }
 
@@ -140,3 +138,5 @@ Route::get('/', function () {
 
 
 // Route::get('/home', [HomeController::class, 'index'])->name('home');
+
+
