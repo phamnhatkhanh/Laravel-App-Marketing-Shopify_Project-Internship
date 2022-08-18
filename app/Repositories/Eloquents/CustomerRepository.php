@@ -52,32 +52,12 @@ class CustomerRepository implements CustomerRepositoryInterface
 
     public function syncCutomerFromShopify(Request $request)
     {
-
         $store = $this->store->where('myshopify_domain', $request->shop)->first();
         // dd([$store->myshopify_domain,$store->access_token,$store->id]);
 
         $shopifyRepository = new ShopifyRepository();
-        $shopifyRepository->syncCustomer($store->myshopify_domain, $store->access_token, $store);
-        //just call funcitno
-        //get data from shopify -> chunk add job.
-        // info($reqeust->all());
-        // $customers = $this->customer->get();
 
-        // $batch = Bus::batch([])
-        //     ->then(function (Batch $batch) {
-
-        //     })->finally(function (Batch $batch)  {
-
-        //         event(new SynchronizedCustomer($batch->id));
-
-        //     })->onQueue('jobs')->dispatch();
-
-        // $batch_id = $batch->id;
-
-        // $chunksCustomer = $customers->chunk(5);
-        // foreach ($chunksCustomer as  $chunkCumtomer) {
-        //     $batch->add(new SyncCumtomer($batch_id, $chunkCumtomer));
-        // }
+        $shopifyRepository->syncCustomer($store->myshopify_domain,$store->access_token,$store );
 
         return response([
             "status" => true,
@@ -87,6 +67,7 @@ class CustomerRepository implements CustomerRepositoryInterface
 
     public function index(Request $request)
     {
+
         $store_id = getStoreID();
 
         $store = Store::where('id',$store_id)->first();
@@ -160,25 +141,7 @@ class CustomerRepository implements CustomerRepositoryInterface
         ], 204);
     }
 
-    public function exportSelectCustomerCSV(Request $request)
-    {
-        $list_customers = $request->list_customer;
-        $except_customer = $request->except_customer;
-        $limit = $request->limit;
-
-        if ($request->has('list_customer')) {
-            $users = $this->customer->whereIn('id', $list_customers)->get();
-        } elseif ($request->has('except_customer')) {
-            $users = $this->customer->whereNotIn('id',  $except_customer)
-                ->take($limit)
-                ->get();
-        } else {
-            $users = $this->customer->simplePaginate(15);
-        }
-
-        $locationExport = storage_path('app/backup/customers/');
-        $dateExport = date('d-m-Y_H-i-s');
-        $fileName = $locationExport . 'customer_' . $dateExport . '.csv';
+    public function exportCustomer($fileName, $users){
 
         $handle = fopen($fileName, 'w');
 
@@ -199,13 +162,47 @@ class CustomerRepository implements CustomerRepositoryInterface
         $headers = array(
             'Content-Type' => 'text/csv',
         );
+    }
 
-        $store = $this->store->latest()->first();
+    public function exportCustomerCSV(Request $request)
+    {
+        info($request->all());
+        $locationExport = storage_path('app/backup/customers/');
+        $dateExport = date('d-m-Y_H-i-s');
 
-        return response([
-            'message' => 'Export Selected Customers CSV Done',
+        $fileName = $locationExport . 'customer_' . $dateExport . '.csv';
+        if (!empty($request->list_customer)) {
+            if ($request->has('list_customer')) {
+                $listCustomers = explode(',', $request->list_customer);
+                $users = $this->customer->whereIn('id', $listCustomers)->get();
+            } elseif ($request->has('except_customer')) {
+                $except_customer = (array)$request->except_customer;
+                $limit = $request->limit;
+                $users = $this->customer->whereNotIn('id', $except_customer)
+                    ->take($limit)
+                    ->get();
+            } else {
+                $users = $this->customer->simplePaginate(15);
+            }
+            $this->exportCustomer($fileName, $users);
+
+            $store = $this->store->latest()->first();
+            dispatch(new SendEmail($fileName, $store));
+        } else {
+            $users = $this->customer->get();
+            $this->exportCustomer($fileName, $users);
+
+            $store = $this->store->latest()->first();
+
+        //    Excel::store(new CustomerExport(), $fileName);
+
+            dispatch(new SendEmail($fileName, $store));
+        }
+
+        return [
+            'message' => 'Export CSV Done',
             'status' => 204,
-        ], 204);
+        ];
     }
 
     public function getCustomer()
@@ -224,10 +221,9 @@ class CustomerRepository implements CustomerRepositoryInterface
         $request['updated_at'] = Carbon::now()->format('Y-m-d H:i:s');
 
         $connect = ($this->customer->getConnection()->getName());
-        event(new CreatedModel($connect, $request->all(), $this->customer->getModel()->getTable()));
-        // $this->customer->create($request->all());
-        // $customer = $this->customer->where('id', $request['id'])->first();
-        // event(new CreatedModel($connect, $customer));
+
+        event(new CreatedModel($connect,$request->all(),$this->customer->getModel()->getTable()));
+
         return "create successfully customer";
     }
 

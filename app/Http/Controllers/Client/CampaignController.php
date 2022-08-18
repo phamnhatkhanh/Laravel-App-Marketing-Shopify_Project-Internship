@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Client;
-use App\Jobs\SendEmailPreview;
+// use App\Jobs\SendEmailPreview;
 use App\Mail\SendMailPreview;
 use App\Models\Store;
 use Illuminate\Support\Facades\Log;
@@ -53,6 +53,10 @@ class CampaignController extends Controller
     public function saveCampaign(Request $request){
 
         return $this->campaignRepository->saveCampaign($request);
+    }
+
+    public function SendEmail(Request $request){
+        return $this->campaignRepository->sendEmail($request);
     }
 
     public function sendEmailPreview(Request $request)

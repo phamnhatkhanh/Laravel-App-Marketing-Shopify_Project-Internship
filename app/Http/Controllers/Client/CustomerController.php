@@ -36,18 +36,15 @@ class CustomerController extends Controller
      *
      *
      */
-    public function exportCustomerCSV(){
-        return $this->customerRepository->exportCustomerCSV();
+    public function exportCustomerCSV(Request $request){
+        return $this->customerRepository->exportCustomerCSV($request);
 
     }
 
-    /**
-     *
-     *
-     */
-    public function exportSelectCustomerCSV(Request $request){
-        return $this->customerRepository->exportSelectCustomerCSV($request);
 
+    public function getCustomer()
+    {
+        return $this->customerRepository->getCustomer();
     }
 
 

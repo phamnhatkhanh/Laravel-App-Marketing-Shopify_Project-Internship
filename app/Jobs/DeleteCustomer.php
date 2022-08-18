@@ -10,6 +10,8 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
 use App\Models\Customer;
+use App\Events\Database\UpdatedModel;
+use App\Events\Database\DeletedModel;
 
 class DeleteCustomer implements ShouldQueue
 {
@@ -24,7 +26,7 @@ class DeleteCustomer implements ShouldQueue
     public function __construct($data_customer)
     {
         $this->data_customer = $data_customer;
-        $this->customer = getConnectDatabaseActived(new Customer());
+        // $this->customer = getConnectDatabaseActived(new Customer());
 
     }
 
@@ -35,9 +37,16 @@ class DeleteCustomer implements ShouldQueue
      */
     public function handle()
     {
-        $data_customer = $this->data_customer;
+        $customer_model = new Customer();
 
+        $data_customer = $this->data_customer;
         $id = $data_customer['id'];
-        $this->customer->where('id', $id)->delete();
+        $customer = $customer_model->where('id', $id)->first();
+
+        if (!empty($customer)) {
+            $connect = ($customer_model->getConnection()->getName());
+            event(new DeletedModel($connect, $customer));
+
+        }
     }
 }

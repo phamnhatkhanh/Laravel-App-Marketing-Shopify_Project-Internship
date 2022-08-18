@@ -27,12 +27,6 @@ use App\Mail\WelcomeMail;
 |
 */
 
-Route::post("/req", function (Request $request) {
-    if ($request->has("khanh")) {
-        return "have att";
-    } else {
-        return "not have att";
-    }
 });
 Route::get("/mail", function () {
     // dd("sdfhbsjfk");
@@ -57,9 +51,12 @@ Route::get('/cnn', function () {
     $connect = ($customer->getConnection()->getName());
     return $connect;
 });
+Route::get('/husky', function (){
+    $get = Customer::get();
+    return $get;
+});
 
-Route::get('/set-db', function () {
-
+Route::get('/set-db',function(){
     $listNameConnectionMysql = config('database.connections');
     foreach ($listNameConnectionMysql as $key => $value) {
         DbStatus::create(['name' => $key, 'status' => 'actived']);
