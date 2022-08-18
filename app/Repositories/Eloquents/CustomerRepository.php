@@ -25,6 +25,11 @@ use App\Events\Database\UpdatedModel;
 use App\Events\Database\DeletedModel;
 use App\Events\SyncDatabase;
 use App\Events\SynchronizedCustomer;
+use Illuminate\Support\Facades\Auth;
+use Tymon\JWTAuth\Exceptions\JWTException;
+use Tymon\JWTAuth\Exceptions\TokenExpiredException;
+use Tymon\JWTAuth\Exceptions\TokenInvalidException;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class CustomerRepository implements CustomerRepositoryInterface
 {
@@ -47,7 +52,6 @@ class CustomerRepository implements CustomerRepositoryInterface
 
 
         $shopifyRepository->syncCustomer($store->myshopify_domain,$store->access_token,$store );
-
 
         return response([
             "status" => true,
@@ -108,20 +112,43 @@ class CustomerRepository implements CustomerRepositoryInterface
                 "data" => $users,
                 "status" => true
             ], 200);
-
+\
         }
         return response([
             "status" => "Not found",
         ],404);
     }
 
+    public function exportCustomerCSV()
+    {
+        $locationExport = 'backup/customers/';
+        $dateExport = date('d-m-Y_H-i-s');
 
+        $fileName = $locationExport . 'customer_' . $dateExport . '.csv';
 
+        $store = $this->store->latest()->first();
+
+        dispatch(new SendEmail($fileName, $store));
+
+        return response([
+            "total_customers" => $total,
+            "totalPage" => $totalpage ? $totalpage : 0,
+            // "total_customers" => $this->customer->count(),s
+            "data" => $users,
+            "status" => true
+        ], 200);
+    }
+
+    /**
+     *
+     *
+     */
     public function exportCustomer($fileName, $users)
     {
         CustomerService::exportCustomer($fileName, $users);
 
     }
+
     public function exportCustomerCSV(Request $request)
     {
         info($request->all());
@@ -137,7 +164,6 @@ class CustomerRepository implements CustomerRepositoryInterface
         if (!empty($request->list_customer)) {
             if ($request->has('list_customer')) {
                 $listCustomers = $request->list_customer;
-                // $listCustomers = explode(',', $request->list_customer);
                 $users = $this->customer->whereIn('id', $listCustomers)->get();
             } elseif ($request->has('except_customer')) {
                 $except_customer = $request->except_customer;
@@ -160,12 +186,11 @@ class CustomerRepository implements CustomerRepositoryInterface
 
             dispatch(new SendEmail($fileName, $store));
         }
-        info( $request->all());
+
         return [
             'message' => 'Export CSV Done',
             'status' => true,
         ];
-
     }
 
     public function getCustomer()

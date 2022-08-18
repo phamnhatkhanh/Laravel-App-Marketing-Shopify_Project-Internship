@@ -10,11 +10,7 @@ use Illuminate\Support\Facades\Bus;
 use Illuminate\Bus\Batch;
 use App\Models\Campaign;
 use App\Models\CampaignProcess;
-use App\Models\CampaignBackgroud;
-use App\Models\CampaignButton;
-use App\Models\CampaignVariant;
 use App\Models\Customer;
-use Carbon\Carbon;
 use App\Jobs\SendMail;
 use App\Events\MailSent;
 use App\Events\Database\CreatedModel;
@@ -22,7 +18,6 @@ use App\Events\Database\UpdatedModel;
 use App\Events\Database\DeletedModel;
 use App\Repositories\Contracts\CampaignRepositoryInterface;
 use Illuminate\Http\Request;
-use IvoPetkov\HTML5DOMDocument;
 use Throwable;
 
 use Tymon\JWTAuth\Exceptions\JWTException;
@@ -153,6 +148,7 @@ class CampaignRepository implements CampaignRepositoryInterface
         info('Ready Job : '.$store);
         dispatch(new SendTestPreview($bodyEmail, $subject, $imageName, $store, $sendEmail));
         info('SendTestMail Success');
+
         return [
             'message' => 'Send Test Success',
             'status' => true,
