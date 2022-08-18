@@ -14,7 +14,7 @@ use App\Models\Customer;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Mail;
-
+use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Mail\WelcomeMail;
 /*
 |--------------------------------------------------------------------------
@@ -30,28 +30,28 @@ use App\Mail\WelcomeMail;
 Route::get("/test",function(Request $request){
 return Customer::simplePaginate(15);
 });
-Route::get("/mail",function(){
+Route::get("/mail", function () {
     // dd("sdfhbsjfk");
     info(date("y-m-d H:i:s"));
-Customer::query()->delete();
-info("delte all customer");
-info(date("y-m-d H:i:s"));
+    Customer::query()->delete();
+    info("delte all customer");
+    info(date("y-m-d H:i:s"));
 });
-Route::get('/cnn', function (){
+Route::get('/cnn', function () {
     $customer = Customer::where('id', 1)->first();
-        // $customer->update([
-        // // $this->customer->where('id', $data_customer_id)->update([
-        //     'email' => $data_customer['email'],
-        //     'first_name' => $data_customer['first_name'],
-        //     'last_name' => $data_customer['last_name'],
-        //     'orders_count' => $data_customer['orders_count'],
-        //     'total_spent' => $data_customer['total_spent'],
-        //     'phone' => $data_customer['phone'],
-        //     'created_at' => $created_at,
-        //     'updated_at' => $updated_at,
-        // ]);
-        $connect = ($customer->getConnection()->getName());
-        return $connect;
+    // $customer->update([
+    // // $this->customer->where('id', $data_customer_id)->update([
+    //     'email' => $data_customer['email'],
+    //     'first_name' => $data_customer['first_name'],
+    //     'last_name' => $data_customer['last_name'],
+    //     'orders_count' => $data_customer['orders_count'],
+    //     'total_spent' => $data_customer['total_spent'],
+    //     'phone' => $data_customer['phone'],
+    //     'created_at' => $created_at,
+    //     'updated_at' => $updated_at,
+    // ]);
+    $connect = ($customer->getConnection()->getName());
+    return $connect;
 });
 
 Route::get('/set-db',function(){
@@ -60,7 +60,7 @@ Route::get('/set-db',function(){
         foreach ($listNameConnectionMysql as $key => $value) {
             DbStatus::create(['name' => $key,'status' => 'actived']);
         }
-        
+
         $path = app_path() . "/Models";
         $listPathModel = getListModels($path);
         // dd($listPathModel);
@@ -105,3 +105,5 @@ Route::get('/', function () {
 
 
 // Route::get('/home', [HomeController::class, 'index'])->name('home');
+
+

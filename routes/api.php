@@ -47,3 +47,10 @@ Route::get('/redis', function (Request $request) {
     $name = $redis->get('store');
     echo $name;
 });
+
+Route::get('/get123', function () {
+    $store = Store::where('id', 2)->first();
+
+    return $store->customers;
+    // return view('welcome');
+});

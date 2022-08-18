@@ -48,15 +48,15 @@ class WebhookRepository
     }
 
     public function createFromShopify($payload, $myshopify_domain){
-        $data =  dispatch(new CreateCustomer($payload, $myshopify_domain));
+       dispatch(new CreateCustomer($payload, $myshopify_domain));
     }
 
     public function updateFromShopify($payload){
         info("WebhookRepository: update customer from shopify");
-        $data =  dispatch(new UpdateCustomer($payload));
+        dispatch(new UpdateCustomer($payload));
     }
 
     public function deleteFromShopify($payload){
-        $data = dispatch(new DeleteCustomer($payload));
+        dispatch(new DeleteCustomer($payload));
     }
 }
