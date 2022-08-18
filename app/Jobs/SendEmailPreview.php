@@ -36,7 +36,6 @@ class SendEmailPreview implements ShouldQueue
         $this->imageName = $imageName;
         $this->store = $store;
         $this->sendEmail = $sendEmail;
-
         $this->batchId = $batchId;
         $this->campaignProcess = $campaignProcess;
     }
@@ -59,16 +58,12 @@ class SendEmailPreview implements ShouldQueue
         $sendEmail = $this->sendEmail;
         info("SendEmailPreview: send mail......");
         // info("body ".$this->batchId ."  processed". $this->campaignProcess->id);
-        Mail::send('mail.emailPreview', compact('bodyEmail' ), function ($email) use ($subject, $store,$sendEmail) {
-            $email->from("giakinh451@gmail.com");
-            $email->to($this->sendEmail)->subject($subject);
+        Mail::send('mail.emailPreview', compact('bodyEmail' ), function ($email) use ($subject, $store, $sendEmail) {
+            $email->from($store->email);
+            $email->to($sendEmail)->subject($subject);
         });
         info("SendEmailPreview: call event");
         event(new SendingMail($this->batchId,$this->campaignProcess));
-        // }catch(Throwable $e){
-        //     info("SendEmailPreview: ".$e);
-        // }
-
     }
     public function failed(Throwable $exception)
     {

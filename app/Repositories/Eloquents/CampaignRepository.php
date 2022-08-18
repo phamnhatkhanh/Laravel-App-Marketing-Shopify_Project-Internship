@@ -5,6 +5,7 @@ namespace App\Repositories\Eloquents;
 use App\Jobs\SendEmailPreview;
 use App\Jobs\SendTestPreview;
 use App\Models\Store;
+use App\Services\Campaigns\CampaignService;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Bus\Batch;
 use App\Models\Campaign;
@@ -21,7 +22,6 @@ use App\Events\Database\UpdatedModel;
 use App\Events\Database\DeletedModel;
 use App\Repositories\Contracts\CampaignRepositoryInterface;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 use IvoPetkov\HTML5DOMDocument;
 use Throwable;
 
@@ -53,7 +53,6 @@ class CampaignRepository implements CampaignRepositoryInterface
 
     public function saveCampaign(Request $request)
     {
-        // dd("saveCampaign");
         //save campaign
         $campaign = $this->campaign->create($request->all());
 
@@ -67,8 +66,6 @@ class CampaignRepository implements CampaignRepositoryInterface
             "name" => $campaign->name,
             "total_customers" => $this->customer->count(),
         ]);
-
-
 
         $this->sendEmailPreview($request, $campaignProcess);
 
@@ -115,121 +112,18 @@ class CampaignRepository implements CampaignRepositoryInterface
 
     public function previewEmail($request, $array)
     {
-        info('previewEmail: inside Fisrt');
-        $imageName = $this->imageNameTemp;
-        if (empty($imageName) && $request->hasFile('background_banner')){
-            $request->validate(
-                [
-                    'background_banner' => 'required|image|mimes:jpeg,png,jpg,gif|max:5120',
-                ]
-            );
-
-            $name = time() . '.' . $request->background_banner->extension();
-            $request->background_banner->move(public_path('uploads'), $name);
-            $this->imageNameTemp = $name;
-        }
-        $image = $this->imageNameTemp;
-
-        $bodyPreviewEmail = $request->preview_email;
-        $cutBodyPreview = str_replace(array("\\",), '', $bodyPreviewEmail);
-        $domBody = new HTML5DOMDocument();
-        $domBody->loadHTML($cutBodyPreview);
-
-        $querySelectorSubject = $domBody->querySelectorAll('.tiptap_variant');
-        for ($i = 0; $i < count( $querySelectorSubject ); $i++){
-            $nameVariant = $querySelectorSubject[$i]->attributes[2]->value;
-            foreach ($array as $arr) {
-                if ($nameVariant == $arr['variant']){
-                    $querySelectorSubject[$i]->textContent = $arr['value'];
-                    $querySelectorSubject[$i]->attributes[0]->value = "color: rgb(40, 41, 61); font-weight: 600; margin: 0px 3px;";
-                }
-            }
-        }
-        info('previewEmail: handle Body');
-
-        if (!empty($image)) {
-            $img = $domBody->getElementsByTagName('img')[0];
-            $img->setAttribute('src', asset('uploads/' . $image));
-        }
-        info('previewEmail: Handle Image');
-
-        $bodyEmail = $domBody->saveHTML();
-        info('previewEmail: save body');
-
-        return $bodyEmail;
-    }
-
-    public function previewEmail1($request, $array)
-    {
-        info('previewEmail: inside Fisrt');
-        $imageName = $this->imageNameTemp;
-        if (empty($imageName) && $request->hasFile('background_banner')){
-            $request->validate(
-                [
-                    'background_banner' => 'required|image|mimes:jpeg,png,jpg,gif|max:5120',
-                ]
-            );
-
-            $name = time() . '.' . $request->background_banner->extension();
-            $request->background_banner->move(public_path('uploads'), $name);
-            $this->imageNameTemp = $name;
-        }
-        $image = $this->imageNameTemp;
-
-        info('previewEmail: Handle Image');
-        $bodyPreviewEmail = $request->preview_email;
-        $cutBodyPreview = str_replace(array("\\",), '', $bodyPreviewEmail);
-        $domBody = new HTML5DOMDocument();
-        $domBody->loadHTML($cutBodyPreview);
-        $querySelectorSubject = $domBody->querySelectorAll('.tiptap_variant');
-        for ($i = 0; $i < count( $querySelectorSubject ); $i++){
-           $nameVariant = $querySelectorSubject[$i]->attributes[2]->value;
-            foreach ($array as $arr) {
-                if ($nameVariant == $arr['variant']){
-                    $querySelectorSubject[$i]->textContent = $arr['value'];
-                    $querySelectorSubject[$i]->attributes[0]->value = "color: rgb(40, 41, 61); font-weight: 600; margin: 0px 3px;";
-                }
-            }
-        }
-        info('previewEmail: handle Body');
-
-        if (!empty($image)) {
-            $img = $domBody->getElementsByTagName('img')[0];
-            $img->setAttribute('src', asset('uploads/' . $image));
-        }
-
-        $bodyEmail = $domBody->saveHTML();
-        info('previewEmail: save body');
-
-        return $bodyEmail;
+        return CampaignService::previewEmail($request, $array);
     }
 
     public function subject($request, $array)
     {
-        $domSubject = new HTML5DOMDocument();
-        $domSubject->loadHTML($request);
-        $querySelectorSubject = $domSubject->querySelector('p')->childNodes;
-
-        $arraySubject = [];
-        foreach ($querySelectorSubject as $item) {
-            if ($item->nodeName == '#text') {
-                array_push($arraySubject, $item->data);
-            } else {
-                $aa = $item->childNodes[0]->data;
-                array_push($arraySubject, $aa);
-            }
-        }
-        $arrayJoinElements = implode(' ', $arraySubject);
-
-        foreach ($array as $arr) {
-            $arrayJoinElements = str_replace($arr['variant'], $arr['value'], $arrayJoinElements);
-        }
-        return $arrayJoinElements;
+        return CampaignService::subject($request, $array);
     }
 
     public function SendEmail(Request $request)
     {
-        $store = Store::where('id',1)->first();
+        info('SendTestMail Success');
+        $store = Store::where('myshopify_domain', $request->myshopify_domain)->first();
         $array = ([
             [
                 "variant" => 'Customer_Full_name',
@@ -256,9 +150,9 @@ class CampaignRepository implements CampaignRepositoryInterface
         $subject = $this->subject($request->subject, $array);
 
         $sendEmail = $request->send_email;
-
+        info('Ready Job : '.$store);
         dispatch(new SendTestPreview($bodyEmail, $subject, $imageName, $store, $sendEmail));
-
+        info('SendTestMail Success');
         return [
             'message' => 'Send Test Success',
             'status' => true,
@@ -267,7 +161,7 @@ class CampaignRepository implements CampaignRepositoryInterface
 
     public function sendEmailPreview(Request $request, $campaignProcess)
     {
-
+        info($request->all());
         try{
             $batch = Bus::batch([])
                 ->then(function (Batch $batch) {
@@ -286,10 +180,8 @@ class CampaignRepository implements CampaignRepositoryInterface
                 })->onQueue('jobs')->dispatch();
             $batchId = $batch->id;
 
-
             info("inside sendEmailPreview: handel templete mail ". $batchId);
             info("inside sendEmailPreview: lsit customer ". $request->list_mail_customers);
-
 
             if($request->has("list_mail_customers")){
                 $listCustomersId =  json_decode($request->list_mail_customers, true);
@@ -302,10 +194,9 @@ class CampaignRepository implements CampaignRepositoryInterface
                 $listCustomers = Customer::get();
             }
 
-            $store = Store::where('id',1)->first();
+            $store = Store::where('myshopify_domain', $request->domain)->first();
             foreach ($listCustomers as  $value) {
                 info("inside sendEmailPreview");
-                // dd($request->list_mail_customers);
 
                 $array = ([
                     [
@@ -333,7 +224,6 @@ class CampaignRepository implements CampaignRepositoryInterface
                 $subject = $this->subject($request->subject, $array);
 
                 $batch->add(new SendEmailPreview( $value->email, $batchId, $campaignProcess,$bodyEmail, $subject, $imageName, $store));
-
             }
             info("inside sendEmailPreview:group jobs");
         } catch (Throwable $e) {
