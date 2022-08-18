@@ -22,10 +22,10 @@ class CheckAuthenticate
     {
         try {
             info("check acces token ");
-            if (!$user = JWTAuth::parseToken()->authenticate()) {
+            if (!$store = JWTAuth::parseToken()->authenticate()) {
                 return response()->json(['user_not_found'], 404);
             }
-            $request->user = $user;
+            $request->store = $store;
             return $next($request);
         } catch (TokenExpiredException $e) {
 
@@ -47,6 +47,6 @@ class CheckAuthenticate
             ]);
         }
 
-        return response()->json(compact('user'));
+        return response()->json(compact('store'));
     }
 }

@@ -26,16 +26,21 @@ use App\Models\Store;
 
 use App\Jobs\SyncCumtomer;
 use App\Jobs\SendEmail;
-
+use App\Http\Controllers\LoginController;
 use App\Events\Database\CreatedModel;
 use App\Events\Database\UpdatedModel;
 use App\Events\Database\DeletedModel;
 use App\Events\SyncDatabase;
 use App\Events\SynchronizedCustomer;
+use Illuminate\Support\Facades\Auth;
+
+use Tymon\JWTAuth\Exceptions\JWTException;
+use Tymon\JWTAuth\Exceptions\TokenExpiredException;
+use Tymon\JWTAuth\Exceptions\TokenInvalidException;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class CustomerRepository implements CustomerRepositoryInterface
 {
-
     protected $customer;
     protected $store;
 
@@ -51,65 +56,93 @@ class CustomerRepository implements CustomerRepositoryInterface
         // dd([$store->myshopify_domain,$store->access_token,$store->id]);
 
         $shopifyRepository = new ShopifyRepository();
-        $shopifyRepository->syncCustomer($store->myshopify_domain,$store->access_token,$store );
 
+        $shopifyRepository->syncCustomer($store->myshopify_domain,$store->access_token,$store );
 
         return response([
             "status" => true,
             "message" => "Start sync customer"
-        ],200);
-
+        ], 200);
     }
 
     public function index(Request $request)
     {
 
-        $totalpage = 0;
+        $store_id = getStoreID();
 
-        if ($request->has('list_customer')) {
-            $arr = explode(',', $request['list_customer']);
+        $store = Store::where('id',$store_id)->first();
+      
+        if (isset($store)) {
+            $totalpage = 0;
+            if ($request->has('list_customer')) {
+                $arr = explode(',', $request['list_customer']);
 
-            if(count($arr) > 0){
-                $users = $this->customer->whereIn('id', $arr)
-                ->simplePaginate(3);
+                if (count($arr) > 0) {
+                    $users = $this->customer
+                        ->where("store_id", $store->id)
+                        ->whereIn('id', $arr)
+                        ->simplePaginate(3);
+                }
+            } elseif ($request->has('except_customer')) {
+                $arr = explode(',', $request['except_customer']);
 
+                if (count($arr) > 0) {
+                    $users = $this->customer
+                        ->where("store_id", $store->id)
+                        ->whereNotIn('id', $arr)
+                        ->simplePaginate(3);
+                }
+            } else {
+                $params = $request->except('_token');
+
+                $users = $this->customer
+                    ->where("store_id", $store->id)
+                    ->searchcustomer($params)
+                    ->order($params)
+                    ->totalspent($params)
+                    ->sort($params)
+                    ->date($params)
+                    ->simplePaginate(15);
+
+                $total =  $this->customer
+                    ->where("store_id", $store->id)
+                    ->searchcustomer($params)->count();
+                $totalpage = (int)ceil($total / 15);
             }
-        } elseif ($request->has('except_customer')) {
-            $arr = explode(',', $request['except_customer']);
 
-            if(count($arr) > 0){
-                $users = $this->customer->whereNotIn('id', $arr)
+            $total = Customer::where("store_id", $store->id)->count();
 
-                // ->get();
-                ->simplePaginate(3);
-            }
-        } else {
-            $params = $request->except('_token');
-
-            $users = $this->customer->searchcustomer($params)
-                ->order($params)
-                ->totalspent($params)
-                ->sort($params)
-                ->date($params)
-                ->simplePaginate(15);
-
-            $total =  $this->customer->searchcustomer($params)->count();
-            // $totalpage = (int)round($total / 15);
-            $totalpage = (int)ceil($total / 15);
+            return response([
+                "total_customers" => $total,
+                "totalPage" => $totalpage ? $totalpage : 0,
+                "data" => $users,
+                "status" => true
+            ], 200);
         }
-        $total = Customer::count();
-        // $totalpage = (int)round($total / 15);
+        return response([
+            "status" => "Not found",
+        ],404);
+    }
+
+    public function exportCustomerCSV()
+    {
+        $locationExport = 'backup/customers/';
+        $dateExport = date('d-m-Y_H-i-s');
+
+        $fileName = $locationExport . 'customer_' . $dateExport . '.csv';
+
+        $store = $this->store->latest()->first();
+
+        dispatch(new SendEmail($fileName, $store));
 
         return response([
-            "total_customers" => $total,
-            "totalPage" => $totalpage ? $totalpage : 0 ,
-            // "total_customers" => $this->customer->count(),s
-            "data" => $users,
-            "status" => true
-        ], 200);
+            'message' => 'Export CSV Done',
+            'status' => 204,
+        ], 204);
     }
 
     public function exportCustomer($fileName, $users){
+
         $handle = fopen($fileName, 'w');
 
         fputcsv($handle, array(
@@ -184,10 +217,11 @@ class CustomerRepository implements CustomerRepositoryInterface
     {
         $request['id'] = $this->customer->max('id') + 1;
         // dd($request['id'] );
-        $request['created_at'] = Carbon::now()->format('Y-m-d H:i:s');;
-        $request['updated_at'] = Carbon::now()->format('Y-m-d H:i:s');;
+        $request['created_at'] = Carbon::now()->format('Y-m-d H:i:s');
+        $request['updated_at'] = Carbon::now()->format('Y-m-d H:i:s');
 
         $connect = ($this->customer->getConnection()->getName());
+
         event(new CreatedModel($connect,$request->all(),$this->customer->getModel()->getTable()));
 
         return "create successfully customer";

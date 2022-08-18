@@ -35,7 +35,11 @@
             "app/Helpers/JsonRespone/formatJson.php",
             "app/Helpers/Routes/RouteHelper.php",
             "app/Helpers/Database/Connection.php",
+
+            "app/Helpers/Routes/DecodeHelper.php"
+
             "app/Helpers/Database/SyncDatabase.php"
+
         ]
     },
     "autoload-dev": {
