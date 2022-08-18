@@ -2,8 +2,7 @@
 
 namespace App\Jobs;
 
-use App\Events\Database\UpdatedModel;
-use Illuminate\Bus\Batchable;
+use App\Models\Customer;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -11,48 +10,38 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-use App\Events\Database\CreatedModel;
-use App\Events\SyncingCustomer;
-use App\Models\Customer;
-use Illuminate\Support\Facades\DB;
-
-class SyncCumtomer implements ShouldQueue
+class createDataCustomer implements ShouldQueue
 {
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    private $customers, $store_id;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public $customers;
-    public $store_id;
-    public $batch_id;
-    public function __construct($batch_id,$store_id,$customers)
+    public function __construct($customers, $store_id)
     {
         $this->customers = $customers;
         $this->store_id = $store_id;
-        $this->batch_id = $batch_id;
+
+        /**
+         * Execute the job.
+         *
+         * @return void
+         */
     }
 
-    /**
-     * Execute the job.
-     *
-     * @return void
-     */
     public function handle()
     {
-
-        $customer_model = new Customer();
         $store_id = $this->store_id;
-
         $customers = $this->customers;
-
+        $customerModel = new Customer();
         data_set($customers, '*.store_id', $store_id);
+
         info("Shopify: save customers");
-        $getCustomer = $customer_model::get();
-        info('All customer: '. json_encode($getCustomer, true));
+        $getCustomer = $customerModel->get();
 
         foreach ($customers as $customer) {
             $created_at = str_replace(array('T', '+07:00'), array(' ', ''), $customer['created_at']);
@@ -77,19 +66,17 @@ class SyncCumtomer implements ShouldQueue
                 $findCustomer = $getCustomer->where('id', $data['id'])->first();
 
                 if (empty($findCustomer)) {
-                    info('Create Customer: ...'.  json_encode($findCustomer, true));
-                    $connect = ($customer_model->getConnection()->getName());
-                    SyncDatabaseAfterCreatedModel($connect,$data,$customer_model->getTable());
+                        info('Create Customer: ...'.  json_encode($findCustomer, true));
+                    $connect = ($customerModel->getConnection()->getName());
+                    SyncDatabaseAfterCreatedModel($connect, $data, $customerModel->getTable());
                 } else {
-                    info('Update Customer: ...'.  json_encode($findCustomer, true));
+                        info('Update Customer: ...'.  json_encode($findCustomer, true));
                     $findCustomer->update($data);
-                    $connect = ($customer_model->getConnection()->getName());
-                    SyncDatabaseAfterUpdatedModel($connect,$findCustomer);
+                    $connect = ($customerModel->getConnection()->getName());
+                    SyncDatabaseAfterUpdatedModel($connect, $findCustomer);
                 }
-                 info("CreatedModel: show log in function sycn customer: ");
-                showLog();
             }
         }
-        event(new SyncingCustomer($this->batch_id));
     }
 }
+
