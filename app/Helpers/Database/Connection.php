@@ -75,3 +75,34 @@ if (!function_exists('getRandomModelId')) {
         }
     }
 }
+
+if (!function_exists('getListModel')) {
+    function getListModels($path){
+            $out = [];
+            $results = scandir($path);
+            foreach ($results as $result) {
+                if ($result === '.' or $result === '..') continue;
+                $filename = $path . '/' . $result;
+                if (is_dir($filename)) {
+                    $out = array_merge($out, getModels($filename));
+                }else{
+                    $model  = str_replace(app_path(),"App",substr($filename,0,-4));
+                    $model  = str_replace("/","\\",$model );
+                    // dd(new $model());
+                    $out[] = $model;
+                    //hello
+                }
+            }
+            return $out;
+    }
+}
+
+if (!function_exists('getDiverDafault')) {
+    function getDiverDafault($model){
+        $diverCurrent = $model->getConnection()->getName();
+        if(strpos($diverCurrent,"_backup")){
+            $diverCurrent =substr($diverCurrent,0,strpos($diverCurrent,"_backup"));
+        }
+        return $diverCurrent;
+    }
+}

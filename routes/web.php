@@ -53,70 +53,38 @@ Route::get('/cnn', function (){
         $connect = ($customer->getConnection()->getName());
         return $connect;
 });
-Route::get('/husky', function (){
-    $get = Customer::get();
-    return $get;
-});
 
 Route::get('/set-db',function(){
-    $listNameConnectionMysql = config('database.connections');
-    foreach ($listNameConnectionMysql as $key => $value) {
-        DbStatus::create(['name' => $key,'status' => 'actived']);
-    }
-
-    $path = app_path() . "/Models";
-    function getModels($path){
-        $out = [];
-        $results = scandir($path);
-        foreach ($results as $result) {
-            if ($result === '.' or $result === '..') continue;
-            $filename = $path . '/' . $result;
-            if (is_dir($filename)) {
-                $out = array_merge($out, getModels($filename));
-            }else{
-                $model  = str_replace(app_path(),"App",substr($filename,0,-4));
-                $model  = str_replace("/","\\",$model );
-                // dd(new $model());
-                $out[] = $model;
-                //hello
-            }
-
+        $listNameConnectionMysql = config('database.connections');
+        // dd($listNameConnectionMysql);
+        foreach ($listNameConnectionMysql as $key => $value) {
+            DbStatus::create(['name' => $key,'status' => 'actived']);
         }
-        return $out;
-    }
-    function getDiverDafault($model){
-        $diverCurrent = $model->getConnection()->getName();
-        if(strpos($diverCurrent,"_backup")){
-            $diverCurrent =substr($diverCurrent,0,strpos($diverCurrent,"_backup"));
-        }
-        return $diverCurrent;
-    }
-    $listPathModel = getModels($path);
-    // dd($listPathModel);
-    foreach ($listPathModel as $pathModel) {
-        $model = new $pathModel();
-        // dd($model);
-        $driverDefaultModel = getDiverDafault($model);
-        if($driverDefaultModel!="mysql"){
-            //  dd($driverDefaultModel);
-            $get_list_driver =  DbStatus::where(function ($query) use ($driverDefaultModel){
-                $query->where('name','like',$driverDefaultModel.'%')
-                        ->where('model_name', '=', null);
-            })->get();
-            // dd($get_list_driver);
-            foreach ($get_list_driver as $driver) {
-                // info($driver->name);
-                if(Schema::connection($driver->name)->hasTable($model->getTable())){
-                    DbStatus::create(['name' => $driver->name,'status' => 'actived','model_name' => $model->getTable()]);
+        
+        $path = app_path() . "/Models";
+        $listPathModel = getListModels($path);
+        // dd($listPathModel);
+        foreach ($listPathModel as $pathModel) {
+            $model = new $pathModel();
+            // dd($model);
+            $driverDefaultModel = getDiverDafault($model);
+            // info("cnn: ". $model->getConnection()->getName(). " default cnn ".$driverDefaultModel);
+            if($driverDefaultModel!="mysql"){
+                $get_list_driver =  DbStatus::where(function ($query) use ($driverDefaultModel){
+                    $query->where('name','like',$driverDefaultModel.'%')
+                            ->where('model_name', '=', null);
+                })->get();
+                // dd($get_list_driver);
+                foreach ($get_list_driver as $driver) {
+                    // info($driver->name);
+                    if(Schema::connection($driver->name)->hasTable($model->getTable())){
+                        DbStatus::create(['name' => $driver->name,'status' => 'actived','model_name' => $model->getTable()]);
+                    }
                 }
             }
-
         }
-    }
-
-    DbStatus::where('model_name', '=', null)
+        DbStatus::where('model_name', '=', null)
         ->orWhereNull('model_name')->delete();
-    //from model base on driver defautl -> get list driver -> check table -> add.
 
     return  "done set db";
     // return $listNameConnectionMysql;
@@ -124,9 +92,6 @@ Route::get('/set-db',function(){
 
 Route::get('/getCustomer', [CustomerController::class, 'getCustomer']);
 Route::get('/getStore', [ShopifyController::class, 'getStore']);
-
-// Route::get('/mail', [CampaignController::class, 'sendEmailCampaign']);
-// Route::get('/test-mail', [CampaignController::class, 'sendEmailCampaign']);
 
 Route::get('/', function () {
     return view('showNotification');

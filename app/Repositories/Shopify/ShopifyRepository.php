@@ -324,7 +324,7 @@ class ShopifyRepository implements ShopifyRepositoryInterface
 
                     if (empty($findCustomer)) {
                         info('Create Customer');
-//                        $this->customer->create($data);
+                    //    $this->customer->create($data);
                         $connect = ($this->customer->getConnection()->getName());
                         event(new CreatedModel($connect, $data, $this->customer->getModel()->getTable()));
                     } else {
@@ -347,7 +347,7 @@ class ShopifyRepository implements ShopifyRepositoryInterface
         // get store.
         try {
             $store_id = $store->id;
-            $store->customers()->delete();
+            // $store->customers()->delete();
 
             $batch = Bus::batch([])
                 ->then(function (Batch $batch) {
@@ -437,7 +437,7 @@ class ShopifyRepository implements ShopifyRepositoryInterface
     public function getStore(){
         return $this->store->get();
     }
-    
+
     public function store($request)
     {
         $request['id'] = $this->store->max('id') + 1;
@@ -461,7 +461,7 @@ class ShopifyRepository implements ShopifyRepositoryInterface
 
         return $store;
     }
-    public function destroy( $store_id){
+
 
     public function destroy($store_id)
     {

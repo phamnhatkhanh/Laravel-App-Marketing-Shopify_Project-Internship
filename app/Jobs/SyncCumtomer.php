@@ -53,7 +53,7 @@ class SyncCumtomer implements ShouldQueue
         info("Shopify: save customers");
         $getCustomer = $customer_model::get();
         info('All customer: '. json_encode($getCustomer, true));
-        
+
         foreach ($customers as $customer) {
             $created_at = str_replace(array('T', '+07:00'), array(' ', ''), $customer['created_at']);
             $updated_at = str_replace(array('T', '+07:00'), array(' ', ''), $customer['updated_at']);
@@ -75,26 +75,29 @@ class SyncCumtomer implements ShouldQueue
                     'updated_at' => $updated_at,
                 ];
                 $findCustomer = $getCustomer->where('id', $data['id'])->first();
-                info('Id cua Customer:'.json_encode($findCustomer, true));
+                // info('Id cua Customer:'.json_encode($findCustomer, true));
 
 
-              //  if (empty($findCustomer)) {
-                    info('Create Customer');
-//                        $this->customer->create($data);
-                 //   $connect = ($customer_model->getConnection()->getName());
+               if (empty($findCustomer)) {
+                    info('Create Customer: ...'.  json_encode($findCustomer, true));
+                    //    $this->customer->create($data);
+                //    $connect = ($customer_model->getConnection()->getName());
                 //    event(new CreatedModel($connect, $data, $customer_model->getModel()->getTable()));
-                //} else {
-                  //  info('Update Customer');
-                 //   $findCustomer->update($data);
-                 //   $connect = ($customer_model->getConnection()->getName());
-                  //  event(new UpdatedModel($connect, $findCustomer));
-               // }
+                    $connect = ($customer_model->getConnection()->getName());
+                    SyncDatabaseAfterCreatedModel($connect,$data,$customer_model->getTable());
+                } else {
+                   info('Update Customer: ...'.  json_encode($findCustomer, true));
+                   $findCustomer->update($data);
+                   $connect = ($customer_model->getConnection()->getName());
+                   SyncDatabaseAfterUpdatedModel($connect,$findCustomer);
+                //    $connect = ($customer_model->getConnection()->getName());
+                //    event(new UpdatedModel($connect, $findCustomer));
+               }
 
-                $connect = ($customer_model->getConnection()->getName());
-                SyncDatabaseAfterCreatedModel($connect,$data,$customer_model->getTable());
+
                 // event(new CreatedModel($connect,$data,$customer_model->getTable()));
                  info("CreatedModel: show log in function sycn custoemr: ");
-                showLog();
+
                 // $model->create($data);
 
             }

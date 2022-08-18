@@ -25,6 +25,8 @@ class CheckAuthenticate
             if (!$user = JWTAuth::parseToken()->authenticate()) {
                 return response()->json(['user_not_found'], 404);
             }
+        
+
             $request->user = $user;
             return $next($request);
         } catch (TokenExpiredException $e) {

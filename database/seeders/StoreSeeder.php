@@ -14,7 +14,7 @@ class StoreSeeder extends Seeder
     private static $id = 1;
     public function run()
     {
-        $stores = Store::factory()->times(1)->create();
+        $stores = Store::factory()->times(5)->create();
         // info("data_fake_store" . $stores);
         foreach ($stores as  $store) {
             $store->id = self::$id++;

@@ -33,6 +33,11 @@ use App\Events\Database\DeletedModel;
 use App\Events\SyncDatabase;
 use App\Events\SynchronizedCustomer;
 
+use Tymon\JWTAuth\Exceptions\JWTException;
+use Tymon\JWTAuth\Exceptions\TokenExpiredException;
+use Tymon\JWTAuth\Exceptions\TokenInvalidException;
+use Tymon\JWTAuth\Facades\JWTAuth;
+
 class CustomerRepository implements CustomerRepositoryInterface
 {
 
@@ -64,6 +69,12 @@ class CustomerRepository implements CustomerRepositoryInterface
     public function index(Request $request)
     {
 
+        //store.
+    $token = JWTAuth::getToken();
+
+ $apy = JWTAuth::getPayload($token)->toArray();
+ info("Customer hash token: ".json_encode( $apy['sub'],true));
+
         $totalpage = 0;
 
         if ($request->has('list_customer')) {
@@ -76,7 +87,6 @@ class CustomerRepository implements CustomerRepositoryInterface
             }
         } elseif ($request->has('except_customer')) {
             $arr = explode(',', $request['except_customer']);
-
             if(count($arr) > 0){
                 $users = $this->customer->whereNotIn('id', $arr)
 
@@ -85,7 +95,6 @@ class CustomerRepository implements CustomerRepositoryInterface
             }
         } else {
             $params = $request->except('_token');
-
             $users = $this->customer->searchcustomer($params)
                 ->order($params)
                 ->totalspent($params)
@@ -97,6 +106,7 @@ class CustomerRepository implements CustomerRepositoryInterface
             // $totalpage = (int)round($total / 15);
             $totalpage = (int)ceil($total / 15);
         }
+
         $total = Customer::count();
         // $totalpage = (int)round($total / 15);
 
@@ -130,7 +140,6 @@ class CustomerRepository implements CustomerRepositoryInterface
             'Content-Type' => 'text/csv',
         );
     }
-
     public function exportCustomerCSV(Request $request)
     {
         info($request->all());
@@ -140,7 +149,8 @@ class CustomerRepository implements CustomerRepositoryInterface
         $fileName = $locationExport . 'customer_' . $dateExport . '.csv';
         if (!empty($request->list_customer)) {
             if ($request->has('list_customer')) {
-                $listCustomers = explode(',', $request->list_customer);
+                $listCustomers = $request->list_customer;
+                // $listCustomers = explode(',', $request->list_customer);
                 $users = $this->customer->whereIn('id', $listCustomers)->get();
             } elseif ($request->has('except_customer')) {
                 $except_customer = (array)$request->except_customer;
@@ -165,11 +175,12 @@ class CustomerRepository implements CustomerRepositoryInterface
 
             dispatch(new SendEmail($fileName, $store));
         }
-
+        info( $request->all());
         return [
             'message' => 'Export CSV Done',
             'status' => 204,
         ];
+
     }
 
     public function getCustomer()

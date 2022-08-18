@@ -154,50 +154,7 @@ class CampaignRepository implements CampaignRepositoryInterface
         return $bodyEmail;
     }
 
-    public function previewEmail1($request, $array)
-    {
-        info('previewEmail: inside Fisrt');
-        $imageName = $this->imageNameTemp;
-        if (empty($imageName) && $request->hasFile('background_banner')){
-            $request->validate(
-                [
-                    'background_banner' => 'required|image|mimes:jpeg,png,jpg,gif|max:5120',
-                ]
-            );
 
-            $name = time() . '.' . $request->background_banner->extension();
-            $request->background_banner->move(public_path('uploads'), $name);
-            $this->imageNameTemp = $name;
-        }
-        $image = $this->imageNameTemp;
-
-        info('previewEmail: Handle Image');
-        $bodyPreviewEmail = $request->preview_email;
-        $cutBodyPreview = str_replace(array("\\",), '', $bodyPreviewEmail);
-        $domBody = new HTML5DOMDocument();
-        $domBody->loadHTML($cutBodyPreview);
-        $querySelectorSubject = $domBody->querySelectorAll('.tiptap_variant');
-        for ($i = 0; $i < count( $querySelectorSubject ); $i++){
-           $nameVariant = $querySelectorSubject[$i]->attributes[2]->value;
-            foreach ($array as $arr) {
-                if ($nameVariant == $arr['variant']){
-                    $querySelectorSubject[$i]->textContent = $arr['value'];
-                    $querySelectorSubject[$i]->attributes[0]->value = "color: rgb(40, 41, 61); font-weight: 600; margin: 0px 3px;";
-                }
-            }
-        }
-        info('previewEmail: handle Body');
-
-        if (!empty($image)) {
-            $img = $domBody->getElementsByTagName('img')[0];
-            $img->setAttribute('src', asset('uploads/' . $image));
-        }
-
-        $bodyEmail = $domBody->saveHTML();
-        info('previewEmail: save body');
-
-        return $bodyEmail;
-    }
 
     public function subject($request, $array)
     {
@@ -293,7 +250,7 @@ class CampaignRepository implements CampaignRepositoryInterface
                 $listCustomersId =  $request->list_mail_customers;
                 $listCustomersId =  json_decode($request->list_mail_customers, true);
                 $listCustomers = Customer::whereNotIn('id', $listCustomersId)->get();
-            }else{
+            }elseif($request->has("all_customer")){
                 $listCustomers = Customer::get();
             }
 
