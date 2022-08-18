@@ -24,6 +24,11 @@ use Illuminate\Support\Facades\Log;
 use IvoPetkov\HTML5DOMDocument;
 use Throwable;
 
+use Tymon\JWTAuth\Exceptions\JWTException;
+use Tymon\JWTAuth\Exceptions\TokenExpiredException;
+use Tymon\JWTAuth\Exceptions\TokenInvalidException;
+use Tymon\JWTAuth\Facades\JWTAuth;
+
 class CampaignRepository implements CampaignRepositoryInterface
 {
     protected $customer;
@@ -264,22 +269,33 @@ class CampaignRepository implements CampaignRepositoryInterface
 
     public function index(Request $request)
     {
-        $totalpage = 0;
-        $params = $request->except('_token');
-        $data = $this->campaignProcess->searchcampaign($params)
-            ->sort($params)
-            ->name($params)
-            ->status($params)
-            ->simplePaginate(15);
+        $store_id = getStoreID();
 
-        $total = $this->campaignProcess->searchcampaign($params)->count();
-        $totalpage = (int)ceil($total / 15);
-        return response([
-            'data' => $data,
-            "totalPage" => $totalpage ? $totalpage : 0,
-            "total_campaignProcess" => $this->campaignProcess->count(),
-            'status' => true,
-        ], 200);
+        $store = Store::where('id',$store_id)->first();
+
+        if(isset($store)){
+            $totalpage = 0;
+            $params = $request->except('_token');
+            $data = $this->campaignProcess
+            ->where("store_id", $store->id)
+            ->searchcampaign($params)
+                ->sort($params)
+                ->name($params)
+                ->status($params)
+                ->simplePaginate(15);
+    
+            $total = $this->campaignProcess
+            ->where("store_id", $store->id)
+            ->searchcampaign($params)->count();
+
+            $totalpage = (int)ceil($total / 15);
+            return response([
+                'data' => $data,
+                "totalPage" => $totalpage ? $totalpage : 0,
+                "total_campaignProcess" => $this->campaignProcess->count(),
+                'status' => true,
+            ], 200);
+        }
     }
 
     public function getCampaign()

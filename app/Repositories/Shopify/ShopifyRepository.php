@@ -38,7 +38,6 @@ class ShopifyRepository implements ShopifyRepositoryInterface
     }
     public function login(Request $request)
     {
-
         if (isset($request["hmac"])) {
             info("have hash mac ");
             if ($this->verifyHmacAppInstall($request)) {
@@ -322,9 +321,6 @@ class ShopifyRepository implements ShopifyRepositoryInterface
         try {
             $store_id = $store->id;
             $store->customers()->delete();
-
-            // $store->query()->delete();
-            // dd(["sfjnskfs",$shop, $access_token,$store_id]);
 
             $batch = Bus::batch([])
                 ->then(function (Batch $batch) {

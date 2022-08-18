@@ -33,7 +33,7 @@ class LoginController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login', 'register', 'user']]);
+        $this->middleware('auth:api', ['except' => ['login', 'register', 'store']]);
     }
     /**
      * Get a JWT via given credentials.
@@ -48,7 +48,7 @@ class LoginController extends Controller
         $data = ([
             "password"=> $getStore['shop'],
             "myshopify_domain"=>$getStore['shop']
-        ]);
+        ]);        
 
         $validator = Validator::make($data, [
             'myshopify_domain' => 'required',
@@ -120,8 +120,8 @@ class LoginController extends Controller
         ]);
     }
 
-    public function user(Request $request)
+    public function store(Request $request)
     {
-        return response()->json(['user' => $request->user]);
+        return response()->json(['store' => $request->store]);
     }
 }
