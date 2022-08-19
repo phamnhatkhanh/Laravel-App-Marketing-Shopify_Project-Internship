@@ -43,12 +43,13 @@ class LoginController extends Controller
 
     public function login(Request $request)
     {
+        info("LoginController: login");
         $getStore = $request->toArray();
 
         $data = ([
             "password"=> $getStore['shop'],
             "myshopify_domain"=>$getStore['shop']
-        ]);        
+        ]);
 
         $validator = Validator::make($data, [
             'myshopify_domain' => 'required',
@@ -62,6 +63,9 @@ class LoginController extends Controller
             return response()->json(['error' => 'Unauthorized'], 401);
         }
         $access_Token = $this->createNewToken($token);
+
+        // info("token ". $access_Token);
+
         return response([
             'data' => $access_Token,
             'status' => true,

@@ -20,11 +20,13 @@ class SyncDatabase
      * @return void
      */
     public $databaseSync;
+    public $databaseChooseSync;
     public $model;
-    public function __construct($databaseSync,$model)
+    public function __construct($databaseSync,$model,$databaseChooseSync=null)
     {
         $this->databaseSync = $databaseSync;
         $this->model = $model;
+        $this->databaseChooseSync = $databaseChooseSync;
     }
 
     /**

@@ -9,6 +9,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Schema;
 
 class createDataCustomer implements ShouldQueue
 {
@@ -66,9 +67,18 @@ class createDataCustomer implements ShouldQueue
                 $findCustomer = $getCustomer->where('id', $data['id'])->first();
 
                 if (empty($findCustomer)) {
-                        info('Create Customer: ...'.  json_encode($findCustomer, true));
+                    // Schema::connection($customerModel->getConnection()->getName())->disableForeignKeyConstraints();
+
+                    // $campaignProcess = $this->campaignProcess->create($request->all());
+
+                        // info('Create Customer: ...'.  json_encode($findCustomer, true));
+
+                    $customerModel->create($data);
+                     $customer_eloquent = $customerModel->where("id",$customer['id'])->first();
+                    info("Create Customer: ...  ". json_encode($customer_eloquent, true));
                     $connect = ($customerModel->getConnection()->getName());
-                    SyncDatabaseAfterCreatedModel($connect, $data, $customerModel->getTable());
+                    // SyncDatabaseAfterCreatedModel($connect,$customer_eloquent);
+                    // Schema::connection($customerModel->getConnection()->getName())->enableForeignKeyConstraints();
                 } else {
                         info('Update Customer: ...'.  json_encode($findCustomer, true));
                     $findCustomer->update($data);

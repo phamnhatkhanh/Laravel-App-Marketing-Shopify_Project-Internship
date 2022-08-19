@@ -16,7 +16,6 @@ class UpdatedModel
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $db_server;
-
     public $model;
 
     public function __construct($db_server,$model)
