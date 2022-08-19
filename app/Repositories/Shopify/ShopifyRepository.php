@@ -59,6 +59,9 @@ class ShopifyRepository implements ShopifyRepositoryInterface
             }
         } else {
             info("NO hmac Login");
+
+            //404
+            //else
             $apiKey = config('shopify.shopify_api_key');
             // $apiKey = config('shopify.shopify_api_key');
             $scope = 'read_customers,write_customers';
@@ -120,6 +123,7 @@ class ShopifyRepository implements ShopifyRepositoryInterface
      * @return void
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
+
     public function authen(Request $request)
     {
         $code = $request->code;
@@ -141,6 +145,7 @@ class ShopifyRepository implements ShopifyRepositoryInterface
         //Đăng kí CustomerWebhooks thêm, xóa, sửa
         $this->registerCustomerWebhookService($shop, $access_token, $getWebhook);
         info("registerCustomerWebhookService");
+        return "setup store sucess";
     }
 
     /**
