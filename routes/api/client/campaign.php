@@ -14,7 +14,7 @@ Route::prefix('campaign')->group(function (){
 
     Route::post('/save-campaign', [CampaignController::class, 'saveCampaign']);
 
-    Route::get('/get-campaigns-process',[CampaignController::class, 'getCampaignProceess']);
+    // Route::get('/get-campaigns-process',[CampaignController::class, 'getCampaignProceess']);
 
     Route::post('/send-test',[CampaignController::class, 'sendEmail']);
 });
