@@ -13,4 +13,4 @@ Route::any('/authen', [ShopifyController::class, 'authen'])->name('authen');
 Route::get('/store', [LoginController::class, 'store'])->middleware('CheckAuthenticate');
 
 
-Route::post('/login', [LoginController::class, 'login'])->name('login');
+// Route::post('/login', [LoginController::class, 'login'])->name('login');

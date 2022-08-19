@@ -29,7 +29,7 @@ use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Exceptions\TokenExpiredException;
 use Tymon\JWTAuth\Exceptions\TokenInvalidException;
 use Tymon\JWTAuth\Facades\JWTAuth;
-
+use Illuminate\Support\Facades\Schema;
 class CampaignRepository implements CampaignRepositoryInterface
 {
     protected $customer;
@@ -39,9 +39,9 @@ class CampaignRepository implements CampaignRepositoryInterface
 
     public function __construct()
     {
-        $this->campaignProcess = getConnectDatabaseActived(new CampaignProcess());
         $this->customer = getConnectDatabaseActived(new Customer());
         $this->campaign = getConnectDatabaseActived(new Campaign());
+        $this->campaignProcess = getConnectDatabaseActived(new CampaignProcess());
     }
 
     public function getCampaignProceess()
@@ -54,30 +54,37 @@ class CampaignRepository implements CampaignRepositoryInterface
     public function saveCampaign(Request $request)
     {
         //save campaign
-        $campaign = $this->campaign->create($request->all());
+        // dd($this->campaign->getModels());
 
-        $request['campaign_id'] = $campaign->id;
+        try{
+            $campaign = $this->campaign->create($request->all());
+            $request['campaign_id'] = $campaign->id;
+            $connect = ($this->campaign->getConnection()->getName());
+            event(new CreatedModel($connect,$campaign));
+            // dd( $this->campaignProcess->getModels());
+
+            Schema::connection($this->campaignProcess->getConnection()->getName())->disableForeignKeyConstraints();
+                $campaignProcess = $this->campaignProcess->create([
+                    "process" => "0",
+                    "status" => "running",
+                    "campaign_id" => $campaign->id,
+                    "name" => $campaign->name,
+                    "total_customers" => $this->customer->count(),
+                ]);
+                $connect = ($this->campaignProcess->getConnection()->getName());
+                event(new CreatedModel($connect,$campaignProcess));
+            Schema::connection($this->campaignProcess->getConnection()->getName())->disableForeignKeyConstraints();
 
 
-        $campaignProcess = $this->campaignProcess->create([
-            "process" => "0",
-            "status" => "running",
-            "campaign_id" => 1,
-            "name" => $campaign->name,
-            "total_customers" => $this->customer->count(),
-        ]);
+            $this->sendEmailPreview($request, $campaignProcess);
+            return response([
+            "status" => true,
+            "message" => "Save success campaign"
+        ], 200);
+        }catch(Throwable $e){
+            // dd($e);
+        }
 
-        $this->sendEmailPreview($request, $campaignProcess);
-
-
-        //    $connect = ($this->campaignProcess->getConnection()->getName());
-        // event(new CreatedModel($connect,$data_campaignProcess,$this->campaignProcess->getModel()->getTable()));
-        // $connect = ($this->campaignProcess->getConnection()->getName());
-
-
-        // event(new CreatedModel($connect, $campaignProcess));
-
-        return [$campaign];
     }
 
     // nhan list user va gui sau hien tai fix cung.
@@ -238,39 +245,42 @@ class CampaignRepository implements CampaignRepositoryInterface
 
     public function index(Request $request)
     {
-        $store_id = getStoreID();
+        return $this->campaign->get();
+        // dd("skfskfj");
+        // $store_id = getStoreID();
 
-        $store = Store::where('id',$store_id)->first();
+        // $store = Store::where('id',$store_id)->first();
 
-        if(isset($store)){
-            $totalpage = 0;
-            $params = $request->except('_token');
-            $data = $this->campaignProcess
-            ->where("store_id", $store->id)
-            ->searchcampaign($params)
-                ->sort($params)
-                ->name($params)
-                ->status($params)
-                ->simplePaginate(15);
+        // if(isset($store)){
+        //     $totalpage = 0;
+        //     $params = $request->except('_token');
+        //     $data = $this->campaignProcess
+        //     ->where("store_id", $store->id)
+        //     ->searchcampaign($params)
+        //         ->sort($params)
+        //         ->name($params)
+        //         ->status($params)
+        //         ->simplePaginate(15);
 
-            $total = $this->campaignProcess
-            ->where("store_id", $store->id)
-            ->searchcampaign($params)->count();
+        //     $total = $this->campaignProcess
+        //     ->where("store_id", $store->id)
+        //     ->searchcampaign($params)->count();
 
-            $totalpage = (int)ceil($total / 15);
-            return response([
-                'data' => $data,
-                "totalPage" => $totalpage ? $totalpage : 0,
-                "total_campaignProcess" => $this->campaignProcess->count(),
-                'status' => true,
-            ], 200);
-        }
+        //     $totalpage = (int)ceil($total / 15);
+        //     return response([
+        //         'data' => $data,
+        //         "totalPage" => $totalpage ? $totalpage : 0,
+        //         "total_campaignProcess" => $this->campaignProcess->count(),
+        //         'status' => true,
+        //     ], 200);
+        // }
 
     }
 
     public function getCampaign()
     {
-        return $this->campaign->orderBy('created_at', 'desc')->get();
+        return $this->campaign->get();
+        // return $this->campaign->orderBy('created_at', 'desc')->get();
     }
 
     public function store($request)

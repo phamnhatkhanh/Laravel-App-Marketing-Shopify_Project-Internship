@@ -25,6 +25,7 @@ class ShopifyController extends Controller
     }
     public function login(Request $request)
     {
+        // info("shopify controller login");
         return $this->shopifyRepository->login($request);
     }
 

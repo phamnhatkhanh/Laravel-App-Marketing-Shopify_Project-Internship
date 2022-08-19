@@ -29,6 +29,7 @@ class SyncDatabaseAfterDisconnect  implements ShouldQueue
     public function handle($event)
     {
 
+        info("all disconnect ".$event->databaseChooseSync);
         $dbNames = DbStatus::where('model_name', '=', $event->model)->get();
         $listDataNeedSync = ObserveModel::where('database',$event->databaseSync)->get();
         info("SyncDatabaseAfterDisconnect list item sync: ".json_encode($listDataNeedSync));
@@ -37,17 +38,25 @@ class SyncDatabaseAfterDisconnect  implements ShouldQueue
             // $dbName = $dbName->name;
             // info("SyncDatabaseAfterDisconnect: find DB activing base on sync ");
             try {
-                if(($dbName->status =="db_sync")  || DB::connection($dbName->name)->getPdo()){
-                    info("SyncDatabaseAfterDisconnect: ". $dbName->status);
+                $dbConnect = DbStatus::where("name",$dbName->name)->first();
 
-                    $dbConnect = DbStatus::where("name",$dbName->name)->first();
+                if(  !empty($event->databaseChooseSync) || DB::connection($dbName->name)->getPdo() ){
+                    // info("SyncDatabaseAfterDisconnect: choose sync ". $dbName->name);
+
                     // info("SyncDatabaseAfterDisconnect: find db connect ".$dbName);
-                    if(($dbConnect->status == "actived") ||  ($dbConnect->status =="db_sync")){
+                    if(( !empty($event->databaseChooseSync)||$dbConnect->status == "actived" ) ){
+                        info("SyncDatabaseAfterDisconnect: choose sync ". $dbName->name);
+                    // if DB status db_sync is just it -> change status to actived.
                         // && ($dbName != $event->databaseSync)
                         info("SyncDatabaseAfterDisconnect: get DB is active in DB ".$dbName->name);
                         // info($listDataNeedSync);
+                        if(!empty($event->databaseChooseSync)){
+                                    $dbConnect->name = $event->databaseChooseSync;
+                                     info("SyncDatabaseAfterDisconnect: all db nto connect choose sync ". $dbConnect->name);
+                            }
+
                         foreach ($listDataNeedSync as $dataNeedSync) {
-                            info($dataNeedSync);
+                            // info($dataNeedSync);
                             if($dataNeedSync->action  == "delete") {
                                 //row not exist.
                                 info("SyncDatabaseAfterDisconnect: delete product ".$dataNeedSync->id_row);
@@ -59,6 +68,8 @@ class SyncDatabaseAfterDisconnect  implements ShouldQueue
                                 // have exist row in DB
                                 info("SyncDatabaseAfterDisconnect: ".$dataNeedSync->action." product ".$dataNeedSync->id_row);
                                 // get row_data in DB connect
+
+
                                 $latestData = DB::connection($dbConnect->name)
                                     ->table($dataNeedSync->table)
                                     ->where('id', $dataNeedSync->id_row)
@@ -66,7 +77,7 @@ class SyncDatabaseAfterDisconnect  implements ShouldQueue
 
                                     info("SyncDatabaseAfterDisconnect data: ".json_encode($latestData));
                                 if(!is_null($latestData)){
-                                    info("do action ");
+                                    // info("do action ");
                                     $data = json_decode(json_encode($latestData), true);
                                     if($dataNeedSync->action  == "update") {
                                         DB::connection($event->databaseSync)
@@ -83,6 +94,7 @@ class SyncDatabaseAfterDisconnect  implements ShouldQueue
                             }
                             $dataNeedSync->delete();
                         }
+
                         info("SyncDatabaseAfterDisconnect: update stattus and delte observer");
                         DbStatus::where('name',$event->databaseSync)->update([ "status" =>"actived"]);
                         break;
