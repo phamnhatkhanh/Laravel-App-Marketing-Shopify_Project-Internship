@@ -20,8 +20,8 @@ Route::prefix('customer')->group(function () {
 
 });
 
-Route::apiResource('/customer', CustomerController::class)
-->middleware("CheckAuthenticate");
+Route::apiResource('/customer', CustomerController::class);
+// ->middleware("CheckAuthenticate");
 
 
 

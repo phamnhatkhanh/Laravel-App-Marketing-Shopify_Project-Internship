@@ -42,6 +42,7 @@ class ShopifyRepository implements ShopifyRepositoryInterface
      */
     public function login(Request $request)
     {
+        info("shopify login");
         if (isset($request["hmac"])) {
             info("have hash mac ");
             if ($this->verifyHmacAppInstall($request)) {
@@ -63,12 +64,15 @@ class ShopifyRepository implements ShopifyRepositoryInterface
             $scope = 'read_customers,write_customers';
             $shop = $request->myshopify_domain;
 
-//            $redirect_uri = 'http://localhost:8000/api/auth/authen';
-            $redirect_uri = 'http://192.168.101.83:8080/login';
+            // $redirect_uri = 'http://localhost:8000/api/auth/authen';
+            $redirect_uri = $request->header("origin")."/login";
 
             $url = 'https://' . $shop . '/admin/oauth/authorize?client_id=' . $apiKey . '&scope=' . $scope . '&redirect_uri=' . $redirect_uri;
             info($url);
-            return $url;
+            return response()->json([
+                "status" => true,
+                "url"=> $url
+            ]);
         }
     }
 
@@ -198,6 +202,7 @@ class ShopifyRepository implements ShopifyRepositoryInterface
 
         $store = !empty($responseStore) ? $responseStore : [];
 
+        info("createDataStore...");
         dispatch(new createDataStore($store, $access_token));
 
         $getData = $store['shop'];
@@ -358,9 +363,17 @@ class ShopifyRepository implements ShopifyRepositoryInterface
         $request['id'] = $this->store->max('id') + 1;
         $request['created_at'] = Carbon::now()->format('Y-m-d H:i:s');;
         $request['updated_at'] = Carbon::now()->format('Y-m-d H:i:s');;
+        $store = $this->store->create($request->all());
+        // dd($store);
+        $store = $this->store->where('id', $request['id'])->first();
         $connect = ($this->store->getConnection()->getName());
-        event(new CreatedModel($connect, $request->all(), $this->store->getModel()->getTable()));
-        return "add successfully store";
+        event(new CreatedModel($connect, $store));
+        return $store;
+        // return "add successfully store";
+
+
+
+
     }
 
     public function update($request, $store_id)

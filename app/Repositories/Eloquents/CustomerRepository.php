@@ -196,10 +196,15 @@ class CustomerRepository implements CustomerRepositoryInterface
         $request['created_at'] = Carbon::now()->format('Y-m-d H:i:s');
         $request['updated_at'] = Carbon::now()->format('Y-m-d H:i:s');
 
+        $customer = $this->customer->create($request->all());
+        // dd($customer);
+        $customer = $this->customer->where('id', $request['id'])->first();
         $connect = ($this->customer->getConnection()->getName());
-        event(new CreatedModel($connect, $request->all(), $this->customer->getModel()->getTable()));
+        event(new CreatedModel($connect, $customer));
 
-        return "create successfully customer";
+        return  $customer;
+
+        // return "create successfully customer";
     }
 
     /**

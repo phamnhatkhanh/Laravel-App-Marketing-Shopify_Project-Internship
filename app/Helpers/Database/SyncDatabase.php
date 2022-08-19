@@ -5,57 +5,62 @@ use App\Models\ObserveModel;
 use App\Models\DbStatus;
 // use Throwable;
 use Carbon\Carbon;
-
-if (!function_exists('showLog')) {
-    function showLog(){
-        info("access function show log and run in queue...");
-    }
-}
+use Illuminate\Support\Facades\Schema;
 
 if (!function_exists('SyncDatabaseAfterCreatedModel')) {
-    function SyncDatabaseAfterCreatedModel($db_server,$data,$model){
-        info("SyncDatabaseAfterCreatedModel: created product listener");
-        $dbNames = DbStatus::where('model_name', '=', $model)->get();
-        // dd( $dbNames);
+    function SyncDatabaseAfterCreatedModel($db_server,$model){
+        info("SyncDatabaseAfterCreatedModel: created product listener ....". json_encode($model,true));
+        $dbNames = DbStatus::where('model_name', '=', $model->getTable())->get();
+        // info( json_encode($dbNames,true) );
         // dd($dataUpdateModel);
-        $dataCreatedModel = $data;
+        $dataCreatedModel = $model->toArray();
         // info("SyncDatabaseAfterCreatedModel: ".json_encode($dataCreatedModel));
         $dataCreatedModel['created_at'] =  Carbon::parse($dataCreatedModel['created_at'])->format('Y-m-d H:i:s');
         $dataCreatedModel['updated_at'] =  Carbon::parse($dataCreatedModel['updated_at'])->format('Y-m-d H:i:s');
         // dd($dataCreatedModel);
-        info("SyncDatabaseAfterCreatedModel: ".json_encode($dataCreatedModel));
+        // info("SyncDatabaseAfterCreatedModel: ".json_encode($dataCreatedModel));
         foreach ($dbNames as $dbName) {
             $dbName = $dbName->name;
             try {
-                // if($dbName == $event->db_server){continue;}
-                // info("insert data to db");
-                 DB::connection($dbName)
-                    ->table($model)
-                    ->insert($dataCreatedModel);
+                if($dbName == $db_server){continue;}
+                info("SyncDatabaseAfterCreatedModel: prepare insert data to db");
+                if(DB::connection($dbName)->getPdo()){
+
+                    Schema::connection($dbName)->disableForeignKeyConstraints();
+
+                    // $campaignProcess = $this->campaignProcess->create($request->all());
+                        $model::on($dbName)->create($dataCreatedModel);
+                    Schema::connection($dbName)->enableForeignKeyConstraints();
+                    info("SyncDatabaseAfterCreatedModel: insert doneeee");
+                }
+                //  DB::connection($dbName)
+                //     ->table($model->getTable())
+                //     ->insert($dataCreatedModel);
 
             } catch (\Throwable $th) {
-                info("SyncDatabaseAfterCreatedModel:" .$th);
+                // info("SyncDatabaseAfterCreatedModel:" .$th);
+                // info("DB not connect Create: ".$model->getTable()."  ".$model->id );
                 $dataObserveModel = [
                     "database" => $dbName,
-                    "table" => $model,
-                    "id_row" => $dataCreatedModel['id'],
+                    "table" => $model->getTable(),
+                    "id_row" => $model->id,
                     "action" => "create"
                 ];
-                // DbStatus::where('name',$dbName)->update([ "status" =>"disconnected"]);
-                // ObserveModel::where('id_row', $dataUpdateModel['id'])->updateOrCreate($dataObserveModel);
+
+                DbStatus::where('name',$dbName)->update([ "status" =>"disconnected"]);
+                ObserveModel::where('id_row',$model->id)->updateOrCreate($dataObserveModel);
 
                 continue;
             }
         }
-        // info($event->db_server);
-        // info($event->product);
+
     }
 }
 
 if (!function_exists('SyncDatabaseAfterUpdatedModel')) {
     function SyncDatabaseAfterUpdatedModel($db_server,$model){
-         info("show log in function created: ");
-        showLog();
+        //  info("show log in function created: ");
+
         $dbNames = DbStatus::where('model_name', '=', $model->getTable())->get();
         // dd($dbNames);
         if(!empty($model)){
@@ -68,12 +73,13 @@ if (!function_exists('SyncDatabaseAfterUpdatedModel')) {
             foreach ($dbNames as $dbName) {
                 $dbName = $dbName->name;
                 try {
-                    // dd($dbName);
+                    // info("SyncDatabaseAfterUpdatedModel: prepare update ".$model->id);
                     if(DB::connection($dbName)->getPdo()){
                         $dbConnect = DbStatus::where('name',$dbName)->first();
                         // if($dbConnect->status == 'actived'){
                             if($dbName == $db_server){continue;}
                             $model::on($dbName)->where('id',$model->id)->update($dataUpdateModel);
+                            // info("SyncDatabaseAfterUpdatedModel: update done".$model->id);
                         // }else{
                         //     // syncing or retry connect but status still disconnected
                         //     // throw new Throwable(); // not do sync update.
@@ -81,13 +87,14 @@ if (!function_exists('SyncDatabaseAfterUpdatedModel')) {
                         // }
                     }
                 } catch (Throwable $th ) {
+                    // info("DB not connect Update: ".$model->getTable()."  ".$model->id );
                     $dataObserveModel = [
                         "database" => $dbName,
                         "table" => $model->getTable(),
                         "id_row" => $model->id,
                         "action" => "update"
                     ];
-                    info("Event updateproudct: change status ".$dbName);
+                    // info("Event updateproudct: change status ".$dbName);
                     DbStatus::where('name',$dbName)->update([ "status" =>"disconnected"]);
                     ObserveModel::where('id_row', $model->id)->updateOrCreate($dataObserveModel);
                     // info($model->id . " Listener db not connnect ".$dbName);
@@ -101,40 +108,43 @@ if (!function_exists('SyncDatabaseAfterUpdatedModel')) {
 if (!function_exists('SyncDatabaseAfterDeletedModel')) {
     function SyncDatabaseAfterDeletedModel($db_server,$model){
         // dd($model);
-        info("hhre event deleted");
+        // info("hhre event deleted");
         $dbNames = DbStatus::where('model_name', '=', $model->getTable())->get();
         // dd($dbNames);
         if(!empty($model)){
-            info("delte item exist");
+            // info("delte item exist");
             foreach ($dbNames as $dbName) {
                 $dbName = $dbName->name;
                 // if($dbName == $event->db_server){continue;}
                 try {
-                    // dd("dlete model in otehr database where");
-                    $model::on($dbName)->where('id',$model->id)->delete();
+                    // info("SyncDatabaseAfterdletedModel: prepare delete ".$model->id);
+                    if(DB::connection($dbName)->getPdo()){
+                        // dd("dlete model in otehr database where");
+                        $model::on($dbName)->where('id',$model->id)->delete();
+                        // info("SyncDatabaseAfterdeletedModel: prepare delete ".$model->id);
+                    }
                 } catch (\Throwable $th) {
+                    // info("DB not connect Delete: ".$model->getTable()."  ".$model->id );
                     $dataObserveModel = [
                         "database" => $dbName,
                         "table" => $model->getTable(),
                         "id_row" => $model->id,
                         "action" => "delete"
                     ];
-                    // info("Event updateproudct: change status ".$dbName);
+
                     DbStatus::where('name',$dbName)->update([ "status" =>"disconnected"]);
                     ObserveModel::where('id_row', $model->id)->updateOrCreate($dataObserveModel);
                     continue;
                 }
             }
         }
-        // info($event->db_server);
-        // info($event->product);
-        info("excute delete event done");
+
     }
 }
 
-if (!function_exists('SyncDatabaseAfterDisconnect')) {
-    function SyncDatabaseAfterDisconnect(){
-        info("access function show log and run in queue...");
-    }
-}
+// if (!function_exists('SyncDatabaseAfterDisconnect')) {
+//     function SyncDatabaseAfterDisconnect(){
+//         info("access function show log and run in queue...");
+//     }
+// }
 
