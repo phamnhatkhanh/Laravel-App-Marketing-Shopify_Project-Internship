@@ -39,9 +39,13 @@ class CustomerRepository implements CustomerRepositoryInterface
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
     public function syncCutomerFromShopify(Request $request)
+
     {
-        $storeID = GetStoreID();
-        $store = $this->store->where('id', $storeID)->first();
+
+        $store_id = getStoreID();
+
+        $store = $this->store->where('id',  $store_id)->first();
+
 
         $shopifyRepository = new ShopifyRepository();
 

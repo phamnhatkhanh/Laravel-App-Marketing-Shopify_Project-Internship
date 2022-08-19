@@ -5,6 +5,7 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 use App\Models\Campaign;
+use App\Models\Store;
 
 class CampaignProcessFactory extends Factory
 {
@@ -16,6 +17,10 @@ class CampaignProcessFactory extends Factory
     public function definition()
     {
         return [
+            'store_id'=>function(){
+                return Store::all()->random()->id;
+            },
+
             'campaign_id'=>function(){
                 return Campaign::all()->random()->id;
             },
