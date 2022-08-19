@@ -17,13 +17,19 @@ class CustomerController extends Controller
         $this->customerRepository = $customerRepository;
     }
 
+    /**
+     * Get Store Information
+     *
+     * @param Request $request
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     */
     public function syncCutomerFromShopify(Request $request)
     {
         return $this->customerRepository->syncCutomerFromShopify($request);
     }
 
     /**
-     * Display a listing of the resource.
+     * Search Customer by Store
      *
      * @return \Illuminate\Http\Response
      */
@@ -33,20 +39,25 @@ class CustomerController extends Controller
     }
 
     /**
+     * Receive request from FontEnd send all Customer or select Customer and Create File to send Mail
      *
-     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
      */
     public function exportCustomerCSV(Request $request){
         return $this->customerRepository->exportCustomerCSV($request);
 
     }
 
-
+    /**
+     * Get All Customer display the interface
+     *
+     * @return resource
+     */
     public function getCustomer()
     {
         return $this->customerRepository->getCustomer();
     }
-
 
     public function update(Request $request, $customer_id)
     {

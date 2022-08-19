@@ -6,11 +6,19 @@ use GuzzleHttp\Client;
 
 class ShopifyService
 {
+    /**
+     * Get access_token from the Shopify
+     *
+     * @param string $code
+     * @param string $domain
+     * @return mixed
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
     public static function getAccessToken(string $code, string $domain)
     {
         info("ShopifyRepository getAccessToken: get token");
-        $client2 = new Client();
-        $response = $client2->post(
+        $client = new Client();
+        $request = $client->post(
             "https://" . $domain . "/admin/oauth/access_token",
             [
                 'form_params' => [
@@ -20,10 +28,19 @@ class ShopifyService
                 ]
             ]
         );
+        $response = json_decode($request->getBody()->getContents());
 
-        return json_decode($response->getBody()->getContents());
+        return $response;
     }
 
+    /**
+     * Retrieves a count of existing webhook subscriptions
+     *
+     * @param $shop
+     * @param $access_token
+     * @return array
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
     public static function getTopicWebhook($shop, $access_token)
     {
         info('Get all Topic Webhook Register');
@@ -39,6 +56,15 @@ class ShopifyService
         return $response;
     }
 
+    /**
+     * Create a new webhook subscription
+     *
+     * @param $shop
+     * @param $access_token
+     * @param $getWebhook
+     * @return void
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
     public static function registerCustomerWebhookService($shop, $access_token, $getWebhook)
     {
 
@@ -68,20 +94,35 @@ class ShopifyService
         }
     }
 
+    /**
+     * Retrieve a count of Customers
+     *
+     * @param $shop
+     * @param $access_token
+     * @return array
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
     public static function countDataCustomer($shop, $access_token)
     {
         $client = new Client();
         $url = 'https://' . $shop . '/admin/api/2022-07/customers/count.json';
-        $resCustomer = $client->request('get', $url, [
+        $request = $client->request('get', $url, [
             'headers' => [
                 'X-Shopify-Access-Token' => $access_token,
             ]
         ]);
-        $countCustomer = (array)json_decode($resCustomer->getBody());
+        $countCustomer = (array)json_decode($request->getBody());
 
         return $countCustomer;
     }
 
+    /**
+     * If quantity Customer exceed one save will automatically press rel="next" to go through the page and continue save
+     *
+     * @param array $headers
+     * @param $params
+     * @return array|mixed
+     */
     public static function setParam(array $headers, $params)
     {
         $links = explode(',', @$headers['Link'][0]);

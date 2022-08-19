@@ -7,16 +7,11 @@ namespace App\Repositories\Shopify;
 use App\Jobs\createDataCustomer;
 use App\Jobs\createDataStore;
 use App\Services\Shopify\ShopifyService;
-use Symfony\Component\HttpFoundation\Response;
-
-use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Bus\Batch;
 use Carbon\Carbon;
-use phpDocumentor\Reflection\Types\This;
 use Throwable;
-
 use GuzzleHttp\Client;
 use App\Http\Controllers\LoginController;
 use App\Repositories\Contracts\ShopifyRepositoryInterface;
@@ -25,7 +20,6 @@ use App\Models\Store;
 use App\Events\Database\CreatedModel;
 use App\Events\Database\UpdatedModel;
 use App\Events\Database\DeletedModel;
-use App\Events\SyncDatabase;
 use App\Events\SynchronizedCustomer;
 use App\Jobs\SyncCumtomer;
 
@@ -38,16 +32,21 @@ class ShopifyRepository implements ShopifyRepositoryInterface
     {
         $this->customer = getConnectDatabaseActived(new Customer());
         $this->store = getConnectDatabaseActived(new Store());
-
     }
 
+    /**
+     * If hmac already exists, then login into Store. If don't have hmac download the app from Shopify
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse|string|void
+     */
     public function login(Request $request)
     {
         if (isset($request["hmac"])) {
             info("have hash mac ");
             if ($this->verifyHmacAppInstall($request)) {
 
-                $shop = $this->store->where("myshopify_domain", $request->shop)->first();
+                $shop = $this->store->where("myshopify_domain", $request->myshopify_domain)->first();
 
                 if (empty($shop)) {
                     info("get acces token ");
@@ -73,6 +72,12 @@ class ShopifyRepository implements ShopifyRepositoryInterface
         }
     }
 
+    /**
+     * Define since from Shopify to server after install app
+     *
+     * @param Request $request
+     * @return true
+     */
     private function verifyHmacAppInstall(Request $request)
     {
         $params = array();
@@ -94,48 +99,85 @@ class ShopifyRepository implements ShopifyRepositoryInterface
                 "status" => false
             ], 401);
         }
+
         return true;
     }
 
+    /**
+     * Receive information from login to do other things
+     *
+     * @param Request $request
+     * @return void
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
     public function authen(Request $request)
     {
         $code = $request->code;
         info("in functino authen " . $code);
-        $shopName = $request->shop;
+        $shop = $request->shop;
 
         //Lấy Access_token gọi về từ WebhookService
-        $getAccess_token = $this->getAccessToken($code, $shopName);
+        $getAccess_token = $this->getAccessToken($code, $shop);
         $access_token = $getAccess_token->access_token;
 
-        $store_id = $this->createDataStore($shopName, $access_token);
+        $storeID = $this->createDataStore($shop, $access_token);
 
         //Lưu thông tin khách hàng ở Shopify vào DB
         info("save customer");
-        $this->createDataCustomer($shopName, $access_token, $store_id);
+        $this->createDataCustomer($shop, $access_token, $storeID);
 
-
-        $getWebhook = $this->getTopicWebhook($shopName, $access_token);
+        $getWebhook = $this->getTopicWebhook($shop, $access_token);
 
         //Đăng kí CustomerWebhooks thêm, xóa, sửa
-        $this->registerCustomerWebhookService($shopName, $access_token, $getWebhook);
+        $this->registerCustomerWebhookService($shop, $access_token, $getWebhook);
         info("registerCustomerWebhookService");
     }
 
+    /**
+     * Get access_token from the Shopify
+     *
+     * @param string $code
+     * @param string $domain
+     * @return resource
+     */
     public function getAccessToken(string $code, string $domain)
     {
         return ShopifyService::getAccessToken($code, $domain);
     }
 
+    /**
+     * Retrieves a count of existing webhook subscriptions
+     *
+     * @param string $shop
+     * @param string $access_token
+     * @return array
+     */
     public function getTopicWebhook($shop, $access_token)
     {
         return ShopifyService::getTopicWebhook($shop, $access_token);
     }
 
+    /**
+     * Create a new webhook subscription
+     *
+     * @param string $shop
+     * @param string $access_token
+     * @param $getWebhook
+     * @return string
+     */
     public static function registerCustomerWebhookService($shop, $access_token, $getWebhook)
     {
         return ShopifyService::registerCustomerWebhookService($shop, $access_token, $getWebhook);
     }
 
+    /**
+     * Get Shop Information and save it into the Database
+     *
+     * @param string $shop
+     * @param string $access_token
+     * @return resource
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
     public function createDataStore($shop, $access_token)
     {
         $params = [
@@ -163,16 +205,36 @@ class ShopifyRepository implements ShopifyRepositoryInterface
         return $getData['id'];
     }
 
+    /**
+     * Retrieve a count of Customers
+     *
+     * @param string $shop
+     * @param string $access_token
+     * @return array
+     */
     public function countDataCustomer($shop, $access_token)
     {
         return ShopifyService::countDataCustomer($shop, $access_token);
     }
 
-    public function createDataCustomer($shop, $access_token, $store_id)
+    /**
+     * Get list Customer from Shopify and Save Customer into the Database
+     *
+     * @param string $shop
+     * @param string $access_token
+     * @param string $storeID
+     * @return mixed
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function createDataCustomer($shop, $access_token, $storeID)
     {
         $limit = 250;
+
+        //Count number Customers
         $countCustomer = $this->countDataCustomer($shop, $access_token);
         $ceilRequest = (int)ceil($countCustomer['count'] / $limit);
+
+        //Calculate the number of iterations to be able to save all customers to the DB
         $numberRequest = $countCustomer > $limit ? $ceilRequest : 1;
         $log = [];
         $params = [
@@ -196,22 +258,29 @@ class ShopifyRepository implements ShopifyRepositoryInterface
             $responseCustomer = json_decode($request->getBody(), true);
             $customers = !empty($responseCustomer['customers']) ? $responseCustomer['customers'] : [];
 
-            data_set($customers, '*.store_id', $store_id);
+            data_set($customers, '*.store_id', $storeID);
 
             info("Shopify: save customers");
-            dispatch(new createDataCustomer($customers, $store_id));
+            dispatch(new createDataCustomer($customers, $storeID));
         }
 
         return $log;
     }
 
+    /**
+     * SyncCustomer from Shopify to Database. If the Customer already exits then edit and Customer doesn't exist then save Customer in the Database
+     *
+     * @param string $shop
+     * @param string $access_token
+     * @param string $store
+     * @return mixed
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
     public function syncCustomer($shop, $access_token, $store)
     {
         // get store.
         try {
-            $store_id = $store->id;
-            // $store->customers()->delete();
-
+            $storeID = $store->id;
             $batch = Bus::batch([])
                 ->then(function (Batch $batch) {
 
@@ -219,11 +288,15 @@ class ShopifyRepository implements ShopifyRepositoryInterface
 
                     event(new SynchronizedCustomer($batch->id));
                 })->onQueue('jobs')->dispatch();
-            $batch_id = $batch->id;
+            $batchID = $batch->id;
 
-            $limit = 10;
+            $limit = 250;
+
+            //Count number Customers
             $countCustomer = $this->countDataCustomer($shop, $access_token);
             $ceilRequest = (int)ceil($countCustomer['count'] / $limit);
+
+            //Calculate the number of iterations to be able to save all customers to the DB
             $numberRequest = $countCustomer > $limit ? $ceilRequest : 1;
             $log = [];
             $params = [
@@ -247,7 +320,7 @@ class ShopifyRepository implements ShopifyRepositoryInterface
                 $responseCustomer = (array)json_decode($request->getBody(), true);
                 $customers = !empty($responseCustomer['customers']) ? $responseCustomer['customers'] : [];
 
-                $batch->add(new SyncCumtomer($batch_id, $store_id, $customers));
+                $batch->add(new SyncCumtomer($batchID, $storeID, $customers));
             }
 
             info("syncCustomer done sycn customer");
@@ -255,14 +328,26 @@ class ShopifyRepository implements ShopifyRepositoryInterface
             info($e);
             // report($e);
         }
-        return "successfully sycn customers";
+        return "successfully sync customers";
     }
 
+    /**
+     * If quantity Customer exceed one save will automatically press rel="next" to go through the page and continue save
+     *
+     * @param array $headers
+     * @param $params
+     * @return mixed
+     */
     public function setParam(array $headers, $params)
     {
         return ShopifyService::setParam($headers, $params);
     }
 
+    /**
+     * Get all Customer display the interface
+     *
+     * @return resource
+     */
     public function getStore()
     {
         return $this->store->get();
