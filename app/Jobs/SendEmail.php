@@ -40,7 +40,7 @@ class SendEmail implements ShouldQueue
 
         Mail::send('mail.attachment', compact('store' ), function ($email) use ($fileName, $store) {
             $email->from($store->email);
-            $email->subject('Backup data CSV');
+            $email->subject('Backup data CSV From: '.$store->name_merchant);
             $email->to($store->email);
             $email->attach($fileName);
         });

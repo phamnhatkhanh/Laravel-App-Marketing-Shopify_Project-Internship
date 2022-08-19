@@ -32,6 +32,7 @@ class CampaignRepository implements CampaignRepositoryInterface
     protected $campaignProcess;
     protected $imageNameTemp = null;
 
+
     public function __construct()
     {
         $this->campaignProcess = getConnectDatabaseActived(new CampaignProcess());
@@ -39,6 +40,11 @@ class CampaignRepository implements CampaignRepositoryInterface
         $this->campaign = getConnectDatabaseActived(new Campaign());
     }
 
+    /**
+     * Get List Campaign Processes
+     *
+     * @return mixed
+     */
     public function getCampaignProceess()
     {
         $campaignProcess = $this->campaignProcess->orderBy('created_at', 'desc')->get();
@@ -46,6 +52,12 @@ class CampaignRepository implements CampaignRepositoryInterface
         return $campaignProcess;
     }
 
+    /**
+     * Receive request from FrontEnd. Send mail for selected customers and use Pusher the display mail number of successes, failures
+     *
+     * @param Request $request
+     * @return array
+     */
     public function saveCampaign(Request $request)
     {
         //save campaign
@@ -75,50 +87,41 @@ class CampaignRepository implements CampaignRepositoryInterface
         return [$campaign];
     }
 
-    // nhan list user va gui sau hien tai fix cung.
-    private function sendEmailCampaign($listMailCustomers, $campaignProcess)
-    {
-
-        $batch = Bus::batch([])
-            ->then(function (Batch $batch) {
-            })
-            ->finally(function (Batch $batch) use ($campaignProcess) {
-                $campaignProcess->update([
-                    'status' => 'completed',
-                    'process' => 100,
-                    'send_email_done' => $batch->processedJobs(),
-                    'send_email_fail' => $batch->failedJobs,
-                ]);
-
-                $connect = ($campaignProcess->getConnection()->getName());
-                event(new UpdatedModel($connect, $campaignProcess));
-                event(new MailSent($batch->id, $campaignProcess));
-            })->onQueue('jobs')->dispatch();
-        $batchId = $batch->id;
-
-        foreach ($listMailCustomers as $key => $MailCustomer) {
-            if ($key > 1 && $key < 5) {
-                $MailCustomer = 1;
-                // info("key: ".  $key. "  value: ".$MailCustomer);
-            }
-            $batch->add(new SendMail($batchId, $MailCustomer, $campaignProcess));
-        }
-    }
-
+    /**
+     * Receive request, array from sendMail or SendMailPreview replace image, mailing content and put in dom
+     *
+     * @param $request
+     * @param array $array
+     * @return string
+     */
     public function previewEmail($request, $array)
     {
         return CampaignService::previewEmail($request, $array);
     }
 
+    /**
+     * Receive request, array from SendMail or sendMailPreview put in dom and replace subject
+     *
+     * @param $request
+     * @param array $array
+     * @return string
+     */
     public function subject($request, $array)
     {
         return CampaignService::subject($request, $array);
     }
 
+    /**
+     * Receive request from FrontEnd put in Job and send mail to the person receiving the request
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function SendEmail(Request $request)
     {
         info('SendTestMail Success');
-        $store = Store::where('myshopify_domain', $request->myshopify_domain)->first();
+        $storeID = GetStoreID();
+        $store = Store::where('id', $storeID)->first();
         $array = ([
             [
                 "variant" => 'Customer_Full_name',
@@ -149,12 +152,19 @@ class CampaignRepository implements CampaignRepositoryInterface
         dispatch(new SendTestPreview($bodyEmail, $subject, $imageName, $store, $sendEmail));
         info('SendTestMail Success');
 
-        return [
+        return response()->json([
             'message' => 'Send Test Success',
             'status' => true,
-        ];
+        ], 204);
     }
 
+    /**
+     * Receive request from saveCampaign put in Job. Send mail for selected customers and use Pusher the display mail number of successes, failures
+     *
+     * @param Request $request
+     * @param $campaignProcess
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function sendEmailPreview(Request $request, $campaignProcess)
     {
         info($request->all());
@@ -190,7 +200,8 @@ class CampaignRepository implements CampaignRepositoryInterface
                 $listCustomers = Customer::get();
             }
 
-            $store = Store::where('myshopify_domain', $request->domain)->first();
+            $storeID = GetStoreID();
+            $store = Store::where('id', $storeID)->first();
             foreach ($listCustomers as  $value) {
                 info("inside sendEmailPreview");
 
@@ -226,12 +237,18 @@ class CampaignRepository implements CampaignRepositoryInterface
             info($e);
         }
 
-        return [
+        return response()->json([
             'message' => 'Prepare save campaign and send mail',
             'status' => true,
-        ];
+        ], 204);
     }
 
+    /**
+     * Search Campaign by Store
+     *
+     * @param Request $request
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response|void
+     */
     public function index(Request $request)
     {
         $store_id = getStoreID();
@@ -264,22 +281,25 @@ class CampaignRepository implements CampaignRepositoryInterface
 
     }
 
+    /**
+     * Get list Campaign
+     *
+     * @return mixed
+     */
     public function getCampaign()
     {
         return $this->campaign->orderBy('created_at', 'desc')->get();
     }
 
+    /**
+     * Save Campaign
+     *
+     * @param $request
+     * @return mixed
+     */
     public function store($request)
     {
-
-        // dd("repo: sotre");
-
-        // $request['created_at'] = Carbon::now()->format('Y-m-d H:i:s');;
-        // $request['updated_at'] = Carbon::now()->format('Y-m-d H:i:s');;
-
         $campaign = $this->campaign->create($request->all());
-        // dd($campaign);
-        // $campaign = $this->campaign->where('id', $request['id'])->first();
         $connect = ($this->campaign->getConnection()->getName());
         event(new CreatedModel($connect, $campaign));
         return $campaign;

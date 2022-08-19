@@ -7,11 +7,17 @@ use Illuminate\Http\Request;
 
 interface WebHookRepositoryInterface
 {
+    /**
+     * Receive Webhook was shot back from Shopify
+     *
+     * @param Request $request
+     * @return mixed
+     */
     function webhook(Request $request);
-    public function registerCustomerWebhookService($shop, $access_token);
-    public function createFromShopify($payload, $myshopify_domain);
-    public function updateFromShopify($payload);
-    public function deleteFromShopify($payload);
+//    public function registerCustomerWebhookService($shop, $access_token);
+//    public function createFromShopify($payload, $myshopify_domain);
+//    public function updateFromShopify($payload);
+//    public function deleteFromShopify($payload);
 }
 
 

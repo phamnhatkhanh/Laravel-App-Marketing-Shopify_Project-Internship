@@ -6,8 +6,20 @@ use IvoPetkov\HTML5DOMDocument;
 
 class CampaignService
 {
+    /**
+     * Create variable image temp to save image receive from Request
+     *
+     * @var null
+     */
     protected static $imageNameTemp = null;
 
+    /**
+     * Receive request, array from sendMail or SendMailPreview replace image, mailing content and put in dom
+     *
+     * @param object $request
+     * @param object $array
+     * @return string
+     */
     public static function previewEmail($request, $array)
     {
         info('previewEmail: inside Fisrt');
@@ -54,6 +66,13 @@ class CampaignService
         return $bodyEmail;
     }
 
+    /**
+     * Receive request, array from SendMail or sendMailPreview put in dom and replace subject
+     *
+     * @param object $request
+     * @param object $array
+     * @return string
+     */
     public static function subject($request, $array)
     {
         $domSubject = new HTML5DOMDocument();
