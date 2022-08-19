@@ -29,9 +29,6 @@ implements ShouldQueue
 
     public function handle($event)
     {
-        // event(new CreatedModel($connect,$data,$this->store->getModel()->getTable()));
         SyncDatabaseAfterCreatedModel($event->db_server,$event->model);
-
-
     }
 }

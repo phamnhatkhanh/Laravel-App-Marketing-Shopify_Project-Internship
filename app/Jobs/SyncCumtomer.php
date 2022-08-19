@@ -14,9 +14,10 @@ use Illuminate\Queue\SerializesModels;
 use App\Events\Database\CreatedModel;
 use App\Events\SyncingCustomer;
 use App\Models\Customer;
-use Illuminate\Support\Facades\DB;
 
-class SyncCumtomer implements ShouldQueue
+
+class SyncCumtomer
+ implements ShouldQueue
 {
 
     use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
@@ -34,6 +35,7 @@ class SyncCumtomer implements ShouldQueue
         $this->customers = $customers;
         $this->store_id = $store_id;
         $this->batch_id = $batch_id;
+        
     }
 
     /**
@@ -44,23 +46,31 @@ class SyncCumtomer implements ShouldQueue
     public function handle()
     {
 
-        $customer_model = new Customer();
-        $store_id = $this->store_id;
+      info("---verify connect");
+      // info(json_encode($this->customers,true));
+        // $customer_model = (new Customer());
+        $customer_model_builder = getConnectDatabaseActived(new Customer());
+        $customer_model = $customer_model_builder->getModel();
 
+        $store_id = $this->store_id;
         $customers = $this->customers;
 
+        // $customers = $this->customers;
+      info("---get connect active ");
         data_set($customers, '*.store_id', $store_id);
-        info("Shopify: save customers");
-        $getCustomer = $customer_model::get();
-        info('All customer: '. json_encode($getCustomer, true));
+      // info("Shopify: save customers: ".$customer_model->getConnection()->getName());
+      // info("Shopify: get ta customers: ".$customer_model->getModels()->getTable());
+        // $getCustomer = $customer_model->all();
+        // info('All customer: '. json_encode($getCustomer, true));
 
         foreach ($customers as $customer) {
             $created_at = str_replace(array('T', '+07:00'), array(' ', ''), $customer['created_at']);
             $updated_at = str_replace(array('T', '+07:00'), array(' ', ''), $customer['updated_at']);
+            info("--Customer Shopiyfy: ".json_encode($customer,true));
 
             foreach ($customer['addresses'] as $item) {
                 $country = $item['country'];
-
+                info("--Customer Addresre: ".$customer['email']);
                 $data = [
                     'id' => $customer['id'],
                     'store_id' => $store_id,
@@ -74,33 +84,38 @@ class SyncCumtomer implements ShouldQueue
                     'created_at' => $created_at,
                     'updated_at' => $updated_at,
                 ];
-                $findCustomer = $getCustomer->where('id', $data['id'])->first();
+                
+
+                $findCustomer =  $customer_model->where('id', $data['id'])->first();
                 // info('Id cua Customer:'.json_encode($findCustomer, true));
+                info("--name: ".json_encode($findCustomer,true));
+                if (empty($findCustomer)) {
 
-
-               if (empty($findCustomer)) {
-                    info('Create Customer: ...'.  json_encode($findCustomer, true));
-                    //    $this->customer->create($data);
-                //    $connect = ($customer_model->getConnection()->getName());
-                //    event(new CreatedModel($connect, $data, $customer_model->getModel()->getTable()));
+                  try {
+                    $customer_model->create($data);
+                    $customer_eloquent = $customer_model->where("id",$data['id'])->first();
+                    info("Create Customer: ...  ". json_encode($customer_eloquent, true));
                     $connect = ($customer_model->getConnection()->getName());
-                    SyncDatabaseAfterCreatedModel($connect,$data,$customer_model->getTable());
+                    SyncDatabaseAfterCreatedModel($connect,$customer_eloquent);
+                  } catch (\Throwable $th) {
+                    info("Sync customer form shopiuf: ". $th);
+                  }
+
                 } else {
-                   info('Update Customer: ...'.  json_encode($findCustomer, true));
-                   $findCustomer->update($data);
-                   $connect = ($customer_model->getConnection()->getName());
-                   SyncDatabaseAfterUpdatedModel($connect,$findCustomer);
-                //    $connect = ($customer_model->getConnection()->getName());
-                //    event(new UpdatedModel($connect, $findCustomer));
-               }
-
-
-                // event(new CreatedModel($connect,$data,$customer_model->getTable()));
-                 info("CreatedModel: show log in function sycn custoemr: ");
-
-                // $model->create($data);
-
+                    info('Update Customer: ...'.  json_encode($findCustomer, true));
+                    $findCustomer->update($data);
+                    $connect = ($customer_model->getConnection()->getName());
+                    SyncDatabaseAfterUpdatedModel($connect,$findCustomer);
+    
+                }
             }
+
+
+            // event(new CreatedModel($connect,$data,$customer_model->getTable()));
+              info("CreatedModel: show log in function sycn custoemr: ");
+
+            // $model->create($data);
+
         }
         event(new SyncingCustomer($this->batch_id));
     }

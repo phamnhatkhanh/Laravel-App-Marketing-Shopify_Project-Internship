@@ -36,21 +36,31 @@ class createDataCustomer implements ShouldQueue
 
     public function handle()
     {
+        info("---verify connect");
+      // info(json_encode($this->customers,true));
+        // $customer_model = (new Customer());
+        $customer_model_builder = getConnectDatabaseActived(new Customer());
+        $customer_model = $customer_model_builder->getModel();
+
         $store_id = $this->store_id;
         $customers = $this->customers;
-        $customerModel = new Customer();
-        data_set($customers, '*.store_id', $store_id);
 
-        info("Shopify: save customers");
-        $getCustomer = $customerModel->get();
+        // $customers = $this->customers;
+        info("---get connect active ");
+        data_set($customers, '*.store_id', $store_id);
+        // info("Shopify: save customers: ".$customer_model->getConnection()->getName());
+        // info("Shopify: get ta customers: ".$customer_model->getModels()->getTable());
+        // $getCustomer = $customer_model->all();
+        // info('All customer: '. json_encode($getCustomer, true));
 
         foreach ($customers as $customer) {
             $created_at = str_replace(array('T', '+07:00'), array(' ', ''), $customer['created_at']);
             $updated_at = str_replace(array('T', '+07:00'), array(' ', ''), $customer['updated_at']);
+            info("--Customer Shopiyfy: ".json_encode($customer,true));
 
             foreach ($customer['addresses'] as $item) {
                 $country = $item['country'];
-
+                info("--Customer Addresre: ".$customer['email']);
                 $data = [
                     'id' => $customer['id'],
                     'store_id' => $store_id,
@@ -64,28 +74,37 @@ class createDataCustomer implements ShouldQueue
                     'created_at' => $created_at,
                     'updated_at' => $updated_at,
                 ];
-                $findCustomer = $getCustomer->where('id', $data['id'])->first();
+                
 
+                $findCustomer =  $customer_model->where('id', $data['id'])->first();
+                // info('Id cua Customer:'.json_encode($findCustomer, true));
+                info("--name: ".json_encode($findCustomer,true));
                 if (empty($findCustomer)) {
-                    // Schema::connection($customerModel->getConnection()->getName())->disableForeignKeyConstraints();
 
-                    // $campaignProcess = $this->campaignProcess->create($request->all());
-
-                        // info('Create Customer: ...'.  json_encode($findCustomer, true));
-
-                    $customerModel->create($data);
-                     $customer_eloquent = $customerModel->where("id",$customer['id'])->first();
+                  try {
+                    $customer_model->create($data);
+                    $customer_eloquent = $customer_model->where("id",$data['id'])->first();
                     info("Create Customer: ...  ". json_encode($customer_eloquent, true));
-                    $connect = ($customerModel->getConnection()->getName());
+                    $connect = ($customer_model->getConnection()->getName());
                     SyncDatabaseAfterCreatedModel($connect,$customer_eloquent);
-                    // Schema::connection($customerModel->getConnection()->getName())->enableForeignKeyConstraints();
+                  } catch (\Throwable $th) {
+                    info("Sync customer form shopiuf: ". $th);
+                  }
+
                 } else {
-                        info('Update Customer: ...'.  json_encode($findCustomer, true));
+                    info('Update Customer: ...'.  json_encode($findCustomer, true));
                     $findCustomer->update($data);
-                    $connect = ($customerModel->getConnection()->getName());
-                    SyncDatabaseAfterUpdatedModel($connect, $findCustomer);
+                    $connect = ($customer_model->getConnection()->getName());
+                    SyncDatabaseAfterUpdatedModel($connect,$findCustomer);
+    
                 }
             }
+
+            // event(new CreatedModel($connect,$data,$customer_model->getTable()));
+              info("CreatedModel: show log in function sycn custoemr: ");
+
+            // $model->create($data);
+
         }
     }
 }

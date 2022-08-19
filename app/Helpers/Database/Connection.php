@@ -21,13 +21,13 @@ if (!function_exists('getConnectDatabaseActived')) {
                         if($dbConnect->status == 'actived' ){
                              //info("IsConnect: repo connect succes in: " . $db);
                             if($isSelectedDatabaseToConnect == "not_selected"){
-                                //// info("IsConnect: connect sucsses to: " . $db);
+                                info("IsConnect: connect sucsses to: " . $db);
                                 $model = $model::on($db);
                                 $isSelectedDatabaseToConnect="selected";
                                 continue;
                             }
                         }else{
-                            //info("IsConnect: Repo syncing db: ".$db);
+                            info("IsConnect: Repo syncing db: ".$db);
                             $dbActived = DbStatus::where('model_name',$table_model)
                                 ->where('status',"actived")->first();
                             if($dbActived){ // normal sync
@@ -60,6 +60,7 @@ if (!function_exists('getConnectDatabaseActived')) {
         }catch(Throwable $e){
             //info("getConnectDatabaseActived; all db not connet ");
         }
+        info("--choose succes connect is actived for model");
         return $model;
     }
 }

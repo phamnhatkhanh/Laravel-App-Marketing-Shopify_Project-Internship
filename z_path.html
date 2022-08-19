@@ -14,10 +14,6 @@ Inprove code:
     5. Send sms.
 
 
-T7: real code project + read book -> handel failed job
-CN: learn test.
-
-
 Đào sâu về server:
 
 Optimize:
@@ -26,25 +22,13 @@ Optimize:
         Eloquent: lazy load.
         Query: paganina và chunk.
 
-<!-- Export với dữ liệu lớn. -->
-1.Redis: Cache, queue kết nối với redis để chạy cho nó nhanh.
-    ?? Cache: lưu gì trên đây.
-    Cache: Thay vì truy xuất dữ liệu trên DB -> lưu Data trên Cache truy xuất nhanh hơn.
-        - FE: Customer,Campaign show list lưu Redis -> truy xuất cho nhanh.
-        - Shopify cập nhật customer: chỉ cập nhật khi email, phone,  orders_count, total_spent thay đổi.
-            - Cập nhật ở Redis sau đó vào DB cập nhật.
-
-Queue: xử lý job failed.
 
 </div>
 
 <div class="open_problem">
-
-
-
-Nghĩ task nào ứng dụng được Facade.
-    - task switch
-    - ## backup DB: require  change just one in backup and use if
+redict: authen
+syncCutomerFromShopify: set fix id store.
+SyncCumtomer: fix id store 
 </div>
 
 <div class="result">
