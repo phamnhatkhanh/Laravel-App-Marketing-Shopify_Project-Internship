@@ -19,34 +19,6 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 */
 
 
-Route::get("/mail", function () {
-    // dd("sdfhbsjfk");
-    info(date("y-m-d H:i:s"));
-    Customer::query()->delete();
-    info("delte all customer");
-    info(date("y-m-d H:i:s"));
-});
-Route::get('/cnn', function () {
-    $customer = Customer::where('id', 1)->first();
-    // $customer->update([
-    // // $this->customer->where('id', $data_customer_id)->update([
-    //     'email' => $data_customer['email'],
-    //     'first_name' => $data_customer['first_name'],
-    //     'last_name' => $data_customer['last_name'],
-    //     'orders_count' => $data_customer['orders_count'],
-    //     'total_spent' => $data_customer['total_spent'],
-    //     'phone' => $data_customer['phone'],
-    //     'created_at' => $created_at,
-    //     'updated_at' => $updated_at,
-    // ]);
-    $connect = ($customer->getConnection()->getName());
-    return $connect;
-});
-Route::get('/husky', function (){
-    $get = Customer::get();
-    return $get;
-});
-
 Route::get('/set-db',function(){
     $listNameConnectionMysql = config('database.connections');
     foreach ($listNameConnectionMysql as $key => $value) {
@@ -73,14 +45,7 @@ Route::get('/set-db',function(){
         }
         return $out;
     }
-    function getDiverDafault($model)
-    {
-        $diverCurrent = $model->getConnection()->getName();
-        if (strpos($diverCurrent, "_backup")) {
-            $diverCurrent = substr($diverCurrent, 0, strpos($diverCurrent, "_backup"));
-        }
-        return $diverCurrent;
-    }
+ 
     $listPathModel = getModels($path);
     // dd($listPathModel);
     foreach ($listPathModel as $pathModel) {

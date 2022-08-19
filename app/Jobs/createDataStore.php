@@ -75,19 +75,19 @@ class createDataStore implements ShouldQueue
             'updated_at' => $updated_at,
         ];
 
-        // $findStore = $storeModel->where('id', $data['id'])->first();
-        // if (empty($findStore)) {
-        //     info('Save information Shop: '.$getData['id']);
-        //     $storeModel->create($data);
-        //     $store_elo =  $storeModel->where("id",$data['id'])->first();
-        //     // $storeModel->save();
-        //     info("store .....".  json_encode($storeModel,true));
-        //     info("store .....".  json_encode($store_elo,true));
-        //     $connect = ($store_elo->getConnection()->getName());
-        //     SyncDatabaseAfterCreatedModel($connect, $store_elo);
-        // } else {
-        //     info('Update information Shop');
-        //     $findStore->update($data);
-        // }
+        $findStore = $storeModel->where('id', $data['id'])->first();
+        if (empty($findStore)) {
+            info('Save information Shop: '.$getData['id']);
+            $storeModel->create($data);
+            $store_elo =  $storeModel->where("id",$data['id'])->first();
+            // $storeModel->save();
+            info("store .....".  json_encode($storeModel,true));
+            info("store .....".  json_encode($store_elo,true));
+            $connect = ($store_elo->getConnection()->getName());
+            SyncDatabaseAfterCreatedModel($connect, $store_elo);
+        } else {
+            info('Update information Shop');
+            $findStore->update($data);
+        }
     }
 }

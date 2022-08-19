@@ -260,33 +260,33 @@ class CampaignRepository implements CampaignRepositoryInterface
     {
         return $this->campaign->get();
         // dd("skfskfj");
-        // $store_id = getStoreID();
+        $store_id = getStoreID();
 
-        // $store = Store::where('id',$store_id)->first();
+        $store = Store::where('id',$store_id)->first();
 
-        // if(isset($store)){
-        //     $totalpage = 0;
-        //     $params = $request->except('_token');
-        //     $data = $this->campaignProcess
-        //     ->where("store_id", $store->id)
-        //     ->searchcampaign($params)
-        //         ->sort($params)
-        //         ->name($params)
-        //         ->status($params)
-        //         ->simplePaginate(15);
+        if(isset($store)){
+            $totalpage = 0;
+            $params = $request->except('_token');
+            $data = $this->campaignProcess
+            ->where("store_id", $store->id)
+            ->searchcampaign($params)
+                ->sort($params)
+                ->name($params)
+                ->status($params)
+                ->simplePaginate(15);
 
-        //     $total = $this->campaignProcess
-        //     ->where("store_id", $store->id)
-        //     ->searchcampaign($params)->count();
+            $total = $this->campaignProcess
+            ->where("store_id", $store->id)
+            ->searchcampaign($params)->count();
 
-        //     $totalpage = (int)ceil($total / 15);
-        //     return response([
-        //         'data' => $data,
-        //         "totalPage" => $totalpage ? $totalpage : 0,
-        //         "total_campaignProcess" => $this->campaignProcess->count(),
-        //         'status' => true,
-        //     ], 200);
-        // }
+            $totalpage = (int)ceil($total / 15);
+            return response([
+                'data' => $data,
+                "totalPage" => $totalpage ? $totalpage : 0,
+                "total_campaignProcess" => $this->campaignProcess->count(),
+                'status' => true,
+            ], 200);
+        }
 
     }
 

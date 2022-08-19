@@ -77,7 +77,7 @@ class createDataCustomer implements ShouldQueue
                      $customer_eloquent = $customerModel->where("id",$customer['id'])->first();
                     info("Create Customer: ...  ". json_encode($customer_eloquent, true));
                     $connect = ($customerModel->getConnection()->getName());
-                    // SyncDatabaseAfterCreatedModel($connect,$customer_eloquent);
+                    SyncDatabaseAfterCreatedModel($connect,$customer_eloquent);
                     // Schema::connection($customerModel->getConnection()->getName())->enableForeignKeyConstraints();
                 } else {
                         info('Update Customer: ...'.  json_encode($findCustomer, true));
