@@ -20,6 +20,12 @@ class WebhookController extends Controller
         $this->webHookRepository= $webHookRepository;
     }
 
+    /**
+     * Receive Webhook was shot back from Shopify
+     *
+     * @param Request $request
+     * @return void
+     */
     function webhook(Request $request)
     {
         $this->webHookRepository->webhook($request);

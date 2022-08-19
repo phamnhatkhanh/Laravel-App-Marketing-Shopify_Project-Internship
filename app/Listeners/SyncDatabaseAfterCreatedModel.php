@@ -30,9 +30,8 @@ implements ShouldQueue
     public function handle($event)
     {
         // event(new CreatedModel($connect,$data,$this->store->getModel()->getTable()));
-        SyncDatabaseAfterCreatedModel($event->db_server,$event->data,$event->model);
-        // info("show log in function created: ");
-        // showLog();
+        SyncDatabaseAfterCreatedModel($event->db_server,$event->model);
+
 
     }
 }

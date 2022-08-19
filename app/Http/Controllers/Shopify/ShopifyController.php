@@ -23,18 +23,36 @@ class ShopifyController extends Controller
     {
         $this->shopifyRepository = $shopifyRepository;
     }
+
+    /**
+     * If hmac already exists, then login into Store. If don't have hmac download the app from Shopify
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse|string|void
+     */
     public function login(Request $request)
     {
+        // info("shopify controller login");
         return $this->shopifyRepository->login($request);
     }
 
-
-    //Get access_token and Login Shop
+    /**
+     * Receive information from login to do other things
+     *
+     * @param Request $request
+     * @return void
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
     public function authen(Request $request)
     {
         return $this->shopifyRepository->authen($request);
     }
 
+    /**
+     * Get all Customer display the interface
+     *
+     * @return resource
+     */
      public function getStore()
     {
         return $this->shopifyRepository->getStore();

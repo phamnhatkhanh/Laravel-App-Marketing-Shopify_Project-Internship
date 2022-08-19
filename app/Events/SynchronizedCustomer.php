@@ -44,10 +44,6 @@ class SynchronizedCustomer implements ShouldBroadcast
             "totat" => $customer->count(),
             "data" => $customer->simplePaginate(15)
         ];
-
-
-
-
     }
 
 

@@ -36,11 +36,20 @@ class CampaignController extends Controller
         $this->campaignRepository = $campaignRepository;
     }
 
+    /**
+     * Search Campaign by Store
+     * @param Request $request
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response|void
+     */
     public function index(Request $request)
     {
         return $this->campaignRepository->index($request);
     }
 
+    /**
+     * Get list Campaign Processes
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     */
     public function getCampaignProceess()
     {
 
@@ -50,20 +59,42 @@ class CampaignController extends Controller
             Response::HTTP_OK);
     }
 
+    /**
+     * Receive request from FrontEnd. Send mail for selected customers and use Pusher the display mail number of successes, failures
+     *
+     * @param Request $request
+     * @return array
+     */
     public function saveCampaign(Request $request){
 
         return $this->campaignRepository->saveCampaign($request);
     }
 
+    /**
+     * Receive request from FrontEnd put in Job and send mail to the person receiving the request
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function SendEmail(Request $request){
         return $this->campaignRepository->sendEmail($request);
     }
 
+    /**
+     * Receive request from saveCampaign put in Job. Send mail for selected customers and use Pusher the display mail number of successes, failures
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function sendEmailPreview(Request $request)
     {
         return $this->campaignRepository->sendEmailPreview($request);
     }
 
+    /**
+     * Get list Campaign
+     *
+     * @return mixed
+     */
     public function getCampaign()
     {
         return $this->campaignRepository->getCampaign();
@@ -78,6 +109,12 @@ class CampaignController extends Controller
         ],201);
     }
 
+    /**
+     * Save Campaign
+     *
+     * @param Request $request
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     */
     public function store(Request $request)
     {
         $campaign = $this->campaignRepository->store($request);

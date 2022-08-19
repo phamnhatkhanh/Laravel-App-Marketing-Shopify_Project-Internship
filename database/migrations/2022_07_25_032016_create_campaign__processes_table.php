@@ -38,11 +38,13 @@ class CreateCampaignProcessesTable extends Migration
             $table->foreign('campaign_id')
                 ->references('id')
                 ->on(new Expression($DB_campaigns . '.campaigns'))
+                ->constrained()
                 ->onDelete('cascade');
 
             $table->foreign('campaign_id', 'campaignsProcess_campagins_backup')
                 ->references('id')
                 ->on(new Expression($DB_campaigns_backup . '.campaigns'))
+                ->constrained()
                 ->onDelete('cascade');
 
             $table->foreign('store_id')

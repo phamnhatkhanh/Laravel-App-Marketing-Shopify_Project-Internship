@@ -4,6 +4,13 @@ namespace App\Services\Customers;
 
 class CustomerService
 {
+    /**
+     * Open File and Add attributes, value
+     *
+     * @param object $fileName
+     * @param object $users
+     * @return void
+     */
     public static function exportCustomer($fileName, $users){
         $handle = fopen($fileName, 'w');
 

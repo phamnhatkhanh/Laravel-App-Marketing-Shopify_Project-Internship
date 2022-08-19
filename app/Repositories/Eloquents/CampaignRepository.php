@@ -10,11 +10,7 @@ use Illuminate\Support\Facades\Bus;
 use Illuminate\Bus\Batch;
 use App\Models\Campaign;
 use App\Models\CampaignProcess;
-use App\Models\CampaignBackgroud;
-use App\Models\CampaignButton;
-use App\Models\CampaignVariant;
 use App\Models\Customer;
-use Carbon\Carbon;
 use App\Jobs\SendMail;
 use App\Events\MailSent;
 use App\Events\Database\CreatedModel;
@@ -22,14 +18,13 @@ use App\Events\Database\UpdatedModel;
 use App\Events\Database\DeletedModel;
 use App\Repositories\Contracts\CampaignRepositoryInterface;
 use Illuminate\Http\Request;
-use IvoPetkov\HTML5DOMDocument;
 use Throwable;
 
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Exceptions\TokenExpiredException;
 use Tymon\JWTAuth\Exceptions\TokenInvalidException;
 use Tymon\JWTAuth\Facades\JWTAuth;
-
+use Illuminate\Support\Facades\Schema;
 class CampaignRepository implements CampaignRepositoryInterface
 {
     protected $customer;
@@ -37,13 +32,19 @@ class CampaignRepository implements CampaignRepositoryInterface
     protected $campaignProcess;
     protected $imageNameTemp = null;
 
+
     public function __construct()
     {
-        $this->campaignProcess = getConnectDatabaseActived(new CampaignProcess());
         $this->customer = getConnectDatabaseActived(new Customer());
         $this->campaign = getConnectDatabaseActived(new Campaign());
+        $this->campaignProcess = getConnectDatabaseActived(new CampaignProcess());
     }
 
+    /**
+     * Get List Campaign Processes
+     *
+     * @return mixed
+     */
     public function getCampaignProceess()
     {
         $campaignProcess = $this->campaignProcess->orderBy('created_at', 'desc')->get();
@@ -51,79 +52,83 @@ class CampaignRepository implements CampaignRepositoryInterface
         return $campaignProcess;
     }
 
+    /**
+     * Receive request from FrontEnd. Send mail for selected customers and use Pusher the display mail number of successes, failures
+     *
+     * @param Request $request
+     * @return array
+     */
     public function saveCampaign(Request $request)
     {
         //save campaign
-        $campaign = $this->campaign->create($request->all());
+        // dd($this->campaign->getModels());
 
-        $request['campaign_id'] = $campaign->id;
+        try{
+            $campaign = $this->campaign->create($request->all());
+            $request['campaign_id'] = $campaign->id;
+            $connect = ($this->campaign->getConnection()->getName());
+            event(new CreatedModel($connect,$campaign));
+            // dd( $this->campaignProcess->getModels());
 
-
-        $campaignProcess = $this->campaignProcess->create([
-            "process" => "0",
-            "status" => "running",
-            "campaign_id" => 1,
-            "name" => $campaign->name,
-            "total_customers" => $this->customer->count(),
-        ]);
-
-        $this->sendEmailPreview($request, $campaignProcess);
-
-
-        //    $connect = ($this->campaignProcess->getConnection()->getName());
-        // event(new CreatedModel($connect,$data_campaignProcess,$this->campaignProcess->getModel()->getTable()));
-        // $connect = ($this->campaignProcess->getConnection()->getName());
-
-
-        // event(new CreatedModel($connect, $campaignProcess));
-
-        return [$campaign];
-    }
-
-    // nhan list user va gui sau hien tai fix cung.
-    private function sendEmailCampaign($listMailCustomers, $campaignProcess)
-    {
-
-        $batch = Bus::batch([])
-            ->then(function (Batch $batch) {
-            })
-            ->finally(function (Batch $batch) use ($campaignProcess) {
-                $campaignProcess->update([
-                    'status' => 'completed',
-                    'process' => 100,
-                    'send_email_done' => $batch->processedJobs(),
-                    'send_email_fail' => $batch->failedJobs,
+            Schema::connection($this->campaignProcess->getConnection()->getName())->disableForeignKeyConstraints();
+                $campaignProcess = $this->campaignProcess->create([
+                    "process" => "0",
+                    "status" => "running",
+                    "campaign_id" => $campaign->id,
+                    "name" => $campaign->name,
+                    "total_customers" => $this->customer->count(),
                 ]);
+                $connect = ($this->campaignProcess->getConnection()->getName());
+                event(new CreatedModel($connect,$campaignProcess));
+            Schema::connection($this->campaignProcess->getConnection()->getName())->disableForeignKeyConstraints();
 
-                $connect = ($campaignProcess->getConnection()->getName());
-                event(new UpdatedModel($connect, $campaignProcess));
-                event(new MailSent($batch->id, $campaignProcess));
-            })->onQueue('jobs')->dispatch();
-        $batchId = $batch->id;
 
-        foreach ($listMailCustomers as $key => $MailCustomer) {
-            if ($key > 1 && $key < 5) {
-                $MailCustomer = 1;
-                // info("key: ".  $key. "  value: ".$MailCustomer);
-            }
-            $batch->add(new SendMail($batchId, $MailCustomer, $campaignProcess));
+            $this->sendEmailPreview($request, $campaignProcess);
+            return response([
+            "status" => true,
+            "message" => "Save success campaign"
+        ], 200);
+        }catch(Throwable $e){
+            // dd($e);
         }
+
     }
 
+    /**
+     * Receive request, array from sendMail or SendMailPreview replace image, mailing content and put in dom
+     *
+     * @param $request
+     * @param array $array
+     * @return string
+     */
     public function previewEmail($request, $array)
     {
         return CampaignService::previewEmail($request, $array);
     }
 
+    /**
+     * Receive request, array from SendMail or sendMailPreview put in dom and replace subject
+     *
+     * @param $request
+     * @param array $array
+     * @return string
+     */
     public function subject($request, $array)
     {
         return CampaignService::subject($request, $array);
     }
 
+    /**
+     * Receive request from FrontEnd put in Job and send mail to the person receiving the request
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function SendEmail(Request $request)
     {
         info('SendTestMail Success');
-        $store = Store::where('myshopify_domain', $request->myshopify_domain)->first();
+        $storeID = GetStoreID();
+        $store = Store::where('id', $storeID)->first();
         $array = ([
             [
                 "variant" => 'Customer_Full_name',
@@ -153,12 +158,20 @@ class CampaignRepository implements CampaignRepositoryInterface
         info('Ready Job : ' . $store);
         dispatch(new SendTestPreview($bodyEmail, $subject, $imageName, $store, $sendEmail));
         info('SendTestMail Success');
-        return [
+
+        return response()->json([
             'message' => 'Send Test Success',
             'status' => true,
-        ];
+        ], 204);
     }
 
+    /**
+     * Receive request from saveCampaign put in Job. Send mail for selected customers and use Pusher the display mail number of successes, failures
+     *
+     * @param Request $request
+     * @param $campaignProcess
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function sendEmailPreview(Request $request, $campaignProcess)
     {
         info($request->all());
@@ -194,7 +207,8 @@ class CampaignRepository implements CampaignRepositoryInterface
                 $listCustomers = Customer::get();
             }
 
-            $store = Store::where('myshopify_domain', $request->domain)->first();
+            $storeID = GetStoreID();
+            $store = Store::where('id', $storeID)->first();
             foreach ($listCustomers as  $value) {
                 info("inside sendEmailPreview");
 
@@ -230,12 +244,18 @@ class CampaignRepository implements CampaignRepositoryInterface
             info($e);
         }
 
-        return [
+        return response()->json([
             'message' => 'Prepare save campaign and send mail',
             'status' => true,
-        ];
+        ], 204);
     }
 
+    /**
+     * Search Campaign by Store
+     *
+     * @param Request $request
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response|void
+     */
     public function index(Request $request)
     {
 
@@ -262,6 +282,7 @@ class CampaignRepository implements CampaignRepositoryInterface
             info("totalpage" . $totalpage);
         }
 
+
         return response([
             'data' => $data,
             "totalPage" => $totalpage ? $totalpage : 0,
@@ -270,21 +291,26 @@ class CampaignRepository implements CampaignRepositoryInterface
         ], 200);
     }
 
+    /**
+     * Get list Campaign
+     *
+     * @return mixed
+     */
     public function getCampaign()
     {
-        return $this->campaign->orderBy('created_at', 'desc')->get();
+        return $this->campaign->get();
+        // return $this->campaign->orderBy('created_at', 'desc')->get();
     }
 
+    /**
+     * Save Campaign
+     *
+     * @param $request
+     * @return mixed
+     */
     public function store($request)
     {
-        // dd("repo: sotre");
-
-        // $request['created_at'] = Carbon::now()->format('Y-m-d H:i:s');;
-        // $request['updated_at'] = Carbon::now()->format('Y-m-d H:i:s');;
-
         $campaign = $this->campaign->create($request->all());
-        // dd($campaign);
-        // $campaign = $this->campaign->where('id', $request['id'])->first();
         $connect = ($this->campaign->getConnection()->getName());
         // event(new CreatedModel($connect, $campaign));
         return $campaign;
