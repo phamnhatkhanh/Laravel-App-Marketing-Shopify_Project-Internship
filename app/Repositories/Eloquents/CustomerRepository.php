@@ -25,6 +25,10 @@ use App\Events\Database\UpdatedModel;
 use App\Events\Database\DeletedModel;
 use App\Events\SyncDatabase;
 use App\Events\SynchronizedCustomer;
+use Tymon\JWTAuth\Exceptions\JWTException;
+use Tymon\JWTAuth\Exceptions\TokenExpiredException;
+use Tymon\JWTAuth\Exceptions\TokenInvalidException;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class CustomerRepository implements CustomerRepositoryInterface
 {
@@ -38,8 +42,11 @@ class CustomerRepository implements CustomerRepositoryInterface
     }
 
     public function syncCutomerFromShopify(Request $request)
+
     {
-        $store = $this->store->where('myshopify_domain', $request->shop)->first();
+        $store_id = getStoreID();
+
+        $store = $this->store->where('id',  $store_id)->first();
 
         $shopifyRepository = new ShopifyRepository();
 

@@ -65,11 +65,18 @@ class ShopifyRepository implements ShopifyRepositoryInterface
             $shop = $request->myshopify_domain;
 
 //            $redirect_uri = 'http://localhost:8000/api/auth/authen';
-            $redirect_uri = 'http://192.168.101.83:8080/login';
+            // $redirect_uri = 'http://192.168.101.83:8080/login';
+
+            $redirect_uri = $request->header("origin")."/login";
+
+            info( $redirect_uri);
 
             $url = 'https://' . $shop . '/admin/oauth/authorize?client_id=' . $apiKey . '&scope=' . $scope . '&redirect_uri=' . $redirect_uri;
             info($url);
-            return $url;
+            return response()->json([
+                "status" => true,
+                "url"=> $url
+            ]);
         }
     }
 

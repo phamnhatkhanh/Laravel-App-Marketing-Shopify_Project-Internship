@@ -150,7 +150,7 @@ class CampaignRepository implements CampaignRepositoryInterface
         $subject = $this->subject($request->subject, $array);
 
         $sendEmail = $request->send_email;
-        info('Ready Job : '.$store);
+        info('Ready Job : ' . $store);
         dispatch(new SendTestPreview($bodyEmail, $subject, $imageName, $store, $sendEmail));
         info('SendTestMail Success');
         return [
@@ -162,7 +162,7 @@ class CampaignRepository implements CampaignRepositoryInterface
     public function sendEmailPreview(Request $request, $campaignProcess)
     {
         info($request->all());
-        try{
+        try {
             $batch = Bus::batch([])
                 ->then(function (Batch $batch) {
                 })
@@ -180,17 +180,17 @@ class CampaignRepository implements CampaignRepositoryInterface
                 })->onQueue('jobs')->dispatch();
             $batchId = $batch->id;
 
-            info("inside sendEmailPreview: handel templete mail ". $batchId);
-            info("inside sendEmailPreview: lsit customer ". $request->list_mail_customers);
+            info("inside sendEmailPreview: handel templete mail " . $batchId);
+            info("inside sendEmailPreview: lsit customer " . $request->list_mail_customers);
 
-            if($request->has("list_mail_customers")){
+            if ($request->has("list_mail_customers")) {
                 $listCustomersId =  json_decode($request->list_mail_customers, true);
                 $listCustomers = Customer::whereIn('id', $listCustomersId)->get();
-            }elseif($request->has("except_customer")){
+            } elseif ($request->has("except_customer")) {
                 $listCustomersId =  $request->list_mail_customers;
                 $listCustomersId =  json_decode($request->list_mail_customers, true);
                 $listCustomers = Customer::whereNotIn('id', $listCustomersId)->get();
-            }elseif($request->has("all_customer")){
+            } elseif ($request->has("all_customer")) {
                 $listCustomers = Customer::get();
             }
 
@@ -201,7 +201,7 @@ class CampaignRepository implements CampaignRepositoryInterface
                 $array = ([
                     [
                         "variant" => 'Customer_Full_name',
-                        "value" =>  $value->first_name.' ' . $value->last_name
+                        "value" =>  $value->first_name . ' ' . $value->last_name
                     ],
                     [
                         "variant" => 'Customer_First_name',
@@ -223,7 +223,7 @@ class CampaignRepository implements CampaignRepositoryInterface
 
                 $subject = $this->subject($request->subject, $array);
 
-                $batch->add(new SendEmailPreview( $value->email, $batchId, $campaignProcess,$bodyEmail, $subject, $imageName, $store));
+                $batch->add(new SendEmailPreview($value->email, $batchId, $campaignProcess, $bodyEmail, $subject, $imageName, $store));
             }
             info("inside sendEmailPreview:group jobs");
         } catch (Throwable $e) {
@@ -238,34 +238,36 @@ class CampaignRepository implements CampaignRepositoryInterface
 
     public function index(Request $request)
     {
+
         $store_id = getStoreID();
+        info("store_id" . $store_id);
 
-        $store = Store::where('id',$store_id)->first();
-
-        if(isset($store)){
+        if (isset($store_id)) {
             $totalpage = 0;
             $params = $request->except('_token');
             $data = $this->campaignProcess
-            ->where("store_id", $store->id)
-            ->searchcampaign($params)
+                ->where("store_id", $store_id)
+                ->searchcampaign($params)
                 ->sort($params)
                 ->name($params)
                 ->status($params)
                 ->simplePaginate(15);
 
             $total = $this->campaignProcess
-            ->where("store_id", $store->id)
-            ->searchcampaign($params)->count();
+                ->where("store_id", $store_id)
+                ->searchcampaign($params)->count();
+            info("total" . $total);
 
             $totalpage = (int)ceil($total / 15);
-            return response([
-                'data' => $data,
-                "totalPage" => $totalpage ? $totalpage : 0,
-                "total_campaignProcess" => $this->campaignProcess->count(),
-                'status' => true,
-            ], 200);
+            info("totalpage" . $totalpage);
         }
 
+        return response([
+            'data' => $data,
+            "totalPage" => $totalpage ? $totalpage : 0,
+            "total_campaignProcess" => $this->campaignProcess->count(),
+            'status' => true,
+        ], 200);
     }
 
     public function getCampaign()
@@ -275,7 +277,6 @@ class CampaignRepository implements CampaignRepositoryInterface
 
     public function store($request)
     {
-
         // dd("repo: sotre");
 
         // $request['created_at'] = Carbon::now()->format('Y-m-d H:i:s');;
@@ -285,7 +286,7 @@ class CampaignRepository implements CampaignRepositoryInterface
         // dd($campaign);
         // $campaign = $this->campaign->where('id', $request['id'])->first();
         $connect = ($this->campaign->getConnection()->getName());
-        event(new CreatedModel($connect, $campaign));
+        // event(new CreatedModel($connect, $campaign));
         return $campaign;
     }
 

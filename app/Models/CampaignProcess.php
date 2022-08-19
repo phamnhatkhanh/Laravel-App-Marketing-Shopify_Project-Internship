@@ -21,6 +21,7 @@ class CampaignProcess extends Model
 
     protected $fillable = [
         'id',
+        'store_id',
         'campaign_id',
         'name',
         'process',
