@@ -60,9 +60,9 @@ class CampaignRepository implements CampaignRepositoryInterface
      */
     public function saveCampaign(Request $request)
     {
-        //save campaign
-        // dd($this->campaign->getModels());
-
+        // $store_id = "60157821137";
+        $store_id = getStoreID();
+        $request['store_id']=$store_id;
         try{
             $campaign = $this->campaign->create($request->all());
             $request['campaign_id'] = $campaign->id;
@@ -74,6 +74,7 @@ class CampaignRepository implements CampaignRepositoryInterface
                 $campaignProcess = $this->campaignProcess->create([
                     "process" => "0",
                     "status" => "running",
+                    "store_id" => $store_id,
                     "campaign_id" => $campaign->id,
                     "name" => $campaign->name,
                     "total_customers" => $this->customer->count(),
@@ -174,8 +175,10 @@ class CampaignRepository implements CampaignRepositoryInterface
      */
     public function sendEmailPreview(Request $request, $campaignProcess)
     {
+     
         info($request->all());
         try {
+           $listCustomers;
             $batch = Bus::batch([])
                 ->then(function (Batch $batch) {
                 })
@@ -194,7 +197,7 @@ class CampaignRepository implements CampaignRepositoryInterface
             $batchId = $batch->id;
 
             info("inside sendEmailPreview: handel templete mail " . $batchId);
-            info("inside sendEmailPreview: lsit customer " . $request->list_mail_customers);
+            
 
             if ($request->has("list_mail_customers")) {
                 $listCustomersId =  json_decode($request->list_mail_customers, true);
@@ -204,10 +207,15 @@ class CampaignRepository implements CampaignRepositoryInterface
                 $listCustomersId =  json_decode($request->list_mail_customers, true);
                 $listCustomers = Customer::whereNotIn('id', $listCustomersId)->get();
             } elseif ($request->has("all_customer")) {
+              info("SendMail: send all email in store");
                 $listCustomers = Customer::get();
+            }else{
+              $listCustomers=[];
             }
 
-            $storeID = GetStoreID();
+            info("inside sendEmailPreview: list customer send mail " . json_encode($listCustomers,true));
+            $storeID = $campaignProcess->store_id;
+            
             $store = Store::where('id', $storeID)->first();
             foreach ($listCustomers as  $value) {
                 info("inside sendEmailPreview");
@@ -258,12 +266,7 @@ class CampaignRepository implements CampaignRepositoryInterface
      */
     public function index(Request $request)
     {
-
-
-
         $store_id = getStoreID();
-        info("store_id" . $store_id);
-
         if (isset($store_id)) {
             $totalpage = 0;
             $params = $request->except('_token');

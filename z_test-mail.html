@@ -5,10 +5,15 @@ DB: setup.
     Test api resource and adjust event.
         place in shopify.
 1. Test sync
-2. Test and control flow disconnect
+  FE: Customer shopify -> change disconnect.
+      Campaign
+  BE: api.
+
+2. Test and control flow disconnect:
+  
 -> test other model + web hook.
 
-(? access table "gian tiep" use setup in Db(relationsip)).
+
 3. Set name
 4. Clean code, imporve.
 
@@ -24,8 +29,11 @@ Customer:
 
 
 DONE ALL: change sync DB.
+
 Project:
-    Respone: use function -- Exception.
+  Write command artisan run setup DB.
+  Write test.
+  Respone: use function -- Exception.
 </div>
 ngrok http --host-header=rewrite 8000
 

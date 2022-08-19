@@ -42,6 +42,7 @@ class CustomerRepository implements CustomerRepositoryInterface
 
     {
 
+        // $store_id = "60157821137";
         $store_id = getStoreID();
 
         $store = $this->store->where('id',  $store_id)->first();
@@ -195,6 +196,9 @@ class CustomerRepository implements CustomerRepositoryInterface
 
     public function store($request)
     {
+      // $elo = $this->customer->getModel();
+      // $elo = new Customer();
+      // dd($elo->all());
         $request['id'] = $this->customer->max('id') + 1;
         // dd($request['id'] );
         $request['created_at'] = Carbon::now()->format('Y-m-d H:i:s');

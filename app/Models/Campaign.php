@@ -5,8 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Store;
-use App\Models\CampaignBackgroud;
-use App\Models\CampaignButton;
 use App\Models\CampaignVariant;
 class Campaign extends Model
 {

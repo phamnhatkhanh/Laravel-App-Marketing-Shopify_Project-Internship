@@ -32,9 +32,7 @@ class SyncDatabaseAfterUpdatedModel  implements ShouldQueue
 
     public function handle($event)
     {
-
         SyncDatabaseAfterUpdatedModel($event->db_server,$event->model);
-
     }
 }
 

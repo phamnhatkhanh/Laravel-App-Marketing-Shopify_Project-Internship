@@ -88,6 +88,8 @@ class createDataStore implements ShouldQueue
         } else {
             info('Update information Shop');
             $findStore->update($data);
+            $connect = ($findStore->getConnection()->getName());
+            SyncDatabaseAfterUpdatedModel($connect,$findStore);
         }
     }
 }

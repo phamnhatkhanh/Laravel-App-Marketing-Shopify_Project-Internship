@@ -26,27 +26,9 @@ Route::get('/set-db',function(){
     }
 
     $path = app_path() . "/Models";
-    function getModels($path)
-    {
-        $out = [];
-        $results = scandir($path);
-        foreach ($results as $result) {
-            if ($result === '.' or $result === '..') continue;
-            $filename = $path . '/' . $result;
-            if (is_dir($filename)) {
-                $out = array_merge($out, getModels($filename));
-            } else {
-                $model  = str_replace(app_path(), "App", substr($filename, 0, -4));
-                $model  = str_replace("/", "\\", $model);
-                // dd(new $model());
-                $out[] = $model;
-                //hello
-            }
-        }
-        return $out;
-    }
  
-    $listPathModel = getModels($path);
+ 
+    $listPathModel = getListModels($path);
     // dd($listPathModel);
     foreach ($listPathModel as $pathModel) {
         $model = new $pathModel();

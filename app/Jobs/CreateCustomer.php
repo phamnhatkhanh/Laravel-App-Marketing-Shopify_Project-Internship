@@ -29,9 +29,9 @@ class CreateCustomer implements ShouldQueue
     public function __construct($data_customer,$myshopify_domain)
     {
         $this->data_customer = $data_customer;
+        $this->myshopify_domain = $myshopify_domain;
         // $this->customer = getConnectDatabaseActived(new Customer());
         // $this->store = getConnectDatabaseActived(new Store());
-        $this->myshopify_domain = $myshopify_domain;
     }
 
     /**
@@ -64,22 +64,12 @@ class CreateCustomer implements ShouldQueue
             'created_at' => $created_at,
             'updated_at' => $updated_at,
         ];
-
-        info("Job CreatedModel: first_name ".$data_customer['first_name']);
+        
+        $customer_model->create($data);
+        $customer_eloquent = $customer_model->where("id",$data_customer['id'])->first();
+        info("Create Customer: ...  ". json_encode($customer_eloquent, true));
         $connect = ($customer_model->getConnection()->getName());
-        event(new CreatedModel($connect,$data,$customer_model->getModel()->getTable()));
+        SyncDatabaseAfterCreatedModel($connect,$customer_eloquent);
 
-        // $this->customer->create([
-        //     'id' => $data_customer['id'],
-        //     'store_id' => $store->id,
-        //     'email' => $data_customer['email'],
-        //     'first_name' => $data_customer['first_name'],
-        //     'last_name' => $data_customer['last_name'],
-        //     'orders_count' => $data_customer['orders_count'],
-        //     'total_spent' => $data_customer['total_spent'],
-        //     'phone' => $data_customer['phone'],
-        //     'created_at' => $created_at,
-        //     'updated_at' => $updated_at,
-        // ]);
     }
 }
