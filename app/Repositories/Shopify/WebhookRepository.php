@@ -2,15 +2,15 @@
 
 namespace App\Repositories\Shopify;
 
-use App\Jobs\UninstallApp;
+use App\Jobs\Shopify\UninstallApp;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 
 use Session;
 
-use App\Jobs\CreateCustomer;
-use App\Jobs\DeleteCustomer;
-use App\Jobs\UpdateCustomer;
+use App\Jobs\Shopify\CreateCustomer;
+use App\Jobs\Shopify\DeleteCustomer;
+use App\Jobs\Shopify\UpdateCustomer;
 
 
 use App\Models\Store;

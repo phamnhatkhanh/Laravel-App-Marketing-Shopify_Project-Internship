@@ -3,6 +3,7 @@
 
 namespace App\Repositories\Eloquents;
 use App\Services\Customers\CustomerService;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Http\Request;
 use Illuminate\Bus\Batch;
 use Carbon\Carbon;
@@ -204,7 +205,9 @@ class CustomerRepository implements CustomerRepositoryInterface
         $request['created_at'] = Carbon::now()->format('Y-m-d H:i:s');
         $request['updated_at'] = Carbon::now()->format('Y-m-d H:i:s');
 
-        $customer = $this->customer->create($request->all());
+        Schema::connection($this->customer->getConnection()->getName())->disableForeignKeyConstraints();
+            $customer = $this->customer->create($request->all());
+        Schema::connection($this->customer->getConnection()->getName())->enableForeignKeyConstraints();
         // dd($customer);
         $customer = $this->customer->where('id', $request['id'])->first();
         $connect = ($this->customer->getConnection()->getName());

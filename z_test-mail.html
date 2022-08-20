@@ -1,20 +1,7 @@
 <div class="task">
 
 DB: setup.
-#   db_status.
-    Test api resource and adjust event.
-        place in shopify.
-1. Test sync
-  FE: Customer shopify -> change disconnect.
-      Campaign
-  BE: api.
 
-2. Test and control flow disconnect:
-  
--> test other model + web hook.
-
-
-3. Set name
 4. Clean code, imporve.
 
 
@@ -26,26 +13,35 @@ Campaign:
     send many mail -> not image
 
 Customer:
+    Resoucre
 
+Crr:
+    clean sync DB.
+    -> wirte command, resource.
+    -- structure project: job, listen
 
-DONE ALL: change sync DB.
 
 Project:
   Write command artisan run setup DB.
   Write test.
   Respone: use function -- Exception.
+
 </div>
 ngrok http --host-header=rewrite 8000
 
 
 =====================
 
+1. Test sync
+  FE: Customer shopify -> change disconnect.
+      Campaign
+  BE: api.
+
+-- 2. Test and control flow disconnect: -> test other model + web hook.
+    # Connect -> change status in sync_disconnect -> get data last (wait DB have last data.)
 
 
-
-
-
-
+-- 3. Set name
 
 
 

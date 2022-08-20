@@ -4,8 +4,8 @@
 namespace App\Repositories\Shopify;
 
 
-use App\Jobs\createDataCustomer;
-use App\Jobs\createDataStore;
+use App\Jobs\Shopify\CreateDataCustomer;
+use App\Jobs\Shopify\CreateDataStore;
 use App\Services\Shopify\ShopifyService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Bus;
@@ -21,7 +21,7 @@ use App\Events\Database\CreatedModel;
 use App\Events\Database\UpdatedModel;
 use App\Events\Database\DeletedModel;
 use App\Events\SynchronizedCustomer;
-use App\Jobs\SyncCumtomer;
+use App\Jobs\Shopify\SyncCumtomer;
 
 class ShopifyRepository implements ShopifyRepositoryInterface
 {
@@ -214,7 +214,7 @@ class ShopifyRepository implements ShopifyRepositoryInterface
         $store = !empty($responseStore) ? $responseStore : [];
 
         info("createDataStore...");
-        dispatch(new createDataStore($store, $access_token));
+        dispatch(new CreateDataStore($store, $access_token));
 
         $getData = $store['shop'];
 
@@ -277,7 +277,7 @@ class ShopifyRepository implements ShopifyRepositoryInterface
             data_set($customers, '*.store_id', $storeID);
 
             info("Shopify: save customers");
-            dispatch(new createDataCustomer($customers, $storeID));
+            dispatch(new CreateDataCustomer($customers, $storeID));
         }
 
         return $log;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Jobs;
+namespace App\Jobs\Shopify;
 
 use App\Events\Database\UpdatedModel;
 use Illuminate\Bus\Batchable;
@@ -35,7 +35,7 @@ class SyncCumtomer
         $this->customers = $customers;
         $this->store_id = $store_id;
         $this->batch_id = $batch_id;
-        
+
     }
 
     /**
@@ -84,7 +84,7 @@ class SyncCumtomer
                     'created_at' => $created_at,
                     'updated_at' => $updated_at,
                 ];
-                
+
 
                 $findCustomer =  $customer_model->where('id', $data['id'])->first();
                 // info('Id cua Customer:'.json_encode($findCustomer, true));
@@ -106,7 +106,7 @@ class SyncCumtomer
                     $findCustomer->update($data);
                     $connect = ($customer_model->getConnection()->getName());
                     SyncDatabaseAfterUpdatedModel($connect,$findCustomer);
-    
+
                 }
             }
 

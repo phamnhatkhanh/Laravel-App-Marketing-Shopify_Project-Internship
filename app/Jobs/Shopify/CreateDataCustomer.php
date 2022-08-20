@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Jobs;
+namespace App\Jobs\Shopify;
 
 use App\Models\Customer;
 use Illuminate\Bus\Queueable;
@@ -11,7 +11,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Schema;
 
-class createDataCustomer implements ShouldQueue
+class CreateDataCustomer implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -74,7 +74,7 @@ class createDataCustomer implements ShouldQueue
                     'created_at' => $created_at,
                     'updated_at' => $updated_at,
                 ];
-                
+
 
                 $findCustomer =  $customer_model->where('id', $data['id'])->first();
                 // info('Id cua Customer:'.json_encode($findCustomer, true));
@@ -96,7 +96,7 @@ class createDataCustomer implements ShouldQueue
                     $findCustomer->update($data);
                     $connect = ($customer_model->getConnection()->getName());
                     SyncDatabaseAfterUpdatedModel($connect,$findCustomer);
-    
+
                 }
             }
 
