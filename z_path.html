@@ -1,60 +1,34 @@
 <div class="task">
-Tạo các api cho FE ở 2 page: customer, campaign.
-    -> test ở postmain ổn -> đưa FE dùng.
-
-Improve code:
-    - Clean code: cách đặt tên
-    - Tổ chức: file, comment cho rõ ràng.
-
-1.Send email và realtime:
-    -> test FE xem có listen khi serve mình gửi event ko.
-
-DB: add connect in Eloquent
-
-
-
 
 g/s xog hết task project thì.
 Inprove code:
     1. Test code: xem chạy ổn + có lỗi nào không.
-    2. Customer err,EX respone về FE.
+        - Login: refresh token.
+        - Clean code(set name, structure function, comment code) -- Validation -- Exception .
+        - Filter.
+        - Optimize.
+
+
+    3. Docker.
+    4. Viết unit tests.
+    5. Send sms.
+
 
 Đào sâu về server:
+
 Optimize:
     DB:query -- Eloquent -- Class.
-        Class: chỉ cần new 1 lần sử dụng lại thay vì new nhiều lần
+        Class: chỉ cần new 1 lần sử dụng lại thay vì new nhiều lần.
         Eloquent: lazy load.
         Query: paganina và chunk.
 
-1.Shopify:
-    - làm với nhiều customer >1000.
 
-<!-- Export với dữ liệu lớn. -->
-1.Redis: Cache, queue kết nối với redis để chạy cho nó nhanh.
-    ?? Cache: lưu gì trên đây.
-    Cache: Thay vì truy xuất dữ liệu trên DB -> lưu Data trên Cache truy xuất nhanh hơn.
-        - FE: Customer,Campaign show list lưu Redis -> truy xuất cho nhanh.
-        - Shopify cập nhật customer: chỉ cập nhật khi email, phone,  orders_count, total_spent thay đổi.
-            - Cập nhật ở Redis sau đó vào DB cập nhật.
-    Queue: xử lý job failed.
-
-DB:
-    set condition for field in tabel DB.
-    backup data.
-
-
-Pusher not actual realtime.
-DB.
 </div>
 
 <div class="open_problem">
-
-
-
-Nghĩ task nào ứng dụng được Facade.
-
-    - task switch
-    - ## backup DB: require  change just one in backup and use if
+redict: authen
+syncCutomerFromShopify: set fix id store.
+SyncCumtomer: fix id store 
 </div>
 
 <div class="result">

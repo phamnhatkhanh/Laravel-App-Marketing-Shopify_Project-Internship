@@ -21,27 +21,32 @@ class CheckAuthenticate
     public function handle(Request $request, Closure $next)
     {
         try {
-            
-            if (!$user = JWTAuth::parseToken()->authenticate()) {
+            info("check acces token ");
+            if (!$store = JWTAuth::parseToken()->authenticate()) {
                 return response()->json(['user_not_found'], 404);
             }
-            $request->user = $user;
+            $request->store = $store;
             return $next($request);
         } catch (TokenExpiredException $e) {
-    
-            return response()->json(['token_expired']);
 
-    
+            return response()->json([
+                "message" => 'token_expired',
+                "status" => 401
+            ]);
         } catch (TokenInvalidException $e) {
-    
-            return response()->json(['token_invalid']);
-    
+
+            return response()->json([
+                "message" => "token_invalid",
+                "status" => 401
+            ]);
         } catch (JWTException $e) {
-    
-            return response()->json(['token_absent']);
-    
+
+            return response()->json([
+                "message" => 'token_absent',
+                "status" => 401
+            ]);
         }
-    
-        return response()->json(compact('user'));
+
+        return response()->json(compact('store'));
     }
 }

@@ -11,8 +11,17 @@ class CustomerSeeder extends Seeder
      *
      * @return void
      */
+    private static $id = 1;
     public function run()
     {
-        Customer::factory()->times(10)->create();
+        // $customers = Customer::factory()->times(1)->create();
+        $customers = Customer::factory()->times(5)->create();
+
+        foreach ($customers as  $customer) {
+            $customer->id = self::$id++;
+            Customer::on('mysql_customers_backup')->create(($customer->toArray()));
+            Customer::on('mysql_customers_backup_1')->create(($customer->toArray()));
+        }
+
     }
 }

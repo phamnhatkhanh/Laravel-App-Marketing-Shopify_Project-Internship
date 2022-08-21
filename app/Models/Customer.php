@@ -4,7 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Mail;
 use App\Models\Store;
+use DateTime;
+use Illuminate\Support\Facades\DB;
+use Tymon\JWTAuth\Claims\Custom;
 
 class Customer extends Model
 {
@@ -26,72 +30,96 @@ class Customer extends Model
         'updated_at',
     ];
 
-
     public function store()
     {
-    	return $this->belongsTo(Store::class);
+        return $this->belongsTo(Store::class);
     }
     public $timestamps = false;
 
-    public function scopeFirstName($query, $request)
+    public function scopeSearchCustomer($query, $params)
     {
-        if ($request->has('first_name')) {
-            $query->where('first_name', 'LIKE', '%' .$request->first_name. '%');
+        if (!empty($params['keywords']) && trim($params['keywords']) !== '') {
+            $keywords = trim($params['keywords']);
+            $query->where('first_name', 'LIKE', '%'.$keywords.'%')
+                ->Orwhere('last_name', 'LIKE', '%'.$keywords.'%')
+                ->orWhereRaw("concat(first_name, ' ', last_name, ' ', country, ' ', email, ' ', phone) like '%" . $keywords . "%' ")
+                ->Orwhere('country', 'LIKE', '%'.$keywords.'%')
+                ->Orwhere('email', 'LIKE', '%'.$keywords.'%')
+                ->Orwhere('phone', 'LIKE','%'.$keywords.'%');
         }
 
         return $query;
     }
 
-    public function scopeLastName($query, $request)
+    public function scopeOrder($query, $params)
     {
-        if ($request->has('last_name')) {
-            $query->where('last_name', 'LIKE', '%' . $request->last_name . '%');
+        if (isset($params['orders_from']) && isset($params['orders_to'])) {
+
+
+            $query->where('orders_count', '>=', (int)$params['orders_from'])
+                ->where('orders_count', '<=', (int)$params['orders_to']);
+        }
+
+        if (isset($params['orders_from']) && trim($params['orders_from'])) {
+            $query->whereNotBetween('orders_count', [0, (int)$params['orders_from']-1]);
+        }
+
+        if (isset($params['orders_to']) && trim($params['orders_to'])) {
+            $query->whereBetween('orders_count', [0, (int)$params['orders_to']])
+            ->where('orders_count', '<=', (int)$params['orders_to']);
         }
 
         return $query;
     }
 
-    public function scopeEmail($query, $request){
-        if ($request->has('email')){
-            $query->where('email',$request->email);
+    public function scopeTotalSpent($query, $params)
+    {
+        if (isset($params['spent_from']) && isset($params['spent_to'])) {
+            info('from-to');
+            $query->where('total_spent', '>=', (int)$params['spent_from'])
+                ->where('total_spent', '<=', (int)$params['spent_to']);
+        }
+
+        if (isset($params['spent_from']) && trim($params['spent_from'])) {
+            $query->whereNotBetween('total_spent', [0, (int)$params['spent_from']-1]);
+        }
+
+        if (isset($params['spent_to']) && trim($params['spent_to'])) {
+            $query->whereBetween('total_spent', [0, (int)$params['spent_to']])
+                ->where('total_spent', '<=', (int)$params['spent_to']);
         }
 
         return $query;
     }
 
-    public function scopePhone($query, $request){
-        if ($request->has('phone')){
-            $query->where('phone', $request->phone);
+    public function scopeSort($query, $params)
+    {
+        if (isset($params['sort']) && trim($params['sort'] !== '')) {
+            $query->orderBy('created_at', trim($params['sort']));
         }
 
         return $query;
     }
 
-    public function scopeCreateAt($query, $request){
-        if ($request->has('created_at')){
-            $query->whereDate('created_at', $request->created_at);
+    public function scopeDate($query, $params)
+    {
+        $now = date('Y-m-d H:i:s');
+        if (isset($params['date_from']) && isset($params['date_to'])) {
+            $date_from = trim($params['date_from']);
+            $date_to = trim($params['date_to']);
+            $query->whereDate('created_at', '>=',  $date_from)
+                ->whereDate('created_at', '<=', $date_to);
         }
 
-        return $query;
-    }
-
-    public function scopeTotalSpent($query, $request){
-        $min_total_spent = 0;
-        $max_total_spent = 5000000;
-        if ($request->has('total_spent')){
-            $query->whereBetween('total_spent',[$min_total_spent, $max_total_spent]);
+        if (isset($params['date_to']) && trim($params['date_to'])) {
+            $query->whereDate('created_at', '<=',  $params['date_to']);
         }
 
-        return $query;
-    }
+        if (isset($params['date_from']) && trim($params['date_from'])) {
+            $query->whereDate('created_at', '>=', $params['date_from'])
+                ->whereDate('created_at', '<=', $now);
 
-    public function scopeTotalOrder($query, $request){
-        $min_orders_count = 0;
-        $max_orders_count = 5000000;
-        if ($request->has('orders_count')){
-            $query->whereBetween('orders_count',[$min_orders_count, $max_orders_count]);
+            return $query;
         }
-
-        return $query;
     }
 }

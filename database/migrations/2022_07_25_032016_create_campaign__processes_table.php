@@ -2,8 +2,8 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Query\Expression;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
 
 class CreateCampaignProcessesTable extends Migration
@@ -13,16 +13,23 @@ class CreateCampaignProcessesTable extends Migration
      *
      * @return void
      */
+
     public function up()
     {
         Schema::connection('mysql_campaigns_processes')->create('campaign_processes', function (Blueprint $table) {
-            $databaseName = DB::connection('mysql_campaigns')->getDatabaseName();
-            
+            $DB_campaigns = DB::connection('mysql_campaigns')->getDatabaseName();
+            $DB_campaigns_backup = DB::connection('mysql_campaigns_backup')->getDatabaseName();
+
+            $DB_store = DB::connection('mysql_stores')->getDatabaseName();
+            $DB_store_backup = DB::connection('mysql_stores_backup')->getDatabaseName();
+
             $table->id();
+            $table->unsignedBigInteger('store_id');
             $table->unsignedBigInteger('campaign_id');
-            $table->string('name',50);
-            $table->string('status');
-            $table->integer('process')->unsigned()->default(0);
+            $table->string('name', 50);
+            $table->string('status')->nullable()->default(null);
+            $table->integer('process')->default(0);
+            // $table->double('process',10,2)->default(0);
             $table->integer('send_email_done')->unsigned()->default(0);
             $table->integer('send_email_fail')->unsigned()->default(0);
             $table->integer('total_customers')->unsigned()->default(0);
@@ -30,8 +37,24 @@ class CreateCampaignProcessesTable extends Migration
 
             $table->foreign('campaign_id')
                 ->references('id')
-                ->on(new Expression($databaseName . '.campaigns'))
-                // ->on('campaigns')
+                ->on(new Expression($DB_campaigns . '.campaigns'))
+                ->constrained()
+                ->onDelete('cascade');
+
+            $table->foreign('campaign_id', 'campaignsProcess_campagins_backup')
+                ->references('id')
+                ->on(new Expression($DB_campaigns_backup . '.campaigns'))
+                ->constrained()
+                ->onDelete('cascade');
+
+            $table->foreign('store_id')
+                ->references('id')
+                ->on(new Expression($DB_store . '.stores'))
+                ->onDelete('cascade');
+
+            $table->foreign('store_id', 'campaignProcess_stores_backup')
+                ->references('id')
+                ->on(new Expression($DB_store_backup . '.stores'))
                 ->onDelete('cascade');
         });
     }
@@ -43,14 +66,19 @@ class CreateCampaignProcessesTable extends Migration
      */
     public function down()
     {
-        if(Schema::connection('mysql_campaigns_processes')->hasTable('campaign_processes')){
+        if (Schema::connection('mysql_campaigns_processes')->hasTable('campaign_processes')) {
 
             Schema::connection('mysql_campaigns_processes')->table('campaign_processes', function (Blueprint $table) {
+                $table->dropForeign('campaignsProcess_campagins_backup');
                 $table->dropForeign(['campaign_id']);
+
+                $table->dropForeign('campaignProcess_stores_backup');
+                $table->dropForeign(['store_id']);
+                
                 $table->dropColumn('campaign_id');
+                
             });
             Schema::connection('mysql_campaigns_processes')->dropIfExists('campaign_processes');
         }
-
     }
 }

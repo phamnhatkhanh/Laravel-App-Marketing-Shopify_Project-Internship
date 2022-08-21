@@ -2,43 +2,98 @@
 
 namespace App\Repositories\Shopify;
 
-use App\Models\Shopify;
-use App\Models\Store;
+use App\Jobs\Shopify\UninstallApp;
+use GuzzleHttp\Client;
+use Illuminate\Http\Request;
+
 use Session;
+
+use App\Jobs\Shopify\CreateCustomer;
+use App\Jobs\Shopify\DeleteCustomer;
+use App\Jobs\Shopify\UpdateCustomer;
+
+
+use App\Models\Store;
+
 class WebhookRepository
 {
-    //Lưu thông tin Shopify
-    public static function saveDataLogin($res, $access_token)
-    {
-        $saveData = $res['shop'];
 
-        $findCreateAT = array('T', '+07:00');
-        $replaceCreateAT = array(' ', '');
-        $findUpdateAT = array('T', '+07:00');
-        $replaceUpdateAT = array(' ', '');
+    protected $store;
+    public function __construct(){
+        $this->store = new Store();
+    }
 
-        $created_at = str_replace($findCreateAT, $replaceCreateAT, $saveData->created_at);
-        $updated_at = str_replace($findUpdateAT, $replaceUpdateAT, $saveData->updated_at);
-        Session::put('store_id',$saveData->id);
-        $dataPost = [
-            'id' => $saveData->id,
-            'name_merchant' => $saveData->name,
-            'email' => $saveData->email,
-            'password' => '123qwe',
-            'phone' => $saveData->phone,
-            'myshopify_domain' => $saveData->domain,
-            'domain' => $saveData->domain,
-            'access_token' => $access_token,
-            'address' => $saveData->address1,
-            'province' => 'New York',
-            'city' => $saveData->city,
-            'zip' => $saveData->zip,
-            'country_name' => $saveData->country_name,
-            'created_at' => $created_at,
-            'updated_at' => $updated_at,
-        ];
-        Store::create($dataPost);
+    /**
+     * Receive Webhook was shot back from Shopify
+     *
+     * @param Request $request
+     * @return mixed
+     */
+    function webhook(Request $request){
+        $topic = $request->header('X-Shopify-Topic');
+        $myshopify_domain = $request->header('X-Shopify-Shop-Domain');
+        $payload = $request->all();
 
-        return $dataPost;
+        switch ($topic) {
+            case 'customers/update':
+                //Update data Product
+                $this->updateFromShopify($payload);
+                break;
+
+            case 'customers/create':
+                //Create data Product
+                $this->createFromShopify($payload, $myshopify_domain);
+                break;
+
+            case 'customers/delete':
+                //Delete data Product
+                $this->deleteFromShopify($payload);
+
+            case 'app/uninstalled':
+                //Unistall App
+                $this->uninstallAppFromShopify($payload);
+        }
+    }
+
+    /**
+     * Receive Add Customer Webhook from Shopify put in Job
+     *
+     * @param string $payload
+     * @param string $myshopify_domain
+     * @return void
+     */
+    public function createFromShopify($payload, $myshopify_domain){
+       dispatch(new CreateCustomer($payload, $myshopify_domain));
+    }
+
+    /**
+     * Receive Edit Customer Webhook from Shopify put in Job
+     *
+     * @param string $payload
+     * @return void
+     */
+    public function updateFromShopify($payload){
+        info("WebhookRepository: update customer from shopify");
+        dispatch(new UpdateCustomer($payload));
+    }
+
+    /**
+     * Receive Delete Customer Webhook from Shopify put in Job
+     *
+     * @param string $payload
+     * @return void
+     */
+    public function deleteFromShopify($payload){
+        dispatch(new DeleteCustomer($payload));
+    }
+
+    /**
+     * Receive uninstall App Webhook from Shopify put in Job
+     *
+     * @param string $payload
+     * @return void
+     */
+    public function uninstallAppFromShopify($payload){
+        dispatch(new UninstallApp($payload));
     }
 }

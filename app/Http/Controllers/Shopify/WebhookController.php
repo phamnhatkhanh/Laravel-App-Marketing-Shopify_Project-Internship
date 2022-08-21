@@ -2,30 +2,52 @@
 
 namespace App\Http\Controllers\Shopify;
 
-use App\Http\Controllers\Controller;
+use GuzzleHttp\Client;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Repositories\Shopify\WebhookRepository;
+
+use App\Jobs\Shopify\CreateCustomer;
+use App\Jobs\Shopify\DeleteCustomer;
+use App\Jobs\Shopify\UpdateCustomer;
 
 class WebhookController extends Controller
 {
+    protected $webHookRepository;
+    // protected $product;
+
+    public function __construct(WebhookRepository $webHookRepository){
+        $this->webHookRepository= $webHookRepository;
+    }
+
+    /**
+     * Receive Webhook was shot back from Shopify
+     *
+     * @param Request $request
+     * @return void
+     */
     function webhook(Request $request)
     {
-        $topic = $request->header('X-Shopify-Topic');
-        $payload = $request->all();
-        
-        switch ($topic) {
-            case 'customers/update':
-                //Update data Product
-                ShopifyController::updateFromShopify($payload);
-                break;
-
-            case 'customers/create':
-                //Create data Product
-                ShopifyController::createFromShopify($payload);
-                break;
-
-            case 'customers/delete':
-                //Delete data Product
-                ShopifyController::deleteFromShopify($payload);
-        }
+        $this->webHookRepository->webhook($request);
     }
+
+    //Đưa vào Queue để lưu những khách hàng đã được tạo trên Shopify vào DB
+    public function createFromShopify($payload,$myshopify_domain)
+    {
+        $this->webHookRepository->createFromShopify($payload, $myshopify_domain);
+    }
+
+    //Đưa vào Queue để tự động lưu những khách hàng đã được sửa trên Shopify vào DB
+    public function updateFromShopify($payload)
+    {
+        $this->webHookRepository->updateFromShopify($payload);
+    }
+
+    //Đưa vào Queue để tự động xóa khách hàng đã xóa trên Shopify trong DB
+    public function deleteFromShopify($payload)
+    {
+        $this->webHookRepository->deleteFromShopify($payload);
+    }
+
 }
+

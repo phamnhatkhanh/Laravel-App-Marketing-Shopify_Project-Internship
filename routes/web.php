@@ -1,7 +1,12 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Client\CampaignProcessesController;
+use App\Http\Controllers\Client\CustomerController;
+use App\Http\Controllers\Shopify\ShopifyController;
+use App\Models\DbStatus;
+use App\Models\Customer;
+use Illuminate\Support\Facades\Schema;
+use Tymon\JWTAuth\Facades\JWTAuth;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -13,24 +18,18 @@ use App\Http\Controllers\Client\CampaignProcessesController;
 |
 */
 
-Route::get('/mail', [CampaignProcessesController::class, 'sendEmailCampaign']);
+
+Route::get('/getCustomer', [CustomerController::class, 'getCustomer']);
+Route::get('/getStore', [ShopifyController::class, 'getStore']);
 
 Route::get('/', function () {
     return view('showNotification');
-    // return view('welcome');
 });
 
 
-Route::get('getPusher', function (){
-   return view('form_pusher');
-});
+// Auth::routes();
 
-Route::get('/pusher', function(Illuminate\Http\Request $request) {
-    event(new App\Events\HelloPusherEvent($request));
-    return redirect('getPusher');
-});
 
-Auth::routes();
+// Route::get('/home', [HomeController::class, 'index'])->name('home');
 
-Route::get('/home', [\App\Http\Controllers\HomeController::class, 'index'])->name('home');
 

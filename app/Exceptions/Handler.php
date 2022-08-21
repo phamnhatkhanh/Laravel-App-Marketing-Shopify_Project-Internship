@@ -51,9 +51,14 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Throwable $exception)
     {
-        if ($request->expectsJson()) {
-            return $this->apiException($request,$exception);
-        }
-        return parent::render($request, $exception);
+        // if ($request->expectsJson()) {
+        // }
+        // if($exception instanceof QueryException){
+        //     return response()->json([
+        //             'errors' => 'Can not access DB'
+        //         ],404);
+        // }
+        return $this->apiException($request,$exception);
+        // return parent::render($request, $exception);
     }
 }

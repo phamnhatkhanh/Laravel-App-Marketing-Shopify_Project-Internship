@@ -11,9 +11,15 @@ class StoreSeeder extends Seeder
      *
      * @return void
      */
+    private static $id = 1;
     public function run()
     {
-        $stores = Store::factory()->times(10)->create();
-        Info($stores);
+        $stores = Store::factory()->times(5)->create();
+        // info("data_fake_store" . $stores);
+        foreach ($stores as  $store) {
+            $store->id = self::$id++;
+            // info("data_fake_store_id: ".$store->id);
+            Store::on('mysql_stores_backup')->create(($store->toArray()));
+        }
     }
 }

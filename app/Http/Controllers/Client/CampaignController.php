@@ -1,116 +1,141 @@
 <?php
 
 namespace App\Http\Controllers\Client;
-
+// use App\Jobs\SendEmailPreview;
+use App\Mail\SendMailPreview;
+use App\Models\Store;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use IvoPetkov\HTML5DOMDocument;
+use IvoPetkov\HTML5DOMElement;
+use IvoPetkov\HTML5DOMNodeList;
+use phpDocumentor\Reflection\Types\Boolean;
+use Symfony\Component\HttpFoundation\Response;
 use App\Http\Controllers\Controller;
 use App\Repositories\Eloquents\CampaignRepository;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Bus\Batch;
-
+use Illuminate\Http\Request;
 use App\Models\Campaign;
+use App\Models\CampaignProcess;
+use App\Models\CampaignBackgroud;
+use App\Models\CampaignButton;
+use App\Models\CampaignVariant;
+use App\Models\Customer;
 use App\Jobs\SendMail;
 use App\Events\MailSent;
+
 
 class CampaignController extends Controller
 {
     protected $campaignRepository;
     protected $campaign;
 
-    public function __construct(CampaignRepository $campaignRepository){
-        $this->campaignRepository= $campaignRepository;
-    }
-     // nhan list user va gui sau hien tai fix cung.
-    public function sendEmailCampaign(){
-        $batch = Bus::batch([])
-        ->then(function (Batch $batch) {
-            event(new MailSent($batch->id));
-        })->dispatch();
-
-        $batch_id = $batch->id;
-        info($batch_id);
-        $users = [
-            'khanhhcm4@gmail.com'
-            // 'khanhhcm4@gmail.com','nguyenducmanh123@gmail.com','phamgiakinh345@gmail.com','tranvangnhia57@gmail.com','khanhpham5301@gmail.com',
-            // 'khanhhcm4@gmail.com','nguyenducmanh123@gmail.com','phamgiakinh345@gmail.com','tranvangnhia57@gmail.com','khanhpham5301@gmail.com',
-        ];
-        foreach ($users as  $user) {
-            $batch->add(new SendMail($batch_id, $user));
-        }
-        return $batch;
-    }
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
+    public function __construct(CampaignRepository $campaignRepository)
     {
-        //
+        $this->campaignRepository = $campaignRepository;
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
+     * Search Campaign by Store
+     * @param Request $request
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response|void
      */
-    public function create()
+    public function index(Request $request)
     {
-        //
+        return $this->campaignRepository->index($request);
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \App\Http\Requests\StoreCampaignRequest  $request
-     * @return \Illuminate\Http\Response
+     * Get list Campaign Processes
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
-    public function store(StoreCampaignRequest $request)
+    public function getCampaignProceess()
     {
-        //
+
+        $campaignProcess = $this->campaignRepository->getCampaignProceess();
+        return response(
+            formatJsonRepsone(Response::HTTP_OK,"mess",$campaignProcess,"err"),
+            Response::HTTP_OK);
     }
 
     /**
-     * Display the specified resource.
+     * Receive request from FrontEnd. Send mail for selected customers and use Pusher the display mail number of successes, failures
      *
-     * @param  \App\Models\Campaign  $campaign
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return array
      */
-    public function show(Campaign $campaign)
-    {
-        //
+    public function saveCampaign(Request $request){
+
+        return $this->campaignRepository->saveCampaign($request);
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Receive request from FrontEnd put in Job and send mail to the person receiving the request
      *
-     * @param  \App\Models\Campaign  $campaign
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function edit(Campaign $campaign)
-    {
-        //
+    public function SendEmail(Request $request){
+        return $this->campaignRepository->sendEmail($request);
     }
 
     /**
-     * Update the specified resource in storage.
-     *
-     * @param  \App\Http\Requests\UpdateCampaignRequest  $request
-     * @param  \App\Models\Campaign  $campaign
-     * @return \Illuminate\Http\Response
+     * Receive request from saveCampaign put in Job. Send mail for selected customers and use Pusher the display mail number of successes, failures
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function update(UpdateCampaignRequest $request, Campaign $campaign)
+    public function sendEmailPreview(Request $request)
     {
-        //
+        return $this->campaignRepository->sendEmailPreview($request);
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Get list Campaign
      *
-     * @param  \App\Models\Campaign  $campaign
-     * @return \Illuminate\Http\Response
+     * @return mixed
      */
-    public function destroy(Campaign $campaign)
+    public function getCampaign()
     {
-        //
+        return $this->campaignRepository->getCampaign();
     }
+
+    public function update(Request $request, $id)
+    {
+        $campaign = $this->campaignRepository->update($request, $id);
+
+        return response([
+            'data' => $campaign
+        ],201);
+    }
+
+    /**
+     * Save Campaign
+     *
+     * @param Request $request
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+        $campaign = $this->campaignRepository->store($request);
+        return response([
+            'data' => $campaign
+        ],201);
+    }
+
+    public function destroy($id)
+    {
+        $campaign = $this->campaignRepository->destroy( $id);
+        return response([
+            'data' => $campaign,
+            'mess' => "dleete campaign done"
+        ],201);
+
+    }
+
+    public function show($id)
+    {
+
+    }
+
 }

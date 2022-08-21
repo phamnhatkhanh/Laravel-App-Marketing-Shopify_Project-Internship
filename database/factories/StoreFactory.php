@@ -11,19 +11,21 @@ class StoreFactory extends Factory
      *
      * @return array
      */
+    private static $id = 1;
     public function definition()
     {
-
         return [
-            'id' => $this->faker->numberBetween(1000, 7000),
+            'id' => self::$id++,
+            // 'id' => $this->faker->numberBetween(1000, 7000),
             'name_merchant'=>$this->faker->username,
             'email'=> $this->faker->email,
             'phone'=>$this->faker->phoneNumber,
             'password'=>$this->faker->password,
-            'myshopify_domain'=>'https://khanhpham530112313.myshopify.com',
+            'myshopify_domain'=>'https://khanhpn123.myshopify.com',
             'domain'=>$this->faker->domainName,
             'access_token'=>Str::random(10),
-            'address' => $this->faker->address,
+            'address' => $this->faker->username,
+            // 'address' => $this->faker->address,
             'province'=>$this->faker->state,
             'city'=>$this->faker->city,
             'zip'=>$this->faker->numberBetween(1000, 7000),

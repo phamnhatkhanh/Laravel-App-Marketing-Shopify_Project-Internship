@@ -2,121 +2,90 @@
 
 namespace App\Http\Controllers\Shopify;
 
-use App\Http\Controllers\Controller;
-use App\Jobs\CreateCustomer;
-use App\Jobs\DeleteCustomer;
-use App\Jobs\UpdateCustomer;
-use App\Models\Customer;
-use App\Models\Shopify;
-use App\Models\Store;
-use App\Repositories\Eloquents\CustomerWebhookRepository;
-use App\Repositories\Eloquents\WebhookRepository;
-use App\Repositories\Webhooks\RegisterCustomerWebhookService;
-use App\Repositories\Webhooks\WebhookService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
+use phpDocumentor\Reflection\Types\This;
+
+use App\Http\Controllers\Controller;
+use App\Http\Controllers\LoginController;
+use App\Repositories\Shopify\ShopifyRepository;
+
+use App\Models\Customer;
+use App\Models\Store;
 
 class ShopifyController extends Controller
 {
-    
-    // Truyền ra ngoài view để nhập tên Shopify
-    public function index(Request $request)
-    {
-        $name = $request->get('name');
-        if(!empty($name)){
-            return response([
-                'data'=> $name,
-                'status' => 201,
-            ],201);
-        }
-        else{
-            return response();
-        }
 
+    protected $shopifyRepository;
+
+    public function __construct(ShopifyRepository $shopifyRepository)
+    {
+        $this->shopifyRepository = $shopifyRepository;
     }
 
-    // Lấy link Shopify
+    /**
+     * If hmac already exists, then login into Store. If don't have hmac download the app from Shopify
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse|string|void
+     */
     public function login(Request $request)
     {
-        $apiKey = config('shopify.shopify_api_key');
-        $scope = 'read_customers,write_customers';
-        // $shop = $request->shop;
-        $shop = env('SHOPIFY_DOMAIN');
-        $redirect_uri =  'http://localhost:8000/api/authen';
-        // $redirect_uri = config('shopify.ngrok') . '/api/authen';
-        $url = 'https://' . $shop . '/admin/oauth/authorize?client_id=' . $apiKey . '&scope=' . $scope . '&redirect_uri=' . $redirect_uri;
-        // dd($url);
-        return redirect($url);
+        // info("shopify controller login");
+        return $this->shopifyRepository->login($request);
     }
 
-    //Get access_token and Login Shop
+    /**
+     * Receive information from login to do other things
+     *
+     * @param Request $request
+     * @return void
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
     public function authen(Request $request)
     {
-        $code = $request->code;
-        $shopName = $request->shop;
-
-        //Lấy Access_token gọi về từ WebhookService
-        $getAccess_token = WebhookService::getAccessToken($code, $shopName);
-        $access_token = $getAccess_token->access_token;
-
-        //Lấy thông tin đăng nhập
-        $getDataLogin = WebhookService::getDataLogin($shopName, $access_token);
-
-        //Lưu thông tin Shopify vào DB
-        if (!Store::find($getDataLogin['shop']->id)) {
-            WebhookRepository::saveDataLogin($getDataLogin, $access_token);
-        }
-        //Lưu thông tin khách hàng ở Shopify lấy về từ SaveDataWebhookService vào DB
-        $createCustomer = WebhookService::createDataCustomer($shopName, $access_token);
-
-        foreach ($createCustomer['customers'] as $item) {
-            if (!Customer::find($item->id)) {
-                CustomerWebhookRepository::saveDataCustomer($createCustomer);
-            }
-        }
-
-        //Đăng kí CustomerWebhooks thêm, xóa, sửa
-        $this->registerProductWebhook($shopName, $access_token);
-        // return redirect()->route('login');
-        return redirect('http://127.0.0.1:8000/api/dashboard');
+        return $this->shopifyRepository->authen($request);
     }
 
-    //Đăng kí ProductWebhooks thêm, xóa, sửa
-    public function registerProductWebhook($shop, $access_token)
+    /**
+     * Get all Customer display the interface
+     *
+     * @return resource
+     */
+     public function getStore()
     {
-        RegisterCustomerWebhookService::registerProductWebhookService($shop, $access_token);
+        return $this->shopifyRepository->getStore();
     }
 
-    //Đưa vào Queue để lưu những khách hàng đã được tạo trên Shopify vào DB
-    public static function createFromShopify($payload)
+    public function store(Request $request)
     {
-        $data =  dispatch(new CreateCustomer($payload));
+        $store = $this->shopifyRepository->store($request);
+        return response([
+            'data' => $store
+        ],201);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $store = $this->shopifyRepository->update($request, $id);
 
         return response([
-            'data' => $data,
-            'status' => 201
-        ], 201);
+            'data' => $store
+        ],201);
     }
-
-    //Đưa vào Queue để tự động lưu những khách hàng đã được sửa trên Shopify vào DB
-    public static function updateFromShopify($payload)
+    public function destroy($id)
     {
-       $data =  dispatch(new UpdateCustomer($payload));
-
-       return response([
-        'data' => $data,
-        'status' => 201
-    ], 201);
-    }
-
-    //Đưa vào Queue để tự động xóa khách hàng đã xóa trên Shopify trong DB
-    public static function deleteFromShopify($payload)
-    {
-        $data = dispatch(new DeleteCustomer($payload));
-
+        $store = $this->shopifyRepository->destroy( $id);
         return response([
-            'data' => $data,
-            'status' => 201
-        ], 201);
+            'data' => $store,
+            'mess' => "dleete customer done"
+        ],201);
+
     }
 
+    public function show($id)
+    {
+
+    }
 }

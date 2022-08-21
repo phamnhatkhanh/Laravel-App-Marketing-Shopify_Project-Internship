@@ -3,7 +3,6 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Query\Expression;
 
 
 class CreateStoresTable extends Migration
@@ -19,20 +18,20 @@ class CreateStoresTable extends Migration
             $table->bigInteger('id')->unsigned()->primary();
             $table->string("name_merchant",50);
             $table->string("email",50);
-            $table->string("password",20);
+            $table->string("password",100);
             $table->string("phone")->nullable();
             $table->string("myshopify_domain",100);
             $table->string("domain");
             $table->string("access_token");
             $table->string("address",255)->nullable();
-            $table->string("province",20)->nullable();
-            $table->string("city",30)->nullable();
-            $table->string("zip",20)->nullable();
-            $table->string("country_name",50)->nullable();
+            $table->string("province",50)->nullable();
+            $table->string("city",50)->nullable();
+            $table->string("zip",50)->nullable();
+            $table->string("country_name",100)->nullable();
             $table->dateTime('created_at')->nullable();
             $table->dateTime('updated_at')->nullable();
         });
-    
+
     }
 
     /**

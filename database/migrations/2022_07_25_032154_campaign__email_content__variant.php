@@ -2,8 +2,8 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Query\Expression;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
 
 class CampaignEmailContentVariant extends Migration
@@ -16,17 +16,11 @@ class CampaignEmailContentVariant extends Migration
     public function up()
     {
 
-<<<<<<< HEAD
-         Schema::create('campaign_email_content_variant', function (Blueprint $table) {
-            $table->unsignedBigInteger('campaign_id');
-            $table->string('name')->nullable();
-=======
         Schema::connection('mysql_campaigns')->create('campaign_email_content_variant', function (Blueprint $table) {
             $databaseName = DB::connection('mysql_campaigns')->getDatabaseName();
-            
+
             $table->unsignedBigInteger('campaign_id');
-            $table->string(' name');
->>>>>>> m_db_dev
+            $table->string('name');
             $table->timestamp('created_at')->default(\DB::raw('CURRENT_TIMESTAMP'));
             $table->timestamp('updated_at')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
 

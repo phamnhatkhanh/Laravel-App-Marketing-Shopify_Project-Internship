@@ -75,11 +75,42 @@
         cluster: "ap1"
     });
 
+    var channel_1 = pusher.subscribe('customers_syncing');
+
+    // Bind a function to a Event (the full Laravel class)
+    channel_1.bind('syncing_customer', function(data) {
+        var existingNotifications = notifications.html();
+        var avatar = Math.floor(Math.random() * (71 - 20 + 1)) + 20;
+        var newNotificationHtml = `
+          <li class="notification active">
+              <div class="media">
+                <div class="media-left">
+                  <div class="media-object">
+                    <img src="https://api.adorable.io/avatars/71/`+avatar+`.png" class="img-circle" alt="50x50" style="width: 50px; height: 50px;">
+                  </div>
+                </div>
+                <div class="media-body">
+                  <strong class="notification-title">`+data.payload+`</strong>
+                  <!--p class="notification-desc">Extra description can go here</p-->
+                  <div class="notification-meta">
+                    <small class="timestamp">about a minute ago</small>
+                  </div>
+                </div>
+              </div>
+          </li>
+        `;
+        notifications.html(newNotificationHtml + existingNotifications);
+
+        notificationsCount += 1;
+        notificationsCountElem.attr('data-count', notificationsCount);
+        notificationsWrapper.find('.notif-count').text(notificationsCount);
+        notificationsWrapper.show();
+    });
+
     // Subscribe to the channel we specified in our Laravel Event
-    var channel = pusher.subscribe('MailSent');
-
+    var channel = pusher.subscribe('campaigns');
     // Bind a function to a Event (the full Laravel class)
-    channel.bind('send-done', function(data) {
+    channel.bind('send_mail', function(data) {
         var existingNotifications = notifications.html();
         var avatar = Math.floor(Math.random() * (71 - 20 + 1)) + 20;
         var newNotificationHtml = `
@@ -91,7 +122,7 @@
                   </div>
                 </div>
                 <div class="media-body">
-                  <strong class="notification-title">`+data.message+`</strong>
+                  <strong class="notification-title">`+data.payload+`</strong>
                   <!--p class="notification-desc">Extra description can go here</p-->
                   <div class="notification-meta">
                     <small class="timestamp">about a minute ago</small>
@@ -108,37 +139,9 @@
         notificationsWrapper.show();
     });
 
-     var channel_1 = pusher.subscribe('SendingMail');
 
-    // Bind a function to a Event (the full Laravel class)
-    channel_1.bind('send-processing', function(data) {
-        var existingNotifications = notifications.html();
-        var avatar = Math.floor(Math.random() * (71 - 20 + 1)) + 20;
-        var newNotificationHtml = `
-          <li class="notification active">
-              <div class="media">
-                <div class="media-left">
-                  <div class="media-object">
-                    <img src="https://api.adorable.io/avatars/71/`+avatar+`.png" class="img-circle" alt="50x50" style="width: 50px; height: 50px;">
-                  </div>
-                </div>
-                <div class="media-body">
-                  <strong class="notification-title">`+data.message+`</strong>
-                  <!--p class="notification-desc">Extra description can go here</p-->
-                  <div class="notification-meta">
-                    <small class="timestamp">about a minute ago</small>
-                  </div>
-                </div>
-              </div>
-          </li>
-        `;
-        notifications.html(newNotificationHtml + existingNotifications);
 
-        notificationsCount += 1;
-        notificationsCountElem.attr('data-count', notificationsCount);
-        notificationsWrapper.find('.notif-count').text(notificationsCount);
-        notificationsWrapper.show();
-    });
+
      var channel_2 = pusher.subscribe('helloPusherEvent');
 
     // Bind a function to a Event (the full Laravel class)
@@ -154,7 +157,7 @@
                   </div>
                 </div>
                 <div class="media-body">
-                  <strong class="notification-title">`+data.message+`</strong>
+                  <strong class="notification-title">`+data.payload+`</strong>
                   <!--p class="notification-desc">Extra description can go here</p-->
                   <div class="notification-meta">
                     <small class="timestamp">about a minute ago</small>
