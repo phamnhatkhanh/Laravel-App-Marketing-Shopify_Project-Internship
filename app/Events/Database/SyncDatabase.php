@@ -12,6 +12,7 @@ use Illuminate\Queue\SerializesModels;
 
 class SyncDatabase
 {
+
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     /**
@@ -19,14 +20,14 @@ class SyncDatabase
      *
      * @return void
      */
-    public $databaseSync;
-    public $databaseChooseSync;
-    public $model;
-    public function __construct($databaseSync,$model,$databaseChooseSync=null)
+    public $dbModelConnect;
+    public $tableModel;
+    public $dbLastedActivedModelConnect;
+    public function __construct($dbModelConnect,$tableModel,$dbLastedActivedModelConnect=null)
     {
-        $this->databaseSync = $databaseSync;
-        $this->model = $model;
-        $this->databaseChooseSync = $databaseChooseSync;
+        $this->dbModelConnect = $dbModelConnect;
+        $this->tableModel = $tableModel;
+        $this->dbLastedActivedModelConnect = $dbLastedActivedModelConnect;
     }
 
     /**

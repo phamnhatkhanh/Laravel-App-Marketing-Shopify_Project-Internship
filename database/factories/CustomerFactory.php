@@ -15,14 +15,10 @@ class CustomerFactory extends Factory
     private static $id = 1;
     public function definition()
     {
-         static $number;
         return [
-            // 'id' => $this->faker->numberBetween(1,2000),
             'id' => self::$id++,
-            'store_id'=>function(){
-                return Store::all()->random()->id;
-            },
-            // 'store_id'=>getRandomModelId(Store::class),
+            'store_id'=>getRandomModelId(Store::class),
+            // 'campaign_id'=>getRandomModelId(Campaign::class),
             'first_name'=>$this->faker->firstNameMale,
             'last_name'=>$this->faker->lastName,
             'email'=> $this->faker->email,
@@ -30,8 +26,8 @@ class CustomerFactory extends Factory
             'country'=>$this->faker->country,
             'orders_count'=>$this->faker->numberBetween(0,500),
             'total_spent'=>$this->faker->numberBetween(500,4000),
-            'created_at'=>$this->faker->dateTime(),
-            'updated_at'=>$this->faker->dateTime(),
+            'created_at'=>$this->faker->dateTimeThisYear(),
+            'updated_at'=>$this->faker->dateTimeThisMonth(),
         ];
     }
 }

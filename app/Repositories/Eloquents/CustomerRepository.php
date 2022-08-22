@@ -3,6 +3,7 @@
 
 namespace App\Repositories\Eloquents;
 use App\Services\Customers\CustomerService;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Http\Request;
 use Illuminate\Bus\Batch;
 use Carbon\Carbon;
@@ -28,8 +29,8 @@ class CustomerRepository implements CustomerRepositoryInterface
 
     public function __construct()
     {
-        $this->customer = getConnectDatabaseActived(new Customer());
         $this->store = getConnectDatabaseActived(new Store());
+        $this->customer = getConnectDatabaseActived(new Customer());
     }
 
     /**
@@ -42,9 +43,10 @@ class CustomerRepository implements CustomerRepositoryInterface
 
     {
 
-        $store_id = getStoreID();
+        // $storeID = "60157821137";
+        $storeID = getStoreID();
 
-        $store = $this->store->where('id',  $store_id)->first();
+        $store = $this->store->where('id',  $storeID)->first();
 
 
         $shopifyRepository = new ShopifyRepository();
@@ -65,9 +67,9 @@ class CustomerRepository implements CustomerRepositoryInterface
      */
     public function index(Request $request)
     {
-        $store_id = getStoreID();
+        $storeID = getStoreID();
 
-        $store = Store::where('id', $store_id)->first();
+        $store = $this->store->where('id', $storeID)->first();
 
         if (isset($store)) {
             $totalpage = 0;
@@ -107,7 +109,7 @@ class CustomerRepository implements CustomerRepositoryInterface
                 $totalpage = (int)ceil($total / 15);
             }
 
-            $total = Customer::where("store_id", $store->id)->count();
+            $total = $this->customer->where("store_id", $store->id)->count();
 
             return response([
                 "total_customers" => $total,
@@ -141,14 +143,14 @@ class CustomerRepository implements CustomerRepositoryInterface
     public function exportCustomerCSV(Request $request)
     {
         info($request->all());
-        $storeID = GetStoreID();
+        $storeID = getStoreID();
 
         info("Customer hash token: " . $storeID);
 
         $locationExport = storage_path('app/backup/customers/');
         $dateExport = date('d-m-Y_H-i-s');
 
-        $fileName = $locationExport . 'customer_' . $dateExport . '.csv';
+        $fileName = $locationExport . 'customer_'.$storeID.'_' . $dateExport . '.csv';
         if (!empty($request->list_customer || !empty($request->except_customer))) {
             if ($request->has('list_customer')) {
                 $listCustomers = $request->list_customer;
@@ -195,12 +197,15 @@ class CustomerRepository implements CustomerRepositoryInterface
 
     public function store($request)
     {
+
         $request['id'] = $this->customer->max('id') + 1;
         // dd($request['id'] );
         $request['created_at'] = Carbon::now()->format('Y-m-d H:i:s');
         $request['updated_at'] = Carbon::now()->format('Y-m-d H:i:s');
 
-        $customer = $this->customer->create($request->all());
+        Schema::connection($this->customer->getConnection()->getName())->disableForeignKeyConstraints();
+            $customer = $this->customer->create($request->all());
+        Schema::connection($this->customer->getConnection()->getName())->enableForeignKeyConstraints();
         // dd($customer);
         $customer = $this->customer->where('id', $request['id'])->first();
         $connect = ($this->customer->getConnection()->getName());
@@ -215,13 +220,13 @@ class CustomerRepository implements CustomerRepositoryInterface
      *
      * @return resource
      */
-    public function update($request, $customer_id)
+    public function update($request, $customerID)
     {
 
         // dd($this->customer->getConnection()->getName());
-        // dd("update function ".$customer_id);
+        // dd("update function ".$customerID);
         // info("Repostty: inside update");
-        $customer = $this->customer->where('id', $customer_id)->first();
+        $customer = $this->customer->where('id', $customerID)->first();
         if (!empty($customer)) {
             $customer->update($request->all());
             $connect = ($this->customer->getConnection()->getName());
@@ -235,10 +240,10 @@ class CustomerRepository implements CustomerRepositoryInterface
     }
 
 
-    public function destroy($customer_id)
+    public function destroy($customerID)
     {
-        // dd("dleete function ".$customer_id);
-        $customer = $this->customer->where('id', $customer_id)->first();
+        // dd("dleete function ".$customerID);
+        $customer = $this->customer->where('id', $customerID)->first();
         if (!empty($customer)) {
             // $customer->delete();
             $connect = ($this->customer->getConnection()->getName());

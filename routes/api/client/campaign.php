@@ -9,14 +9,10 @@ use App\Http\Controllers\LoginController;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\ProductRequest;
 
-// Route::middleware("CheckAuthenticate")->prefix('campaign')->group(function (){
-Route::prefix('campaign')->group(function (){
-
+Route::middleware("CheckAuthenticate")->prefix('campaign')->group(function (){
+// Route::prefix('campaign')->group(function (){
     Route::post('/save-campaign', [CampaignController::class, 'saveCampaign']);
-
-    // Route::get('/get-campaigns-process',[CampaignController::class, 'getCampaignProceess']);
-
     Route::post('/send-test',[CampaignController::class, 'sendEmail']);
 });
 
-Route::apiResource('/campaign',CampaignController::class);
+Route::apiResource('/campaign',CampaignController::class)->middleware("CheckAuthenticate");

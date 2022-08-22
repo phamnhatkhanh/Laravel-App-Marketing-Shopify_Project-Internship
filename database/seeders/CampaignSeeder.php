@@ -14,7 +14,7 @@ class CampaignSeeder extends Seeder
      */
     public function run()
     {
-        $campaigns = Campaign::factory()->times(5)->create();
+        $campaigns = Campaign::factory()->times(50)->create();
         foreach ($campaigns as  $campaign) {
             $campaign->id = self::$id++;
             Campaign::on('mysql_campaigns_backup')->create(($campaign->toArray()));

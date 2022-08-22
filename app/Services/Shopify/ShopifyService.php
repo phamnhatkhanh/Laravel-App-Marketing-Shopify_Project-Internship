@@ -7,7 +7,7 @@ use GuzzleHttp\Client;
 class ShopifyService
 {
     /**
-     * Get access_token from the Shopify
+     * Get accessToken from the Shopify
      *
      * @param string $code
      * @param string $domain
@@ -37,18 +37,18 @@ class ShopifyService
      * Retrieves a count of existing webhook subscriptions
      *
      * @param $shop
-     * @param $access_token
+     * @param $accessToken
      * @return array
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public static function getTopicWebhook($shop, $access_token)
+    public static function getTopicWebhook($shop, $accessToken)
     {
         info('Get all Topic Webhook Register');
         $client = new Client();
         $url = 'https://' . $shop . '/admin/api/2022-07/webhooks.json';
         $request = $client->request('get', $url, [
             'headers' => [
-                'X-Shopify-Access-Token' => $access_token
+                'X-Shopify-Access-Token' => $accessToken
             ]
         ]);
         $response = (array)json_decode($request->getBody(), true);
@@ -60,12 +60,12 @@ class ShopifyService
      * Create a new webhook subscription
      *
      * @param $shop
-     * @param $access_token
+     * @param $accessToken
      * @param $getWebhook
      * @return void
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public static function registerCustomerWebhookService($shop, $access_token, $getWebhook)
+    public static function registerCustomerWebhookService($shop, $accessToken, $getWebhook)
     {
 
         info("ShopifyRepository registerCustomerWebhookService: access persmission");
@@ -81,7 +81,7 @@ class ShopifyService
             $url = 'https://' . $shop . '/admin/api/2022-07/webhooks.json';
             $request = $client->request('post', $url, [
                 'headers' => [
-                    'X-Shopify-Access-Token' => $access_token,
+                    'X-Shopify-Access-Token' => $accessToken,
                 ],
                 'form_params' => [
                     'webhook' => [
@@ -98,17 +98,17 @@ class ShopifyService
      * Retrieve a count of Customers
      *
      * @param $shop
-     * @param $access_token
+     * @param $accessToken
      * @return array
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public static function countDataCustomer($shop, $access_token)
+    public static function countDataCustomer($shop, $accessToken)
     {
         $client = new Client();
         $url = 'https://' . $shop . '/admin/api/2022-07/customers/count.json';
         $request = $client->request('get', $url, [
             'headers' => [
-                'X-Shopify-Access-Token' => $access_token,
+                'X-Shopify-Access-Token' => $accessToken,
             ]
         ]);
         $countCustomer = (array)json_decode($request->getBody());
@@ -140,16 +140,16 @@ class ShopifyService
 
         if ($nextPage) {
             preg_match('~<(.*?)>~', $nextPage, $next);
-            $url_components = parse_url($next[1]);
-            parse_str($url_components['query'], $parseStr);
+            $urlComponents = parse_url($next[1]);
+            parse_str($urlComponents['query'], $parseStr);
             $params = $parseStr;
             $params['next_cursor'] = $parseStr['page_info'];
         }
 
         if ($prevPage) {
             preg_match('~<(.*?)>~', $prevPage, $next);
-            $url_components = parse_url($next[1]);
-            parse_str($url_components['query'], $parseStr);
+            $urlComponents = parse_url($next[1]);
+            parse_str($urlComponents['query'], $parseStr);
             $params = !empty($params) ? $params : $parseStr;
             $params['prev_cursor'] = $parseStr['page_info'];
         }
