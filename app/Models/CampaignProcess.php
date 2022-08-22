@@ -12,12 +12,6 @@ class CampaignProcess extends Model
     protected $connection = 'mysql_campaigns_processes';
     protected $table = 'campaign_processes';
 
-    // protected $store;
-    // public function __construct(){
-    //     $this->customer = getConnectDatabaseActived(new Customer());
-    //     $this->store = getConnectDatabaseActived(new Store());
-
-    // }
 
     protected $fillable = [
         'id',
@@ -31,7 +25,7 @@ class CampaignProcess extends Model
         'total_customers',
         'created_at'
     ];
-    
+
     public function campaign()
     {
         return $this->belongsTo(Campaign::class);

@@ -29,28 +29,11 @@ Route::prefix('auth')->group(function () {
     includeRouteFiles(__DIR__ . '/api/login');
 });
 
-// Route::prefix('client')->group(function () {
-
+// Route::group(function () {
 // });
-
 includeRouteFiles(__DIR__ . '/api/client');
 
 Route::prefix('shopify')->group(function () {
     includeRouteFiles(__DIR__ . '/api/shopify');
 });
 
-Route::get('/redis', function (Request $request) {
-
-    $redis = Redis::connection();
-    $store = Store::all();
-    $redis->set('store',$store);
-    $name = $redis->get('store');
-    echo $name;
-});
-
-Route::get('/get123', function () {
-    $store = Store::where('id', 2)->first();
-
-    return $store->customers;
-    // return view('welcome');
-});

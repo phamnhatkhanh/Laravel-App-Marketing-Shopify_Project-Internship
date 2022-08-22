@@ -8,13 +8,13 @@ use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvi
 use Illuminate\Support\Facades\Event;
 
 use App\Events\Database\UpdatedModel;
-use App\Listeners\SyncDatabaseAfterUpdatedModel;
 use App\Events\Database\DeletedModel;
-use App\Listeners\SyncDatabaseAfterDeletedModel;
 use App\Events\Database\CreatedModel;
-use App\Listeners\SyncDatabaseAfterCreatedModel;
 use App\Events\Database\SyncDatabase;
-use App\Listeners\SyncDatabaseAfterDisconnect;
+use App\Listeners\Database\SyncDatabaseAfterUpdatedModel;
+use App\Listeners\Database\SyncDatabaseAfterDeletedModel;
+use App\Listeners\Database\SyncDatabaseAfterCreatedModel;
+use App\Listeners\Database\SyncDatabaseAfterDisconnect;
 
 class EventServiceProvider extends ServiceProvider
 {

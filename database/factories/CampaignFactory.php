@@ -12,9 +12,11 @@ class CampaignFactory extends Factory
      *
      * @return array
      */
+    private static $id = 1;
     public function definition()
     {
         return [
+            'id' => self::$id++,
             'store_id'=>getRandomModelId(Store::class),
             'name'=>$this->faker->userName,
             'subject'=>$this->faker->sentence(3,true),

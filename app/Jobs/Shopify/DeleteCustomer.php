@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Jobs;
+namespace App\Jobs\Shopify;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -16,17 +16,17 @@ use App\Events\Database\DeletedModel;
 class DeleteCustomer implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-    private $data_customer;
+    private $dataCustomer;
     private $customer;
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($data_customer)
+    public function __construct($dataCustomer)
     {
-        $this->data_customer = $data_customer;
-        // $this->customer = getConnectDatabaseActived(new Customer());
+        $this->dataCustomer = $dataCustomer;
+
 
     }
 
@@ -37,14 +37,17 @@ class DeleteCustomer implements ShouldQueue
      */
     public function handle()
     {
-        $customer_model = new Customer();
 
-        $data_customer = $this->data_customer;
-        $id = $data_customer['id'];
-        $customer = $customer_model->where('id', $id)->first();
+        $customerModelBuilder = getConnectDatabaseActived(new Customer());
+        $customerModel = $customerModelBuilder->getModel();
+
+
+        $dataCustomer = $this->dataCustomer;
+        $id = $dataCustomer['id'];
+        $customer = $customerModel->where('id', $id)->first();
 
         if (!empty($customer)) {
-            $connect = ($customer_model->getConnection()->getName());
+            $connect = ($customerModel->getConnection()->getName());
             event(new DeletedModel($connect, $customer));
 
         }

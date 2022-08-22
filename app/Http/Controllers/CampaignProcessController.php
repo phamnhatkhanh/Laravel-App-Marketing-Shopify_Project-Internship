@@ -44,7 +44,6 @@ class CampaignProcessController extends Controller
         $request['created_at'] = Carbon::now()->format('Y-m-d H:i:s');;
         $request['updated_at'] = Carbon::now()->format('Y-m-d H:i:s');;
 
-
         Schema::connection($this->campaignProcess->getConnection()->getName())->disableForeignKeyConstraints();
             $campaignProcess = $this->campaignProcess->create($request->all());
         Schema::connection($this->campaignProcess->getConnection()->getName())->enableForeignKeyConstraints();
@@ -102,7 +101,6 @@ class CampaignProcessController extends Controller
             ],201);
         }
         return response([
-
                 'mess' => "can not fin campaigns"
             ],201);
 

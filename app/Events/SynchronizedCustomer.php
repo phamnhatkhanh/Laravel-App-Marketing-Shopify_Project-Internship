@@ -17,7 +17,7 @@ class SynchronizedCustomer implements ShouldBroadcast
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
 
-    public $batch_id;
+    public $batchID;
 
 
     public $payload;
@@ -26,21 +26,22 @@ class SynchronizedCustomer implements ShouldBroadcast
      *
      * @return void
      */
-    public function __construct($batch_id)
+    public function __construct($batchID)
     {
 
-        $this->batch_id = $batch_id;
+        $this->batchID = $batchID;
         $this->payload  = $this->sendProcess();
     }
 
     public function sendProcess(){
-        info('comleted sync customer: '. $this->batch_id);
-        $batches =  JobBatch::find($this->batch_id);
-        $customer = new Customer();
+        info('comleted sync customer: '. $this->batchID);
+        $batch =  JobBatch::find($this->batchID);
+        $customer_model_builder = getConnectDatabaseActived(new Customer());
+        $customer = $customer_model_builder->getModel();
         return [
             "status" => true,
             "message" => "Success sync customer",
-            'processing'=> $batches->progress(),
+            'processing'=> $batch->progress(),
             "totat" => $customer->count(),
             "data" => $customer->simplePaginate(15)
         ];
@@ -54,18 +55,5 @@ class SynchronizedCustomer implements ShouldBroadcast
     public function broadcastAs(){
         return 'syncing_customer';
     }
-    // public function broadcastOn()
-    // {
-    //     return ['customers_synchronized'];
-    // }
-    // public function broadcastAs(){
-    //     return 'synchronized_customer';
-    // }
-    // public function broadcastOn()
-    // {
-    //     return ['MailSent'];
-    // }
-    // public function broadcastAs(){
-    //     return 'send-done';
-    // }
+ 
 }
