@@ -40,6 +40,8 @@ class UpdateCustomer implements ShouldQueue
     public function handle()
     {
         info("UpdateCustomer: inside function ");
+        $customer_model_builder = getConnectDatabaseActived(new Customer());
+        $customer_model = $customer_model_builder->getModel();
         $data_customer = $this->data_customer;
         $data_customer_id = $data_customer['id'];
 
@@ -48,7 +50,7 @@ class UpdateCustomer implements ShouldQueue
         info("UpdateCustomer: id ".$data_customer_id);
         info("UpdateCustomer: ".$data_customer['last_name']);
 
-        $customer = Customer::where('id', $data_customer_id)->first();
+        $customer = $customer_model->where('id', $data_customer_id)->first();
         $customer->update([
         // $this->customer->where('id', $data_customer_id)->update([
             'email' => $data_customer['email'],
@@ -61,7 +63,6 @@ class UpdateCustomer implements ShouldQueue
             'updated_at' => $updated_at,
         ]);
         $connect = ($customer->getConnection()->getName());
-            // dd($connect);
         event(new UpdatedModel($connect, $customer));
     }
 }

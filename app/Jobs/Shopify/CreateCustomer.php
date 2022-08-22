@@ -41,7 +41,8 @@ class CreateCustomer implements ShouldQueue
      */
     public function handle()
     {
-        $customer_model = new Customer();
+        $customer_model_builder = getConnectDatabaseActived(new Customer());
+        $customer_model = $customer_model_builder->getModel();
         $store_model = new Store();
         $data_customer = $this->data_customer;
         $myshopify_domain = $this->myshopify_domain;

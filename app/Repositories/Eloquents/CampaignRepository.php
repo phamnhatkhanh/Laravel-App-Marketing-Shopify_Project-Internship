@@ -2,12 +2,10 @@
 
 namespace App\Repositories\Eloquents;
 
-use App\Jobs\SendEmailPreview;
-use App\Jobs\SendTestPreview;
-use App\Models\Store;
 use App\Services\Campaigns\CampaignService;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Bus\Batch;
+use App\Models\Store;
 use App\Models\Campaign;
 use App\Models\CampaignProcess;
 use App\Models\Customer;
@@ -16,6 +14,8 @@ use App\Events\MailSent;
 use App\Events\Database\CreatedModel;
 use App\Events\Database\UpdatedModel;
 use App\Events\Database\DeletedModel;
+use App\Jobs\SendEmailPreview;
+use App\Jobs\SendTestPreview;
 use App\Repositories\Contracts\CampaignRepositoryInterface;
 use Illuminate\Http\Request;
 use Throwable;
@@ -27,6 +27,7 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Facades\Schema;
 class CampaignRepository implements CampaignRepositoryInterface
 {
+    protected $store;
     protected $customer;
     protected $campaign;
     protected $campaignProcess;
@@ -35,6 +36,7 @@ class CampaignRepository implements CampaignRepositoryInterface
 
     public function __construct()
     {
+        $this->store = getConnectDatabaseActived(new Store());
         $this->customer = getConnectDatabaseActived(new Customer());
         $this->campaign = getConnectDatabaseActived(new Campaign());
         $this->campaignProcess = getConnectDatabaseActived(new CampaignProcess());
@@ -63,13 +65,27 @@ class CampaignRepository implements CampaignRepositoryInterface
         // $store_id = "60157821137";
         $store_id = getStoreID();
         $request['store_id']=$store_id;
+
         try{
             $campaign = $this->campaign->create($request->all());
             $request['campaign_id'] = $campaign->id;
             $connect = ($this->campaign->getConnection()->getName());
             event(new CreatedModel($connect,$campaign));
             // dd( $this->campaignProcess->getModels());
+            if ($request->has("list_mail_customers")) {
+                $listCustomersId =  json_decode($request->list_mail_customers, true);
+                $total_customers = count($listCustomersId);
+            } elseif ($request->has("list_mail_customers_except")) {
+                $listCustomersId =  json_decode($request->list_mail_customers_except, true);
+                $total_customers = count($this->customer->whereNotIn('id', $listCustomersId)->get());
+            } elseif ($request->has("all_customer")) {
+                info("SendMail: send mail all_customer in store");
+                $listCustomersId =  $this->customer->where('store_id', $store_id)->get();
+                $total_customers = count($listCustomersId);
+            }else{
+                $total_customers = 0;
 
+            }
             Schema::connection($this->campaignProcess->getConnection()->getName())->disableForeignKeyConstraints();
                 $campaignProcess = $this->campaignProcess->create([
                     "process" => "0",
@@ -77,7 +93,7 @@ class CampaignRepository implements CampaignRepositoryInterface
                     "store_id" => $store_id,
                     "campaign_id" => $campaign->id,
                     "name" => $campaign->name,
-                    "total_customers" => $this->customer->count(),
+                    "total_customers" => $total_customers,
                 ]);
                 $connect = ($this->campaignProcess->getConnection()->getName());
                 event(new CreatedModel($connect,$campaignProcess));
@@ -129,7 +145,7 @@ class CampaignRepository implements CampaignRepositoryInterface
     {
         info('SendTestMail Success');
         $storeID = GetStoreID();
-        $store = Store::where('id', $storeID)->first();
+        $store = $this->store->where('id', $storeID)->first();
         $array = ([
             [
                 "variant" => 'Customer_Full_name',
@@ -175,10 +191,10 @@ class CampaignRepository implements CampaignRepositoryInterface
      */
     public function sendEmailPreview(Request $request, $campaignProcess)
     {
-     
-        info($request->all());
+
+        // info($request->all());
         try {
-           $listCustomers;
+
             $batch = Bus::batch([])
                 ->then(function (Batch $batch) {
                 })
@@ -197,26 +213,28 @@ class CampaignRepository implements CampaignRepositoryInterface
             $batchId = $batch->id;
 
             info("inside sendEmailPreview: handel templete mail " . $batchId);
-            
+
 
             if ($request->has("list_mail_customers")) {
+                info("SendMail: list mail");
                 $listCustomersId =  json_decode($request->list_mail_customers, true);
-                $listCustomers = Customer::whereIn('id', $listCustomersId)->get();
-            } elseif ($request->has("except_customer")) {
-                $listCustomersId =  $request->list_mail_customers;
-                $listCustomersId =  json_decode($request->list_mail_customers, true);
-                $listCustomers = Customer::whereNotIn('id', $listCustomersId)->get();
+                $listCustomers =  $this->customer->whereIn('id', $listCustomersId)->get();
+            } elseif ($request->has("list_mail_customers_except")) {
+                info("SendMail: exception mail");
+                $listCustomersId =  $request->list_mail_customers_except;
+                $listCustomersId =  json_decode($request->list_mail_customers_except, true);
+                $listCustomers =  $this->customer->whereNotIn('id', $listCustomersId)->get();
             } elseif ($request->has("all_customer")) {
               info("SendMail: send all email in store");
-                $listCustomers = Customer::get();
+                $listCustomers =  $this->customer->get();
             }else{
               $listCustomers=[];
             }
 
             info("inside sendEmailPreview: list customer send mail " . json_encode($listCustomers,true));
             $storeID = $campaignProcess->store_id;
-            
-            $store = Store::where('id', $storeID)->first();
+
+            $store = $this->store->where('id', $storeID)->first();
             foreach ($listCustomers as  $value) {
                 info("inside sendEmailPreview");
 
@@ -276,6 +294,7 @@ class CampaignRepository implements CampaignRepositoryInterface
                 ->sort($params)
                 ->name($params)
                 ->status($params)
+                ->orderBy('created_at', 'desc')
                 ->simplePaginate(15);
 
             $total = $this->campaignProcess

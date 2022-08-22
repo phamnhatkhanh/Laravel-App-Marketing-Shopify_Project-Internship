@@ -46,9 +46,8 @@ class SyncCumtomer
     public function handle()
     {
 
-      info("---verify connect");
-      // info(json_encode($this->customers,true));
-        // $customer_model = (new Customer());
+        info("---verify connect");
+        
         $customer_model_builder = getConnectDatabaseActived(new Customer());
         $customer_model = $customer_model_builder->getModel();
 
@@ -56,12 +55,8 @@ class SyncCumtomer
         $customers = $this->customers;
 
         // $customers = $this->customers;
-      info("---get connect active ");
+        info("---get connect active ");
         data_set($customers, '*.store_id', $store_id);
-      // info("Shopify: save customers: ".$customer_model->getConnection()->getName());
-      // info("Shopify: get ta customers: ".$customer_model->getModels()->getTable());
-        // $getCustomer = $customer_model->all();
-        // info('All customer: '. json_encode($getCustomer, true));
 
         foreach ($customers as $customer) {
             $created_at = str_replace(array('T', '+07:00'), array(' ', ''), $customer['created_at']);
@@ -84,7 +79,6 @@ class SyncCumtomer
                     'created_at' => $created_at,
                     'updated_at' => $updated_at,
                 ];
-
 
                 $findCustomer =  $customer_model->where('id', $data['id'])->first();
                 // info('Id cua Customer:'.json_encode($findCustomer, true));
@@ -110,11 +104,8 @@ class SyncCumtomer
                 }
             }
 
-
-            // event(new CreatedModel($connect,$data,$customer_model->getTable()));
               info("CreatedModel: show log in function sycn custoemr: ");
 
-            // $model->create($data);
 
         }
         event(new SyncingCustomer($this->batch_id));
