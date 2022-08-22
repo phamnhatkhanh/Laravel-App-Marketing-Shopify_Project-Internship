@@ -11,7 +11,6 @@ use Illuminate\Support\Facades\DB;
 use Throwable;
 
 class SyncDatabaseAfterUpdatedModel  implements ShouldQueue
-// UpdatedProductListener
 {
     /**
      * Create the event listener.
@@ -32,7 +31,7 @@ class SyncDatabaseAfterUpdatedModel  implements ShouldQueue
 
     public function handle($event)
     {
-        SyncDatabaseAfterUpdatedModel($event->db_server,$event->model);
+        SyncDatabaseAfterUpdatedModel($event->dbConnectName,$event->model);
     }
 }
 

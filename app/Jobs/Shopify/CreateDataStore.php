@@ -15,17 +15,17 @@ class CreateDataStore implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    private $store, $access_token;
+    private $store, $accessToken;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($store, $access_token)
+    public function __construct($store, $accessToken)
     {
         $this->store = $store;
-        $this->access_token = $access_token;
+        $this->accessToken = $accessToken;
     }
 
     /**
@@ -36,9 +36,9 @@ class CreateDataStore implements ShouldQueue
     public function handle()
     {
         $store = $this->store;
-        $access_token = $this->access_token;
-        $store_model_builder = getConnectDatabaseActived(new Store());
-        $storeModel = $store_model_builder->getModel();
+        $accessToken = $this->accessToken;
+        $storeModelBuilder = getConnectDatabaseActived(new Store());
+        $storeModel = $storeModelBuilder->getModel();
 
         $password = $store['shop']['myshopify_domain'];
 
@@ -66,7 +66,7 @@ class CreateDataStore implements ShouldQueue
             'phone' => $getData['phone'],
             'myshopify_domain' => $getData['myshopify_domain'],
             'domain' => $getData['domain'],
-            'access_token' => $access_token,
+            'access_token' => $accessToken,
             'address' => $getData['address1'],
             'province' => $getData['province'],
             'city' => $getData['city'],

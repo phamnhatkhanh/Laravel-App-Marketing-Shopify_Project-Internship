@@ -11,18 +11,16 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
 class CreatedModel
-// SyncDBCreatedModel
-
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $db_server;
+    public $dbConnectName;
     public $model;
 
 
-    public function __construct($db_server,$model)
+    public function __construct($dbConnectName,$model)
     {
-        $this->db_server = $db_server;
+        $this->dbConnectName = $dbConnectName;
         $this->model = $model;
 
     }

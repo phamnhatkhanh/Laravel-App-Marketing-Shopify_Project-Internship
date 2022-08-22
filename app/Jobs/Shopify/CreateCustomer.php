@@ -19,19 +19,17 @@ class CreateCustomer implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    private $data_customer,$customer, $myshopify_domain;
+    private $dataCustomer, $myShopifyDomain;
     protected $store;
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($data_customer,$myshopify_domain)
+    public function __construct($dataCustomer,$myShopifyDomain)
     {
-        $this->data_customer = $data_customer;
-        $this->myshopify_domain = $myshopify_domain;
-        // $this->customer = getConnectDatabaseActived(new Customer());
-        // $this->store = getConnectDatabaseActived(new Store());
+        $this->dataCustomer = $dataCustomer;
+        $this->myShopifyDomain = $myShopifyDomain;
     }
 
     /**
@@ -41,36 +39,39 @@ class CreateCustomer implements ShouldQueue
      */
     public function handle()
     {
-        $customer_model_builder = getConnectDatabaseActived(new Customer());
-        $customer_model = $customer_model_builder->getModel();
-        $store_model = new Store();
-        $data_customer = $this->data_customer;
-        $myshopify_domain = $this->myshopify_domain;
+        
+        $customerModelBuilder = getConnectDatabaseActived(new Customer());
+        $customerModel = $customerModelBuilder->getModel();
+        $storeModelBuilder = getConnectDatabaseActived(new Store());
+        $storeModel = $storeModelBuilder->getModel();
 
-        $created_at = str_replace(array('T', '+07:00'), array(' ', ''), $data_customer['created_at']);
-        $updated_at = str_replace(array('T', '+07:00'), array(' ', ''), $data_customer['updated_at']);
+        $dataCustomer = $this->dataCustomer;
+        $myShopifyDomain = $this->myShopifyDomain;
 
-        $store = $store_model->where('myshopify_domain', $myshopify_domain)->first();
+        $created_at = str_replace(array('T', '+07:00'), array(' ', ''), $dataCustomer['created_at']);
+        $updated_at = str_replace(array('T', '+07:00'), array(' ', ''), $dataCustomer['updated_at']);
+
+        $store = $storeModel->where('myshopify_domain', $myShopifyDomain)->first();
 
         info("Job CreatedModel: ".$store->id);
         $data = [
-            'id' => $data_customer['id'],
+            'id' => $dataCustomer['id'],
             'store_id' => $store->id,
-            'email' => $data_customer['email'],
-            'first_name' => $data_customer['first_name'],
-            'last_name' => $data_customer['last_name'],
-            'orders_count' => $data_customer['orders_count'],
-            'total_spent' => $data_customer['total_spent'],
-            'phone' => $data_customer['phone'],
+            'email' => $dataCustomer['email'],
+            'first_name' => $dataCustomer['first_name'],
+            'last_name' => $dataCustomer['last_name'],
+            'orders_count' => $dataCustomer['orders_count'],
+            'total_spent' => $dataCustomer['total_spent'],
+            'phone' => $dataCustomer['phone'],
             'created_at' => $created_at,
             'updated_at' => $updated_at,
         ];
 
-        $customer_model->create($data);
-        $customer_eloquent = $customer_model->where("id",$data_customer['id'])->first();
-        info("Create Customer: ...  ". json_encode($customer_eloquent, true));
-        $connect = ($customer_model->getConnection()->getName());
-        SyncDatabaseAfterCreatedModel($connect,$customer_eloquent);
+        $customerModel->create($data);
+        $customer = $customerModel->where("id",$dataCustomer['id'])->first();
+        info("Create Customer: ...  ". json_encode($customer, true));
+        $connect = $customerModel->getConnection()->getName();
+        SyncDatabaseAfterCreatedModel($connect,$customer);
 
     }
 }

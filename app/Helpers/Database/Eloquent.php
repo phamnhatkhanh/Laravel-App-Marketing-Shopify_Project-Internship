@@ -12,51 +12,43 @@ if (!function_exists('getConnectDatabaseActived')) {
 
         foreach ($listDatabaseModel as  $dbModel) {
             try {
-                //// info("IsConnect:  try connect  ". $dbModel);
+
                 if(DB::connection($dbModel->name)->getPdo()){
-                    //// info("IsConnect: can connect " . $dbModel->name);
-                    $dbConnect = DbStatus::where('name',$dbModel->name)->first();
-                    if($dbConnect->status == 'actived' ){
-                            //info("IsConnect: repo connect succes in: " . $dbModel->name);
+
+                    $dbModelConnect = DbStatus::where('name',$dbModel->name)->first();
+                    if($dbModelConnect->status == 'actived' ){
+
                         if($isSelectedDatabaseConnect == "not_selected"){
-                            info("IsConnect: connect sucsses to: " . $dbModel->name);
                             $model = $model::on($dbModel->name);
                             $isSelectedDatabaseConnect="selected";
                             continue;
                         }
                     }else{
-                        info("IsConnect: Repo syncing db: ".$dbModel->name);
-                        $dbActived = DbStatus::where('model_name',$tableModel)
+                        $dbActivedModel = DbStatus::where('model_name',$tableModel)
                             ->where('status',"actived")->first();
-                        if($dbActived){ // normal sync
-                            info("IsConnect: normal sync");
+                        if($dbActivedModel){ // normal sync
                             DbStatus::where('name',$dbModel->name)->update([ 'status' => 'syncing']);
-                            event(new SyncDatabase($dbModel->name,$tableModel));
+                            event(new SyncDatabase($dbModel->name, $tableModel));
                             continue;
                         }else{ // disconnected all db.
-                            info("-- All database not connected");
-                            $dbLasted =  DbStatus::where('model_name',$tableModel)
+                            $dbLastActiveModel =  DbStatus::where('model_name', $tableModel)
                             ->orderBy('updated_at','DESC')
                             ->first();
-                            $dbLasted->update([ "status" =>"sync_lasted_db" ]);
-                            info("IsConnect: all DB not connect choose DB sync is ".$dbLasted->name);
+                            $dbLastActiveModel->update([ "status" =>"sync_lasted_db" ]);
                             $model = $model::on($dbModel->name);
-                            // event(new SyncDatabase($dbModel,$tableModel));
-                            event(new SyncDatabase($dbModel->name,$tableModel,$dbLasted->name));
+                            event(new SyncDatabase($dbModel->name, $tableModel, $dbLastActiveModel->name));
                             continue;
                         }
                     }
                 }
             } catch (\Throwable $e) {
-                // info($e);
+
                 if($dbModel->status != "disconnected"){
                     DbStatus::where('name',$dbModel->name)->update([ "status" =>"disconnected" ]);
                 }
                 continue;
             }
         }
-
-        info("--choose succes connect is actived for model");
         return $model;
     }
 }
@@ -91,7 +83,6 @@ if (!function_exists('getListModels')) {
                     $model  = str_replace("/","\\",$model );
 
                     $out[] = $model;
-                    //hello
                 }
             }
             return $out;
@@ -104,6 +95,7 @@ if (!function_exists('getDiverDafault')) {
         if(strpos($diverCurrent,"_backup")){
             $diverCurrent =substr($diverCurrent,0,strpos($diverCurrent,"_backup"));
         }
+
         return $diverCurrent;
     }
 }

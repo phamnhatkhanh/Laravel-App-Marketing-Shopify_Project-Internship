@@ -43,10 +43,10 @@ class CustomerRepository implements CustomerRepositoryInterface
 
     {
 
-        // $store_id = "60157821137";
-        $store_id = getStoreID();
+        // $storeID = "60157821137";
+        $storeID = getStoreID();
 
-        $store = $this->store->where('id',  $store_id)->first();
+        $store = $this->store->where('id',  $storeID)->first();
 
 
         $shopifyRepository = new ShopifyRepository();
@@ -67,9 +67,9 @@ class CustomerRepository implements CustomerRepositoryInterface
      */
     public function index(Request $request)
     {
-        $store_id = getStoreID();
+        $storeID = getStoreID();
 
-        $store = $this->store->where('id', $store_id)->first();
+        $store = $this->store->where('id', $storeID)->first();
 
         if (isset($store)) {
             $totalpage = 0;
@@ -143,7 +143,7 @@ class CustomerRepository implements CustomerRepositoryInterface
     public function exportCustomerCSV(Request $request)
     {
         info($request->all());
-        $storeID = GetStoreID();
+        $storeID = getStoreID();
 
         info("Customer hash token: " . $storeID);
 
@@ -220,13 +220,13 @@ class CustomerRepository implements CustomerRepositoryInterface
      *
      * @return resource
      */
-    public function update($request, $customer_id)
+    public function update($request, $customerID)
     {
 
         // dd($this->customer->getConnection()->getName());
-        // dd("update function ".$customer_id);
+        // dd("update function ".$customerID);
         // info("Repostty: inside update");
-        $customer = $this->customer->where('id', $customer_id)->first();
+        $customer = $this->customer->where('id', $customerID)->first();
         if (!empty($customer)) {
             $customer->update($request->all());
             $connect = ($this->customer->getConnection()->getName());
@@ -240,10 +240,10 @@ class CustomerRepository implements CustomerRepositoryInterface
     }
 
 
-    public function destroy($customer_id)
+    public function destroy($customerID)
     {
-        // dd("dleete function ".$customer_id);
-        $customer = $this->customer->where('id', $customer_id)->first();
+        // dd("dleete function ".$customerID);
+        $customer = $this->customer->where('id', $customerID)->first();
         if (!empty($customer)) {
             // $customer->delete();
             $connect = ($this->customer->getConnection()->getName());

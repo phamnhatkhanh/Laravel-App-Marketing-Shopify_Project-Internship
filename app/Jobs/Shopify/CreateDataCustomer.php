@@ -15,17 +15,17 @@ class CreateDataCustomer implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    private $customers, $store_id;
+    private $customers, $storeId;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($customers, $store_id)
+    public function __construct($customers, $storeId)
     {
         $this->customers = $customers;
-        $this->store_id = $store_id;
+        $this->storeId = $storeId;
 
         /**
          * Execute the job.
@@ -37,21 +37,16 @@ class CreateDataCustomer implements ShouldQueue
     public function handle()
     {
         info("---verify connect");
-      // info(json_encode($this->customers,true));
-        // $customer_model = (new Customer());
-        $customer_model_builder = getConnectDatabaseActived(new Customer());
-        $customer_model = $customer_model_builder->getModel();
 
-        $store_id = $this->store_id;
+
+        $customerModelBuilder = getConnectDatabaseActived(new Customer());
+        $customerModel = $customerModelBuilder->getModel();
+
+        $storeId = $this->storeId;
         $customers = $this->customers;
-
-        // $customers = $this->customers;
         info("---get connect active ");
-        data_set($customers, '*.store_id', $store_id);
-        // info("Shopify: save customers: ".$customer_model->getConnection()->getName());
-        // info("Shopify: get ta customers: ".$customer_model->getModels()->getTable());
-        // $getCustomer = $customer_model->all();
-        // info('All customer: '. json_encode($getCustomer, true));
+        data_set($customers, '*.store_id', $storeId);
+
 
         foreach ($customers as $customer) {
             $created_at = str_replace(array('T', '+07:00'), array(' ', ''), $customer['created_at']);
@@ -63,7 +58,7 @@ class CreateDataCustomer implements ShouldQueue
                 info("--Customer Addresre: ".$customer['email']);
                 $data = [
                     'id' => $customer['id'],
-                    'store_id' => $store_id,
+                    'store_id' => $storeId,
                     'email' => $customer['email'],
                     'first_name' => $customer['first_name'],
                     'last_name' => $customer['last_name'],
@@ -76,17 +71,17 @@ class CreateDataCustomer implements ShouldQueue
                 ];
 
 
-                $findCustomer =  $customer_model->where('id', $data['id'])->first();
+                $findCustomer =  $customerModel->where('id', $data['id'])->first();
                 // info('Id cua Customer:'.json_encode($findCustomer, true));
                 info("--name: ".json_encode($findCustomer,true));
                 if (empty($findCustomer)) {
 
                   try {
-                    $customer_model->create($data);
-                    $customer_eloquent = $customer_model->where("id",$data['id'])->first();
-                    info("Create Customer: ...  ". json_encode($customer_eloquent, true));
-                    $connect = ($customer_model->getConnection()->getName());
-                    SyncDatabaseAfterCreatedModel($connect,$customer_eloquent);
+                    $customerModel->create($data);
+                    $customer = $customerModel->where("id",$data['id'])->first();
+                    info("Create Customer: ...  ". json_encode($customer, true));
+                    $connect = ($customerModel->getConnection()->getName());
+                    SyncDatabaseAfterCreatedModel($connect,$customer);
                   } catch (\Throwable $th) {
                     info("Sync customer form shopiuf: ". $th);
                   }
@@ -94,7 +89,7 @@ class CreateDataCustomer implements ShouldQueue
                 } else {
                     info('Update Customer: ...'.  json_encode($findCustomer, true));
                     $findCustomer->update($data);
-                    $connect = ($customer_model->getConnection()->getName());
+                    $connect = $customerModel->getConnection()->getName();
                     SyncDatabaseAfterUpdatedModel($connect,$findCustomer);
 
                 }

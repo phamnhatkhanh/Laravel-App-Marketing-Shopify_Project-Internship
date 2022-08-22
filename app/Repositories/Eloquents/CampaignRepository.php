@@ -62,9 +62,9 @@ class CampaignRepository implements CampaignRepositoryInterface
      */
     public function saveCampaign(Request $request)
     {
-        // $store_id = "60157821137";
-        $store_id = getStoreID();
-        $request['store_id']=$store_id;
+        // $storeID = "60157821137";
+        $storeID = getStoreID();
+        $request['store_id']=$storeID;
 
         try{
             $campaign = $this->campaign->create($request->all());
@@ -80,7 +80,7 @@ class CampaignRepository implements CampaignRepositoryInterface
                 $total_customers = count($this->customer->whereNotIn('id', $listCustomersId)->get());
             } elseif ($request->has("all_customer")) {
                 info("SendMail: send mail all_customer in store");
-                $listCustomersId =  $this->customer->where('store_id', $store_id)->get();
+                $listCustomersId =  $this->customer->where('store_id', $storeID)->get();
                 $total_customers = count($listCustomersId);
             }else{
                 $total_customers = 0;
@@ -90,7 +90,7 @@ class CampaignRepository implements CampaignRepositoryInterface
                 $campaignProcess = $this->campaignProcess->create([
                     "process" => "0",
                     "status" => "running",
-                    "store_id" => $store_id,
+                    "store_id" => $storeID,
                     "campaign_id" => $campaign->id,
                     "name" => $campaign->name,
                     "total_customers" => $total_customers,
@@ -144,7 +144,7 @@ class CampaignRepository implements CampaignRepositoryInterface
     public function SendEmail(Request $request)
     {
         info('SendTestMail Success');
-        $storeID = GetStoreID();
+        $storeID = getStoreID();
         $store = $this->store->where('id', $storeID)->first();
         $array = ([
             [
@@ -284,12 +284,12 @@ class CampaignRepository implements CampaignRepositoryInterface
      */
     public function index(Request $request)
     {
-        $store_id = getStoreID();
-        if (isset($store_id)) {
-            $totalpage = 0;
+        $storeID = getStoreID();
+        if (isset($storeID)) {
+            $totalPage = 0;
             $params = $request->except('_token');
             $data = $this->campaignProcess
-                ->where("store_id", $store_id)
+                ->where("store_id", $storeID)
                 ->searchcampaign($params)
                 ->sort($params)
                 ->name($params)
@@ -298,18 +298,17 @@ class CampaignRepository implements CampaignRepositoryInterface
                 ->simplePaginate(15);
 
             $total = $this->campaignProcess
-                ->where("store_id", $store_id)
+                ->where("store_id", $storeID)
                 ->searchcampaign($params)->count();
             info("total" . $total);
 
-            $totalpage = (int)ceil($total / 15);
-            info("totalpage" . $totalpage);
+            $totalPage = (int)ceil($total / 15);
+            info("totalPage" . $totalPage);
         }
-
 
         return response([
             'data' => $data,
-            "totalPage" => $totalpage ? $totalpage : 0,
+            "totalPage" => $totalPage ? $totalPage : 0,
             "total_campaignProcess" => $this->campaignProcess->count(),
             'status' => true,
         ], 200);

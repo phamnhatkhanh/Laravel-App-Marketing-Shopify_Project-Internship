@@ -47,7 +47,7 @@ class ExportFileToDrive extends Command
         $dateExport = date('d-m-Y_H-i-s');
         $location = $locationExport.'customer_'.$dateExport;
         $fileNameSever = $location.'.csv';
-        Excel::store(new CustomerExport(), $fileNameSever);
+        // Excel::store(new CustomerExport(), $fileNameSever);
 
         $filePath = storage_path('app/'.$fileNameSever);
         $fileData = File::get($filePath);

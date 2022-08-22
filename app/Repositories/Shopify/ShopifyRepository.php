@@ -53,6 +53,7 @@ class ShopifyRepository implements ShopifyRepositoryInterface
                 if (empty($shop)) {
                     info("get acces token ");
                     $this->authen($request);
+
                 }
 
                 $LoginController = new LoginController;
@@ -130,26 +131,33 @@ class ShopifyRepository implements ShopifyRepositoryInterface
         info("in functino authen " . $code);
         $shop = $request->shop;
 
-        //Lấy Access_token gọi về từ WebhookService
-        $getAccess_token = $this->getAccessToken($code, $shop);
-        $access_token = $getAccess_token->access_token;
+        //Lấy accessToken gọi về từ WebhookService
+        $getAccessToken = $this->getAccessToken($code, $shop);
+        $accessToken = $getAccessToken->access_token;
 
-        $storeID = $this->createDataStore($shop, $access_token);
+        $storeID = $this->createDataStore($shop, $accessToken);
+
+
+        // $store->customers
+
+// =======
+
+
 
         //Lưu thông tin khách hàng ở Shopify vào DB
         info("save customer");
-        $this->createDataCustomer($shop, $access_token, $storeID);
+        // $this->createDataCustomer($shop, $accessToken, $storeID);
 
-        $getWebhook = $this->getTopicWebhook($shop, $access_token);
+        $getWebhook = $this->getTopicWebhook($shop, $accessToken);
 
         //Đăng kí CustomerWebhooks thêm, xóa, sửa
-        $this->registerCustomerWebhookService($shop, $access_token, $getWebhook);
+        $this->registerCustomerWebhookService($shop, $accessToken, $getWebhook);
         info("registerCustomerWebhookService");
         return "setup store sucess";
     }
 
     /**
-     * Get access_token from the Shopify
+     * Get accessToken from the Shopify
      *
      * @param string $code
      * @param string $domain
@@ -164,36 +172,36 @@ class ShopifyRepository implements ShopifyRepositoryInterface
      * Retrieves a count of existing webhook subscriptions
      *
      * @param string $shop
-     * @param string $access_token
+     * @param string $accessToken
      * @return array
      */
-    public function getTopicWebhook($shop, $access_token)
+    public function getTopicWebhook($shop, $accessToken)
     {
-        return ShopifyService::getTopicWebhook($shop, $access_token);
+        return ShopifyService::getTopicWebhook($shop, $accessToken);
     }
 
     /**
      * Create a new webhook subscription
      *
      * @param string $shop
-     * @param string $access_token
+     * @param string $accessToken
      * @param $getWebhook
      * @return string
      */
-    public static function registerCustomerWebhookService($shop, $access_token, $getWebhook)
+    public static function registerCustomerWebhookService($shop, $accessToken, $getWebhook)
     {
-        return ShopifyService::registerCustomerWebhookService($shop, $access_token, $getWebhook);
+        return ShopifyService::registerCustomerWebhookService($shop, $accessToken, $getWebhook);
     }
 
     /**
      * Get Shop Information and save it into the Database
      *
      * @param string $shop
-     * @param string $access_token
+     * @param string $accessToken
      * @return resource
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function createDataStore($shop, $access_token)
+    public function createDataStore($shop, $accessToken)
     {
         $params = [
             'fields' => 'id, name, email, password, phone, myshopify_domain, domain, access_token,
@@ -205,7 +213,7 @@ class ShopifyRepository implements ShopifyRepositoryInterface
         $client = new Client();
         $request = $client->request('GET', $url, [
             'headers' => [
-                'X-Shopify-Access-Token' => $access_token,
+                'X-Shopify-Access-Token' => $accessToken,
             ],
             'query' => $params
         ]);
@@ -214,7 +222,7 @@ class ShopifyRepository implements ShopifyRepositoryInterface
         $store = !empty($responseStore) ? $responseStore : [];
 
         info("createDataStore...");
-        dispatch(new CreateDataStore($store, $access_token));
+        dispatch(new CreateDataStore($store, $accessToken));
 
         $getData = $store['shop'];
 
@@ -225,29 +233,29 @@ class ShopifyRepository implements ShopifyRepositoryInterface
      * Retrieve a count of Customers
      *
      * @param string $shop
-     * @param string $access_token
+     * @param string $accessToken
      * @return array
      */
-    public function countDataCustomer($shop, $access_token)
+    public function countDataCustomer($shop, $accessToken)
     {
-        return ShopifyService::countDataCustomer($shop, $access_token);
+        return ShopifyService::countDataCustomer($shop, $accessToken);
     }
 
     /**
      * Get list Customer from Shopify and Save Customer into the Database
      *
      * @param string $shop
-     * @param string $access_token
+     * @param string $accessToken
      * @param string $storeID
      * @return mixed
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function createDataCustomer($shop, $access_token, $storeID)
+    public function createDataCustomer($shop, $accessToken, $storeID)
     {
         $limit = 250;
 
         //Count number Customers
-        $countCustomer = $this->countDataCustomer($shop, $access_token);
+        $countCustomer = $this->countDataCustomer($shop, $accessToken);
         $ceilRequest = (int)ceil($countCustomer['count'] / $limit);
 
         //Calculate the number of iterations to be able to save all customers to the DB
@@ -262,7 +270,7 @@ class ShopifyRepository implements ShopifyRepositoryInterface
             $url = 'https://' . $shop . '/admin/api/2022-07/customers.json';
             $request = $client->request('get', $url, [
                 'headers' => [
-                    'X-Shopify-Access-Token' => $access_token,
+                    'X-Shopify-Access-Token' => $accessToken,
                     'Content-Type' => 'application/json',
                 ],
                 'query' => $params
@@ -287,12 +295,12 @@ class ShopifyRepository implements ShopifyRepositoryInterface
      * SyncCustomer from Shopify to Database. If the Customer already exits then edit and Customer doesn't exist then save Customer in the Database
      *
      * @param string $shop
-     * @param string $access_token
+     * @param string $accessToken
      * @param string $store
      * @return mixed
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function syncCustomer($shop, $access_token, $store)
+    public function syncCustomer($shop, $accessToken, $store)
     {
         // get store.
         try {
@@ -309,7 +317,7 @@ class ShopifyRepository implements ShopifyRepositoryInterface
             $limit = 10;
 
             //Count number Customers
-            $countCustomer = $this->countDataCustomer($shop, $access_token);
+            $countCustomer = $this->countDataCustomer($shop, $accessToken);
             $ceilRequest = (int)ceil($countCustomer['count'] / $limit);
 
             //Calculate the number of iterations to be able to save all customers to the DB
@@ -324,7 +332,7 @@ class ShopifyRepository implements ShopifyRepositoryInterface
                 $url = 'https://' . $shop . '/admin/api/2022-07/customers.json';
                 $request = $client->request('get', $url, [
                     'headers' => [
-                        'X-Shopify-Access-Token' => $access_token,
+                        'X-Shopify-Access-Token' => $accessToken,
                         'Content-Type' => 'application/json',
                     ],
                     'query' => $params
@@ -387,9 +395,9 @@ class ShopifyRepository implements ShopifyRepositoryInterface
 
     }
 
-    public function update($request, $store_id)
+    public function update($request, $storeId)
     {
-        $store = $this->store->where('id', $store_id)->first();
+        $store = $this->store->where('id', $storeId)->first();
         if (!empty($store)) {
 
             $store->update($request->all());
@@ -402,10 +410,10 @@ class ShopifyRepository implements ShopifyRepositoryInterface
     }
 
 
-    public function destroy($store_id)
+    public function destroy($storeId)
     {
 
-        $store = $this->store->where('id', $store_id)->first();
+        $store = $this->store->where('id', $storeId)->first();
         if (!empty($store)) {
             $connect = ($this->store->getConnection()->getName());
             event(new DeletedModel($connect,$store));

@@ -44,25 +44,24 @@ class SetupDatabase extends Command
         Artisan::call('migrate:refresh');
 
         $this->info("Create and setup database...");
-        $listNameConnectionMysql = config('database.connections');
-        foreach ($listNameConnectionMysql as $key => $value) {
+        $listDBConnectionMysql = config('database.connections');
+        foreach ($listDBConnectionMysql as $key => $value) {
             DbStatus::create(['name' => $key, 'status' => 'actived']);
         }
+
         $path = app_path() . "/Models";
-        $listPathModel = getListModels($path);
-        // dd($listPathModel);
-        foreach ($listPathModel as $pathModel) {
+        $listPathModels = getListModels($path);
+
+        foreach ($listPathModels as $pathModel) {
             $model = new $pathModel();
-            // dd($model);
-            $driverDefaultModel = getDiverDafault($model);
-            if ($driverDefaultModel != "mysql") {
-                //  dd($driverDefaultModel);
-                $get_list_driver =  DbStatus::where(function ($query) use ($driverDefaultModel) {
-                    $query->where('name', 'like', $driverDefaultModel . '%')
+            $connectModelDefault = getDiverDafault($model);
+            if ($connectModelDefault != "mysql") {
+                //  dd($connectModelDefault);
+                $getListDriver =  DbStatus::where(function ($query) use ($connectModelDefault) {
+                    $query->where('name', 'like', $connectModelDefault . '%')
                         ->where('model_name', '=', null);
                 })->get();
-                // dd($get_list_driver);
-                foreach ($get_list_driver as $driver) {
+                foreach ($getListDriver as $driver) {
                     // info($driver->name);
                     if (Schema::connection($driver->name)->hasTable($model->getTable())) {
                         DbStatus::create(['name' => $driver->name, 'status' => 'actived', 'model_name' => $model->getTable()]);
