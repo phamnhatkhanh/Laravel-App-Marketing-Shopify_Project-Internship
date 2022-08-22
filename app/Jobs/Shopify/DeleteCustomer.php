@@ -37,7 +37,10 @@ class DeleteCustomer implements ShouldQueue
      */
     public function handle()
     {
-        $customer_model = new Customer();
+
+        $customer_model_builder = getConnectDatabaseActived(new Customer());
+        $customer_model = $customer_model_builder->getModel();
+       
 
         $data_customer = $this->data_customer;
         $id = $data_customer['id'];

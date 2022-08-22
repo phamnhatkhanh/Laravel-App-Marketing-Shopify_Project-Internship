@@ -47,7 +47,8 @@ class ShopifyRepository implements ShopifyRepositoryInterface
             info("have hash mac ");
             if ($this->verifyHmacAppInstall($request)) {
 
-                $shop = $this->store->where("myshopify_domain", $request->myshopify_domain)->first();
+                $shop = $this->store->where("myshopify_domain", "manh-store123.myshopify.com")->first();
+                // $shop = $this->store->where("myshopify_domain", $request->myshopify_domain)->first();
 
                 if (empty($shop)) {
                     info("get acces token ");
@@ -59,11 +60,10 @@ class ShopifyRepository implements ShopifyRepositoryInterface
             }
         } else {
             info("NO hmac Login");
-
             //404
             //else
             $apiKey = config('shopify.shopify_api_key');
-            // $apiKey = config('shopify.shopify_api_key');
+
             $scope = 'read_customers,write_customers';
             $shop = $request->myshopify_domain;
 
@@ -306,7 +306,7 @@ class ShopifyRepository implements ShopifyRepositoryInterface
                 })->onQueue('jobs')->dispatch();
             $batchID = $batch->id;
 
-            $limit = 250;
+            $limit = 10;
 
             //Count number Customers
             $countCustomer = $this->countDataCustomer($shop, $access_token);

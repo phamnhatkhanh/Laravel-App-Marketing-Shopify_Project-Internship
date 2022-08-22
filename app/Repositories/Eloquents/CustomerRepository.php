@@ -29,8 +29,8 @@ class CustomerRepository implements CustomerRepositoryInterface
 
     public function __construct()
     {
-        $this->customer = getConnectDatabaseActived(new Customer());
         $this->store = getConnectDatabaseActived(new Store());
+        $this->customer = getConnectDatabaseActived(new Customer());
     }
 
     /**
@@ -69,7 +69,7 @@ class CustomerRepository implements CustomerRepositoryInterface
     {
         $store_id = getStoreID();
 
-        $store = Store::where('id', $store_id)->first();
+        $store = $this->store->where('id', $store_id)->first();
 
         if (isset($store)) {
             $totalpage = 0;
@@ -109,7 +109,7 @@ class CustomerRepository implements CustomerRepositoryInterface
                 $totalpage = (int)ceil($total / 15);
             }
 
-            $total = Customer::where("store_id", $store->id)->count();
+            $total = $this->customer->where("store_id", $store->id)->count();
 
             return response([
                 "total_customers" => $total,
@@ -150,7 +150,7 @@ class CustomerRepository implements CustomerRepositoryInterface
         $locationExport = storage_path('app/backup/customers/');
         $dateExport = date('d-m-Y_H-i-s');
 
-        $fileName = $locationExport . 'customer_' . $dateExport . '.csv';
+        $fileName = $locationExport . 'customer_'.$storeID.'_' . $dateExport . '.csv';
         if (!empty($request->list_customer || !empty($request->except_customer))) {
             if ($request->has('list_customer')) {
                 $listCustomers = $request->list_customer;
@@ -197,9 +197,7 @@ class CustomerRepository implements CustomerRepositoryInterface
 
     public function store($request)
     {
-      // $elo = $this->customer->getModel();
-      // $elo = new Customer();
-      // dd($elo->all());
+
         $request['id'] = $this->customer->max('id') + 1;
         // dd($request['id'] );
         $request['created_at'] = Carbon::now()->format('Y-m-d H:i:s');

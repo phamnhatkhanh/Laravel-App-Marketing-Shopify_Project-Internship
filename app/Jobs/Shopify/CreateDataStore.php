@@ -37,7 +37,8 @@ class CreateDataStore implements ShouldQueue
     {
         $store = $this->store;
         $access_token = $this->access_token;
-        $storeModel = new Store();
+        $store_model_builder = getConnectDatabaseActived(new Store());
+        $storeModel = $store_model_builder->getModel();
 
         $password = $store['shop']['myshopify_domain'];
 

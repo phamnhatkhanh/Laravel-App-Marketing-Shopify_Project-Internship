@@ -43,7 +43,6 @@ class SetupDatabase extends Command
         $this->info("Run Command: php artisan migrate:refresh");
         Artisan::call('migrate:refresh');
 
-        // Artisan
         $this->info("Create and setup database...");
         $listNameConnectionMysql = config('database.connections');
         foreach ($listNameConnectionMysql as $key => $value) {
