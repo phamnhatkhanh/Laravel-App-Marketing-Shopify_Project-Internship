@@ -73,14 +73,14 @@ Route::get('/set-db',function(){
         }
         return $out;
     }
-    function getDiverDafault($model)
-    {
-        $diverCurrent = $model->getConnection()->getName();
-        if (strpos($diverCurrent, "_backup")) {
-            $diverCurrent = substr($diverCurrent, 0, strpos($diverCurrent, "_backup"));
-        }
-        return $diverCurrent;
-    }
+//    function getDiverDafault($model)
+//    {
+//        $diverCurrent = $model->getConnection()->getName();
+//        if (strpos($diverCurrent, "_backup")) {
+//            $diverCurrent = substr($diverCurrent, 0, strpos($diverCurrent, "_backup"));
+//        }
+//        return $diverCurrent;
+//    }
     $listPathModel = getModels($path);
     // dd($listPathModel);
     foreach ($listPathModel as $pathModel) {
