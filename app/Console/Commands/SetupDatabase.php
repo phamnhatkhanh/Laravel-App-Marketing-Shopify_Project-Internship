@@ -56,7 +56,6 @@ class SetupDatabase extends Command
             $model = new $pathModel();
             $connectModelDefault = getDiverDafault($model);
             if ($connectModelDefault != "mysql") {
-                //  dd($connectModelDefault);
                 $getListDriver =  DbStatus::where(function ($query) use ($connectModelDefault) {
                     $query->where('name', 'like', $connectModelDefault . '%')
                         ->where('model_name', '=', null);
@@ -69,6 +68,7 @@ class SetupDatabase extends Command
                 }
             }
         }
+        
         $this->info("Faker data in database...");
         DbStatus::where('model_name', '=', null)
             ->orWhereNull('model_name')->delete();
