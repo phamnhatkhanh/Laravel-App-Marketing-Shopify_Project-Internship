@@ -19,10 +19,6 @@
                 <div>Email: {{$store->email}}</div>
                 <div>Số điện thoại: {{$store->phone}}</div>
                 <div>Địa chỉ: {{$store->country_name}}</div>
-                <button data-v-5a45470d=""
-                        style="width: 100%; line-height: 18px; font-size: 14px; font-weight: bold; padding: 9px 0px; background: rgb(0, 48, 132); color: rgb(255, 255, 255); border-radius: 4px;">
-                    TRY FREE NOW
-                </button>
             </div>
         </div>
         <div data-v-5a45470d="" class="preview--footer"

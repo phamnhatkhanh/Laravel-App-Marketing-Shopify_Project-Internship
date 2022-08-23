@@ -6,23 +6,27 @@ use Twilio\Rest\Client;
 
 class SendBillSMS
 {
-    public static function sendSMS()
-    {
-        $account_sid = env('TWILIO_SID');
-        $auth_token = env('TWILIO_AUTH_TOKEN');
-        $twilio_phone_number = env('TWILIO_NUMBER');
-        // $twilio_phone_number = env('TWILIO_NUMBER');
+    /**
+     * Setup value to send SMS give shop owner
+     *
+     * @param $store
+     * @return void
+     * @throws \Twilio\Exceptions\ConfigurationException
+     * @throws \Twilio\Exceptions\TwilioException
+     */
+    public static function sendBillSMS($store){
+        $accountSid = config('twilio.twilio_sid');
+        $authToken = config('twilio.twilio_auth_token');
+        $twilioPhoneNumber = config('twilio.twilio_number');
         $phone = $store->phone;
-        $client = new Client($account_sid, $auth_token);
-    }
+        $client = new Client($accountSid, $authToken);
 
-    public static function sendBillSMS(){
         $client->messages->create(
             $phone,
             [
-                "from" => $twilio_phone_number,
-                "body" => "Thank you payment '.$store->name_merchant.' \n
-                            "
+                "from" => $twilioPhoneNumber,
+                "body" => "Thank you payment: $store->name_merchant
+                           The amount paid: 50$"
             ]
         );
     }
