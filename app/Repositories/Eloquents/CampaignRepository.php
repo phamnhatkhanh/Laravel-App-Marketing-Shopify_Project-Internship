@@ -74,14 +74,14 @@ class CampaignRepository implements CampaignRepositoryInterface
             event(new CreatedModel($connect, $campaign));
             // dd( $this->campaignProcess->getModels());
             if ($request->has("list_mail_customers")) {
-                $listCustomersId =  json_decode($request->list_mail_customers, true);
+                $listCustomersId = json_decode($request->list_mail_customers, true);
                 $total_customers = count($listCustomersId);
             } elseif ($request->has("list_mail_customers_except")) {
-                $listCustomersId =  json_decode($request->list_mail_customers_except, true);
+                $listCustomersId = json_decode($request->list_mail_customers_except, true);
                 $total_customers = count($this->customer->whereNotIn('id', $listCustomersId)->get());
             } elseif ($request->has("all_customer")) {
                 info("SendMail: send mail all_customer in store");
-                $listCustomersId =  $this->customer->where('store_id', $storeID)->get();
+                $listCustomersId = $this->customer->where('store_id', $storeID)->get();
                 $total_customers = count($listCustomersId);
             } else {
                 $total_customers = 0;
@@ -106,6 +106,7 @@ class CampaignRepository implements CampaignRepositoryInterface
                 "message" => "Save success campaign"
             ], 200);
         } catch (Throwable $e) {
+
             // dd($e);
         }
     }
@@ -190,12 +191,8 @@ class CampaignRepository implements CampaignRepositoryInterface
      */
     public function sendEmailPreview(Request $request, $campaignProcess)
     {
-
-
         // // info($request->all());
         try {
-
-
             $batch = Bus::batch([])
                 ->then(function (Batch $batch) {
                 })

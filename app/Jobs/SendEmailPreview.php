@@ -41,7 +41,7 @@ class SendEmailPreview implements ShouldQueue
     }
 
     /**
-     * Execute the job.
+     * Send Campaign to Customers
      *
      * @return void
      */

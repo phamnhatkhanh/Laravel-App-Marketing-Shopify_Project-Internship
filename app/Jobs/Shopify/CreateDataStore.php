@@ -29,7 +29,7 @@ class CreateDataStore implements ShouldQueue
     }
 
     /**
-     * Execute the job.
+     * Save information Store to Database
      *
      * @return void
      */

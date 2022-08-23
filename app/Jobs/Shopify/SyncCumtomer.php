@@ -38,7 +38,7 @@ class SyncCumtomer implements ShouldQueue
     }
 
     /**
-     * Execute the job.
+     * Sync information Customers on Shopify back to shop owner
      *
      * @return void
      */
