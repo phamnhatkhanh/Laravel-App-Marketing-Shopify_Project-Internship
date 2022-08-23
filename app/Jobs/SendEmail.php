@@ -29,7 +29,7 @@ class SendEmail implements ShouldQueue
     }
 
     /**
-     * Execute the job.
+     * Send File Information Customer to shop owner
      *
      * @return void
      */

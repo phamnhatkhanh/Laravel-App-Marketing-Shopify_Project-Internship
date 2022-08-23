@@ -32,7 +32,7 @@ class UninstallApp implements ShouldQueue
     }
 
     /**
-     * Execute the job.
+     * Uninstall App will update status Store into uninstalled
      *
      * @return void
      */

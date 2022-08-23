@@ -16,6 +16,7 @@ use App\Events\Database\DeletedModel;
 class DeleteCustomer implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    
     /**
      * Data customer get from shopify.
      *
@@ -37,6 +38,7 @@ class DeleteCustomer implements ShouldQueue
 
     /**
      * Delete customer when get data customer from shopify and sync data in the database model cluster.
+
      *
      * @return void
      */

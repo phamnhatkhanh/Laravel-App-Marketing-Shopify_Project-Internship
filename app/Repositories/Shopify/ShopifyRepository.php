@@ -54,7 +54,6 @@ class ShopifyRepository implements ShopifyRepositoryInterface
                 if (empty($shop)) {
                     info("get acces token ");
                     $this->authen($request);
-
                 }
 
                 $LoginController = new LoginController;
@@ -68,16 +67,21 @@ class ShopifyRepository implements ShopifyRepositoryInterface
 
             $scope = 'read_customers,write_customers';
             $shop = $request->myshopify_domain;
+
             $hostLink = $request->header("origin");
 
             $url = 'https://'.$shop.'/admin/api/2022-07/shop.json';
+
             $request = Http::get($url);
+
             $statusCode = $request->getStatusCode();
+
             if ($statusCode == 401){
                 // $redirect_uri = 'http://localhost:8000/api/auth/authen';
                 // $redirect_uri = 'https://firegroup-team2.herokuapp.com/login';
 
                 $redirect_uri = $hostLink . "/login";
+
                 info($redirect_uri);
                 $url = 'https://' . $shop . '/admin/oauth/authorize?client_id=' . $apiKey . '&scope=' . $scope . '&redirect_uri=' . $redirect_uri;
                 info($url);
@@ -87,7 +91,7 @@ class ShopifyRepository implements ShopifyRepositoryInterface
                 ]);
             } else {
                 return response()->json([
-                    'message' => 'Có lỗi: '.$statusCode,
+                    'message' => 'Có lỗi: ' . $statusCode,
                     'status' => false,
                 ], $statusCode);
             }
@@ -148,7 +152,7 @@ class ShopifyRepository implements ShopifyRepositoryInterface
 
         // $store->customers
 
-// =======
+        // =======
 
 
 
@@ -164,7 +168,8 @@ class ShopifyRepository implements ShopifyRepositoryInterface
         return "setup store sucess";
     }
 
-    public function checkLogin($shop, $access_token){
+    public function checkLogin($shop, $access_token)
+    {
         return ShopifyService::checkLogin($shop, $access_token);
     }
     /**
@@ -319,7 +324,6 @@ class ShopifyRepository implements ShopifyRepositoryInterface
             $storeID = $store->id;
             $batch = Bus::batch([])
                 ->then(function (Batch $batch) {
-
                 })->finally(function (Batch $batch) {
 
                     event(new SynchronizedCustomer($batch->id));
@@ -431,6 +435,4 @@ class ShopifyRepository implements ShopifyRepositoryInterface
             return $store;
         }
     }
-
-
 }

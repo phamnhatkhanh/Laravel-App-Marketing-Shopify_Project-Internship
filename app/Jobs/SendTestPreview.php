@@ -31,7 +31,7 @@ class SendTestPreview implements ShouldQueue
     }
 
     /**
-     * Execute the job.
+     * Send Test mail Campaign to chosen one
      *
      * @return void
      */

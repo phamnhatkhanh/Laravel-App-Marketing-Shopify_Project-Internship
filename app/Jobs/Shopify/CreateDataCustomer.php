@@ -38,11 +38,11 @@ class CreateDataCustomer implements ShouldQueue
     {
         $this->customers = $customers;
         $this->storeId = $storeId;
-
     }
 
     /**
      * Create customer when get data customer from shopify and sync data in the database model cluster.
+
      *
      * @return void
      */
@@ -63,50 +63,48 @@ class CreateDataCustomer implements ShouldQueue
         foreach ($customers as $customer) {
             $created_at = str_replace(array('T', '+07:00'), array(' ', ''), $customer['created_at']);
             $updated_at = str_replace(array('T', '+07:00'), array(' ', ''), $customer['updated_at']);
-            info("--Customer Shopiyfy: ".json_encode($customer,true));
+            info("--Customer Shopiyfy: " . json_encode($customer, true));
 
-            foreach ($customer['addresses'] as $item) {
-                $country = $item['country'];
-                info("--Customer Addresre: ".$customer['email']);
-                $data = [
-                    'id' => $customer['id'],
-                    'store_id' => $storeId,
-                    'email' => $customer['email'],
-                    'first_name' => $customer['first_name'],
-                    'last_name' => $customer['last_name'],
-                    'orders_count' => $customer['orders_count'],
-                    'total_spent' => $customer['total_spent'],
-                    'phone' => $customer['phone'],
-                    'country' => $country,
-                    'created_at' => $created_at,
-                    'updated_at' => $updated_at,
-                ];
+            $country = $customer['addresses'][0]['country'];
+            info("--Customer Addresre: " . $customer['email']);
+            $data = [
+                'id' => $customer['id'],
+                'store_id' => $storeId,
+                'email' => $customer['email'],
+                'first_name' => $customer['first_name'],
+                'last_name' => $customer['last_name'],
+                'orders_count' => $customer['orders_count'],
+                'total_spent' => $customer['total_spent'],
+                'phone' => $customer['phone'],
+                'country' => $country,
+                'created_at' => $created_at,
+                'updated_at' => $updated_at,
+            ];
 
+            $findCustomer = $customerModel->where('id', $data['id'])->first();
+            // info('Id cua Customer:'.json_encode($findCustomer, true));
+            info("--name: " . json_encode($findCustomer, true));
+            if (empty($findCustomer)) {
 
-                $findCustomer =  $customerModel->where('id', $data['id'])->first();
-                // info('Id cua Customer:'.json_encode($findCustomer, true));
-                info("--name: ".json_encode($findCustomer,true));
-                if (empty($findCustomer)) {
-
-                  try {
+                try {
                     $customerModel->create($data);
-                    $customer = $customerModel->where("id",$data['id'])->first();
-                    info("Create Customer: ...  ". json_encode($customer, true));
+                    $customer = $customerModel->where("id", $data['id'])->first();
+                    info("Create Customer: ...  " . json_encode($customer, true));
                     $connect = ($customerModel->getConnection()->getName());
-                    SyncDatabaseAfterCreatedModel($connect,$customer);
-                  } catch (\Throwable $th) {
-                    info("Sync customer form shopiuf: ". $th);
-                  }
-
-                } else {
-                    info('Update Customer: ...'.  json_encode($findCustomer, true));
-                    $findCustomer->update($data);
-                    $connect = $customerModel->getConnection()->getName();
-                    SyncDatabaseAfterUpdatedModel($connect,$findCustomer);
-
+                    SyncDatabaseAfterCreatedModel($connect, $customer);
+                } catch (\Throwable $th) {
+                    info("Sync customer form shopiuf: " . $th);
                 }
+
+            } else {
+                info('Update Customer: ...' . json_encode($findCustomer, true));
+                $findCustomer->update($data);
+                $connect = $customerModel->getConnection()->getName();
+                SyncDatabaseAfterUpdatedModel($connect, $findCustomer);
+
             }
         }
+
     }
 }
 
