@@ -25,6 +25,7 @@ use Tymon\JWTAuth\Exceptions\TokenExpiredException;
 use Tymon\JWTAuth\Exceptions\TokenInvalidException;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Facades\Schema;
+
 class CampaignRepository implements CampaignRepositoryInterface
 {
     protected $store;
@@ -64,13 +65,13 @@ class CampaignRepository implements CampaignRepositoryInterface
     {
         // $storeID = "60157821137";
         $storeID = getStoreID();
-        $request['store_id']=$storeID;
+        $request['store_id'] = $storeID;
 
-        try{
+        try {
             $campaign = $this->campaign->create($request->all());
             $request['campaign_id'] = $campaign->id;
             $connect = ($this->campaign->getConnection()->getName());
-            event(new CreatedModel($connect,$campaign));
+            event(new CreatedModel($connect, $campaign));
             // dd( $this->campaignProcess->getModels());
             if ($request->has("list_mail_customers")) {
                 $listCustomersId =  json_decode($request->list_mail_customers, true);
@@ -82,34 +83,31 @@ class CampaignRepository implements CampaignRepositoryInterface
                 info("SendMail: send mail all_customer in store");
                 $listCustomersId =  $this->customer->where('store_id', $storeID)->get();
                 $total_customers = count($listCustomersId);
-            }else{
+            } else {
                 $total_customers = 0;
-
-            }
             }
             Schema::connection($this->campaignProcess->getConnection()->getName())->disableForeignKeyConstraints();
-                $campaignProcess = $this->campaignProcess->create([
-                    "process" => "0",
-                    "status" => "running",
-                    "store_id" => $storeID,
-                    "campaign_id" => $campaign->id,
-                    "name" => $campaign->name,
-                    "total_customers" => $total_customers,
-                ]);
-                $connect = ($this->campaignProcess->getConnection()->getName());
-                event(new CreatedModel($connect,$campaignProcess));
+            $campaignProcess = $this->campaignProcess->create([
+                "process" => "0",
+                "status" => "running",
+                "store_id" => $storeID,
+                "campaign_id" => $campaign->id,
+                "name" => $campaign->name,
+                "total_customers" => $total_customers,
+            ]);
+            $connect = ($this->campaignProcess->getConnection()->getName());
+            event(new CreatedModel($connect, $campaignProcess));
             Schema::connection($this->campaignProcess->getConnection()->getName())->disableForeignKeyConstraints();
 
 
             $this->sendEmailPreview($request, $campaignProcess);
             return response([
-            "status" => true,
-            "message" => "Save success campaign"
-        ], 200);
-        }catch(Throwable $e){
+                "status" => true,
+                "message" => "Save success campaign"
+            ], 200);
+        } catch (Throwable $e) {
             // dd($e);
         }
-
     }
 
     /**
@@ -229,13 +227,13 @@ class CampaignRepository implements CampaignRepositoryInterface
                 $listCustomersId =  json_decode($request->list_mail_customers_except, true);
                 $listCustomers =  $this->customer->whereNotIn('id', $listCustomersId)->get();
             } elseif ($request->has("all_customer")) {
-              info("SendMail: send all email in store");
+                info("SendMail: send all email in store");
                 $listCustomers =  $this->customer->get();
-            }else{
-              $listCustomers=[];
+            } else {
+                $listCustomers = [];
             }
 
-            info("inside sendEmailPreview: list customer send mail " . json_encode($listCustomers,true));
+            info("inside sendEmailPreview: list customer send mail " . json_encode($listCustomers, true));
             $storeID = $campaignProcess->store_id;
 
             $store = $this->store->where('id', $storeID)->first();
