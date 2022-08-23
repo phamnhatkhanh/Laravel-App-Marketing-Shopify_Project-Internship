@@ -14,6 +14,11 @@ class UninstallApp implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    /**
+     * Respone from shopify after uninstalled app.
+     *
+     * @var mixed
+     */
     private $payload;
 
     /**
@@ -33,13 +38,11 @@ class UninstallApp implements ShouldQueue
      */
     public function handle()
     {
-        $storeModel = getConnectDatabaseActived(new Store());
+        $storeModel = setConnectDatabaseActived(new Store());
         $store = $storeModel->getModel();
 
         $status = 'uninstalled';
-
         data_set($store, '*.status', $status);
-
         $data = [
             'status' => $status,
         ];

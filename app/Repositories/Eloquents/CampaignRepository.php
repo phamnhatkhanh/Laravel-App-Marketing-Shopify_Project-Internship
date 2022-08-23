@@ -25,6 +25,7 @@ use Tymon\JWTAuth\Exceptions\TokenExpiredException;
 use Tymon\JWTAuth\Exceptions\TokenInvalidException;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Facades\Schema;
+
 class CampaignRepository implements CampaignRepositoryInterface
 {
     protected $store;
@@ -36,10 +37,10 @@ class CampaignRepository implements CampaignRepositoryInterface
 
     public function __construct()
     {
-        $this->store = getConnectDatabaseActived(new Store());
-        $this->customer = getConnectDatabaseActived(new Customer());
-        $this->campaign = getConnectDatabaseActived(new Campaign());
-        $this->campaignProcess = getConnectDatabaseActived(new CampaignProcess());
+        $this->store = setConnectDatabaseActived(new Store());
+        $this->customer = setConnectDatabaseActived(new Customer());
+        $this->campaign = setConnectDatabaseActived(new Campaign());
+        $this->campaignProcess = setConnectDatabaseActived(new CampaignProcess());
     }
 
     /**
@@ -64,7 +65,7 @@ class CampaignRepository implements CampaignRepositoryInterface
     {
         // $storeID = "60157821137";
         $storeID = getStoreID();
-        $request['store_id']=$storeID;
+        $request['store_id'] = $storeID;
 
         try {
             $campaign = $this->campaign->create($request->all());
@@ -84,7 +85,6 @@ class CampaignRepository implements CampaignRepositoryInterface
                 $total_customers = count($listCustomersId);
             } else {
                 $total_customers = 0;
-
             }
             Schema::connection($this->campaignProcess->getConnection()->getName())->disableForeignKeyConstraints();
             $campaignProcess = $this->campaignProcess->create([
@@ -105,11 +105,10 @@ class CampaignRepository implements CampaignRepositoryInterface
                 "status" => true,
                 "message" => "Save success campaign"
             ], 200);
-        }
-        catch(Throwable $e){
+        } catch (Throwable $e) {
+
             // dd($e);
         }
-
     }
 
     /**
@@ -192,7 +191,6 @@ class CampaignRepository implements CampaignRepositoryInterface
      */
     public function sendEmailPreview(Request $request, $campaignProcess)
     {
-        // // info($request->all());
         try {
             $batch = Bus::batch([])
                 ->then(function (Batch $batch) {
@@ -225,13 +223,13 @@ class CampaignRepository implements CampaignRepositoryInterface
                 $listCustomersId =  json_decode($request->list_mail_customers_except, true);
                 $listCustomers =  $this->customer->whereNotIn('id', $listCustomersId)->get();
             } elseif ($request->has("all_customer")) {
-              info("SendMail: send all email in store");
+                info("SendMail: send all email in store");
                 $listCustomers =  $this->customer->get();
-            }else{
-              $listCustomers=[];
+            } else {
+                $listCustomers = [];
             }
 
-            info("inside sendEmailPreview: list customer send mail " . json_encode($listCustomers,true));
+            info("inside sendEmailPreview: list customer send mail " . json_encode($listCustomers, true));
             $storeID = $campaignProcess->store_id;
 
             $store = $this->store->where('id', $storeID)->first();

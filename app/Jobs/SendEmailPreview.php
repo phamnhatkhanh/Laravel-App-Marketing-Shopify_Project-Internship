@@ -57,6 +57,7 @@ class SendEmailPreview implements ShouldQueue
     private $batchId;
     private $campaignProcess;
 
+
     /**
      * Create a new job instance.
      *

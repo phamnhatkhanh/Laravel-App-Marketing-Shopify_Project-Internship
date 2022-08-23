@@ -25,7 +25,7 @@ class SyncDatabaseAfterDisconnect  implements ShouldQueue
     }
 
     /**
-     * Handle the event.
+     * Synchronize the data model after the model reconnects to the database.
      *
      * @param  object  $event
      * @return void

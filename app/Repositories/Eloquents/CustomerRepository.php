@@ -29,8 +29,8 @@ class CustomerRepository implements CustomerRepositoryInterface
 
     public function __construct()
     {
-        $this->store = getConnectDatabaseActived(new Store());
-        $this->customer = getConnectDatabaseActived(new Customer());
+        $this->store = setConnectDatabaseActived(new Store());
+        $this->customer = setConnectDatabaseActived(new Customer());
     }
 
     /**
@@ -40,7 +40,6 @@ class CustomerRepository implements CustomerRepositoryInterface
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
     public function syncCutomerFromShopify(Request $request)
-
     {
 
         // $storeID = "60157821137";
@@ -51,6 +50,7 @@ class CustomerRepository implements CustomerRepositoryInterface
 
         $shopifyRepository = new ShopifyRepository();
 
+        
         $shopifyRepository->syncCustomer($store->myshopify_domain, $store->access_token, $store);
 
         return response([

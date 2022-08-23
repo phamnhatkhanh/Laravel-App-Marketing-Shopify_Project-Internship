@@ -13,7 +13,7 @@ use Throwable;
 class SyncDatabaseAfterUpdatedModel  implements ShouldQueue
 {
     /**
-     * Create the event listener.
+     * Update and synchronize data in the database model cluster.
      *
      * @return void
      */

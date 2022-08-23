@@ -1,9 +1,6 @@
 <?php
 
 if (!function_exists('formatJsonRepsone')) {
-
-
-
     function formatJsonRepsone($status=200,$message=[],$data=[],$err=[])
     {
         return [

@@ -4,8 +4,16 @@ use Illuminate\Support\Facades\DB;
 use App\Models\DbStatus;
 use App\Events\Database\SyncDatabase;
 
-if (!function_exists('getConnectDatabaseActived')) {
-    function getConnectDatabaseActived($model){
+if (!function_exists('setConnectDatabaseActived')) {
+    /**
+     * * Set activated connect for model.
+     *
+     * @param $model
+     *
+     * @return \Illuminate\Database\Eloquent\Model
+     */
+
+    function setConnectDatabaseActived($model){
         $listDatabaseModel = DbStatus::where('model_name', '=', $model->getTable())->get();
         $tableModel = $model->getTable();
         $isSelectedDatabaseConnect = "not_selected";
@@ -54,10 +62,17 @@ if (!function_exists('getConnectDatabaseActived')) {
 }
 
 if (!function_exists('getRandomModelId')) {
+    /**
+     * * Get random id from list primary key ID model.
+     *
+     * @param $model
+     *
+     * @return int
+     */
+
     function getRandomModelId(string $model){
         // get model count
         $count = $model::query()->count();
-        // $count = $model::all()->random()->id;
         if($count === 0){
             // if model count is 0
             // we should create a new record and retrieve the record id
@@ -70,6 +85,14 @@ if (!function_exists('getRandomModelId')) {
 }
 
 if (!function_exists('getListModels')) {
+     /**
+     * * Get list eloquent path in folder app/Models.
+     *
+     * @param string $path
+     *
+     * @return array
+     */
+
     function getListModels($path){
             $out = [];
             $results = scandir($path);
@@ -89,8 +112,15 @@ if (!function_exists('getListModels')) {
     }
 }
 
-if (!function_exists('getDiverDafault')) {
-    function getDiverDafault($model){
+if (!function_exists('getConnectModelDefalut')) {
+    /**
+     * * Return default connect model.
+     *
+     * @param $model
+     *
+     * @return \Illuminate\Database\Eloquent\Model
+     */
+    function getConnectModelDefalut($model){
         $diverCurrent = $model->getConnection()->getName();
         if(strpos($diverCurrent,"_backup")){
             $diverCurrent =substr($diverCurrent,0,strpos($diverCurrent,"_backup"));

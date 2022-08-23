@@ -31,8 +31,8 @@ class ShopifyRepository implements ShopifyRepositoryInterface
 
     public function __construct()
     {
-        $this->customer = getConnectDatabaseActived(new Customer());
-        $this->store = getConnectDatabaseActived(new Store());
+        $this->customer = setConnectDatabaseActived(new Customer());
+        $this->store = setConnectDatabaseActived(new Store());
     }
 
     /**
@@ -54,7 +54,6 @@ class ShopifyRepository implements ShopifyRepositoryInterface
                 if (empty($shop)) {
                     info("get acces token ");
                     $this->authen($request);
-
                 }
 
                 $LoginController = new LoginController;
@@ -69,14 +68,20 @@ class ShopifyRepository implements ShopifyRepositoryInterface
             $scope = 'read_customers,write_customers';
             $shop = $request->myshopify_domain;
 
-            $url = 'https://'.$shop.'/admin/api/2022-07/shop.json';
-            $request = Http::get($url);
-            $statusCode = $request->getStatusCode();
-            if ($statusCode == 401){
-                $redirect_uri = 'http://localhost:8000/api/auth/authen';
-                // $redirect_uri = 'http://192.168.101.83:8080/login';
+            $hostLink = $request->header("origin");
 
-//            $redirect_uri = $request->header("origin") . "/login";
+            $url = 'https://'.$shop.'/admin/api/2022-07/shop.json';
+
+            $request = Http::get($url);
+
+            $statusCode = $request->getStatusCode();
+
+            if ($statusCode == 401){
+                // $redirect_uri = 'http://localhost:8000/api/auth/authen';
+                // $redirect_uri = 'https://firegroup-team2.herokuapp.com/login';
+
+                $redirect_uri = $hostLink . "/login";
+
                 info($redirect_uri);
                 $url = 'https://' . $shop . '/admin/oauth/authorize?client_id=' . $apiKey . '&scope=' . $scope . '&redirect_uri=' . $redirect_uri;
                 info($url);
@@ -86,7 +91,7 @@ class ShopifyRepository implements ShopifyRepositoryInterface
                 ]);
             } else {
                 return response()->json([
-                    'message' => 'Có lỗi: '.$statusCode,
+                    'message' => 'Có lỗi: ' . $statusCode,
                     'status' => false,
                 ], $statusCode);
             }
@@ -147,7 +152,7 @@ class ShopifyRepository implements ShopifyRepositoryInterface
 
         // $store->customers
 
-// =======
+        // =======
 
 
 
@@ -163,7 +168,8 @@ class ShopifyRepository implements ShopifyRepositoryInterface
         return "setup store sucess";
     }
 
-    public function checkLogin($shop, $access_token){
+    public function checkLogin($shop, $access_token)
+    {
         return ShopifyService::checkLogin($shop, $access_token);
     }
     /**
@@ -312,12 +318,12 @@ class ShopifyRepository implements ShopifyRepositoryInterface
      */
     public function syncCustomer($shop, $accessToken, $store)
     {
+
         // get store.
         try {
             $storeID = $store->id;
             $batch = Bus::batch([])
                 ->then(function (Batch $batch) {
-
                 })->finally(function (Batch $batch) {
 
                     event(new SynchronizedCustomer($batch->id));
@@ -326,10 +332,11 @@ class ShopifyRepository implements ShopifyRepositoryInterface
 
             $limit = 10;
 
+            info("--run coundata ");
             //Count number Customers
             $countCustomer = $this->countDataCustomer($shop, $accessToken);
             $ceilRequest = (int)ceil($countCustomer['count'] / $limit);
-
+            info("--end run coundata ");
             //Calculate the number of iterations to be able to save all customers to the DB
             $numberRequest = $countCustomer > $limit ? $ceilRequest : 1;
             $log = [];
@@ -428,6 +435,4 @@ class ShopifyRepository implements ShopifyRepositoryInterface
             return $store;
         }
     }
-
-
 }

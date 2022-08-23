@@ -4,11 +4,8 @@ namespace App\Http\Controllers\Client;
 
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
-
 use App\Http\Controllers\Controller;
 use App\Repositories\Eloquents\CampaignRepository;
-
-
 
 class CampaignController extends Controller
 {
@@ -36,7 +33,6 @@ class CampaignController extends Controller
      */
     public function getCampaignProceess()
     {
-
         $campaignProcess = $this->campaignRepository->getCampaignProceess();
         return response(
             formatJsonRepsone(Response::HTTP_OK,"mess",$campaignProcess,"err"),

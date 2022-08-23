@@ -17,7 +17,7 @@ class CampaignProcessController extends Controller
     protected $campaignProcess;
 
     public function __construct(){
-        $this->campaignProcess = getConnectDatabaseActived(new CampaignProcess());
+        $this->campaignProcess = setConnectDatabaseActived(new CampaignProcess());
     }
 
     /**

@@ -22,39 +22,51 @@ class SyncCumtomer implements ShouldQueue
     use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
+     * List data customer get from shopify.
+     *
+     * @var mixed
+     */
+    private $customers;
+
+    /**
+     * The primary key of the store.
+     *
+     * @var string
+     */
+    private $storeID;
+
+    /**
+     * The primary key of the job batch.
+     *
+     * @var string
+     */
+    private $batchID;
+
+    /**
      * Create a new job instance.
      *
      * @return void
      */
-    public $customers;
-    public $storeID;
-    public $batchID;
     public function __construct($batchID,$storeID,$customers)
     {
         $this->customers = $customers;
         $this->storeID = $storeID;
         $this->batchID = $batchID;
-
     }
 
     /**
-     * Sync information Customers on Shopify back to shop owner
+     * Get customer from shopify and update in database.
      *
      * @return void
      */
     public function handle()
     {
-
-        info("---verify connect");
-
-        $customerModelBuilder = getConnectDatabaseActived(new Customer());
+        $customerModelBuilder = setConnectDatabaseActived(new Customer());
         $customerModel = $customerModelBuilder->getModel();
 
         $storeID = $this->storeID;
         $customers = $this->customers;
 
-        // $customers = $this->customers;
-        info("---get connect active ");
         data_set($customers, '*.store_id', $storeID);
 
         foreach ($customers as $customer) {
@@ -80,10 +92,8 @@ class SyncCumtomer implements ShouldQueue
                 ];
 
                 $findCustomer =  $customerModel->where('id', $data['id'])->first();
-
                 info("--name: ".json_encode($findCustomer,true));
                 if (empty($findCustomer)) {
-
                   try {
                     $customerModel->create($data);
                     $customer = $customerModel->where("id",$data['id'])->first();
@@ -93,7 +103,6 @@ class SyncCumtomer implements ShouldQueue
                   } catch (\Throwable $th) {
                     info("Sync customer form shopiuf: ". $th);
                   }
-
                 } else {
                     info('Update Customer: ...'.  json_encode($findCustomer, true));
                     $findCustomer->update($data);
@@ -102,10 +111,6 @@ class SyncCumtomer implements ShouldQueue
 
                 }
             }
-
-              info("CreatedModel: show log in function sycn custoemr: ");
-
-
         }
         event(new SyncingCustomer($this->batchID));
     }

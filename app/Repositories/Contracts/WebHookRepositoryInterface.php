@@ -14,10 +14,7 @@ interface WebHookRepositoryInterface
      * @return mixed
      */
     function webhook(Request $request);
-//    public function registerCustomerWebhookService($shop, $access_token);
-//    public function createFromShopify($payload, $myshopify_domain);
-//    public function updateFromShopify($payload);
-//    public function deleteFromShopify($payload);
+
 }
 
 
