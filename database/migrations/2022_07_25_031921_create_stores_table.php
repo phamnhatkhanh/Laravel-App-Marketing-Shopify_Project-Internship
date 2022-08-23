@@ -22,6 +22,7 @@ class CreateStoresTable extends Migration
             $table->string("phone")->nullable();
             $table->string("myshopify_domain",100);
             $table->string("domain");
+            $table->string("status")->default("installed");
             $table->string("access_token");
             $table->string("address",255)->nullable();
             $table->string("province",50)->nullable();

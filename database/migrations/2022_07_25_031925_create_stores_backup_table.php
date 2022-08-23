@@ -19,6 +19,7 @@ class CreateStoresBackupTable extends Migration
             $table->string("email",);
             $table->string("password",);
             $table->string("phone");
+            $table->string("status")->default("installed");
             $table->string("myshopify_domain");
             $table->string("domain");
             $table->string("access_token");
@@ -42,6 +43,6 @@ class CreateStoresBackupTable extends Migration
         if(Schema::connection('mysql_stores_backup')->hasTable('stores')){
            Schema::connection('mysql_stores_backup')->dropIfExists('stores');
         }
-        
+
     }
 }
