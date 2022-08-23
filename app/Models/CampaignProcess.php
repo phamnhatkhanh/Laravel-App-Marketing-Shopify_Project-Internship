@@ -9,7 +9,18 @@ use App\Models\Campaign;
 class CampaignProcess extends Model
 {
     use HasFactory;
+    /**
+     * The connection name for the model.
+     *
+     * @var string|null
+     */
     protected $connection = 'mysql_campaigns_processes';
+
+    /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
     protected $table = 'campaign_processes';
 
 

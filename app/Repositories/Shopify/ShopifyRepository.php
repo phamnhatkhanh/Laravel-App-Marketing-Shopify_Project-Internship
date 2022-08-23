@@ -31,8 +31,8 @@ class ShopifyRepository implements ShopifyRepositoryInterface
 
     public function __construct()
     {
-        $this->customer = getConnectDatabaseActived(new Customer());
-        $this->store = getConnectDatabaseActived(new Store());
+        $this->customer = setConnectDatabaseActived(new Customer());
+        $this->store = setConnectDatabaseActived(new Store());
     }
 
     /**
@@ -67,16 +67,21 @@ class ShopifyRepository implements ShopifyRepositoryInterface
 
             $scope = 'read_customers,write_customers';
             $shop = $request->myshopify_domain;
-            $host =  $request->header("origin");
-            $url = 'https://' . $shop . '/admin/api/2022-07/shop.json';
+
+            $hostLink = $request->header("origin");
+
+            $url = 'https://'.$shop.'/admin/api/2022-07/shop.json';
+
             $request = Http::get($url);
 
             $statusCode = $request->getStatusCode();
-            if ($statusCode == 401) {
-                // $redirect_uri = 'http://localhost:8000/api/auth/authen';
-                // $redirect_uri = 'http://192.168.101.83:8080/login';
 
-                $redirect_uri = $host . "/login";
+            if ($statusCode == 401){
+                // $redirect_uri = 'http://localhost:8000/api/auth/authen';
+                // $redirect_uri = 'https://firegroup-team2.herokuapp.com/login';
+
+                $redirect_uri = $hostLink . "/login";
+
                 info($redirect_uri);
                 $url = 'https://' . $shop . '/admin/oauth/authorize?client_id=' . $apiKey . '&scope=' . $scope . '&redirect_uri=' . $redirect_uri;
                 info($url);
@@ -313,6 +318,7 @@ class ShopifyRepository implements ShopifyRepositoryInterface
      */
     public function syncCustomer($shop, $accessToken, $store)
     {
+
         // get store.
         try {
             $storeID = $store->id;
@@ -326,10 +332,11 @@ class ShopifyRepository implements ShopifyRepositoryInterface
 
             $limit = 10;
 
+            info("--run coundata ");
             //Count number Customers
             $countCustomer = $this->countDataCustomer($shop, $accessToken);
             $ceilRequest = (int)ceil($countCustomer['count'] / $limit);
-
+            info("--end run coundata ");
             //Calculate the number of iterations to be able to save all customers to the DB
             $numberRequest = $countCustomer > $limit ? $ceilRequest : 1;
             $log = [];

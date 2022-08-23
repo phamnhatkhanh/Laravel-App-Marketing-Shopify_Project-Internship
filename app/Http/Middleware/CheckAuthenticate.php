@@ -12,7 +12,7 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 class CheckAuthenticate
 {
     /**
-     * Handle an incoming request.
+     * Check acces token from client.
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \Closure(\Illuminate\Http\Request): (\Illuminate\Http\Response|\Illuminate\Http\RedirectResponse)  $next

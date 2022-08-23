@@ -14,7 +14,18 @@ class CreatedModel
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
+    /**
+     * The current connection of model
+     *
+     * @var string
+     */
     public $dbConnectName;
+
+    /**
+     * * The model being created.
+     *
+     * @var \Illuminate\Database\Eloquent\Model
+     */
     public $model;
 
 

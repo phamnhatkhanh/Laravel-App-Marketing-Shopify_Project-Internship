@@ -6,11 +6,10 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 
 
-class SyncDatabaseAfterCreatedModel
-implements ShouldQueue
+class SyncDatabaseAfterCreatedModel implements ShouldQueue
 {
     /**
-     * Create the event listener.
+     * Create and synchronize data in the database model cluster.
      *
      * @return void
      */

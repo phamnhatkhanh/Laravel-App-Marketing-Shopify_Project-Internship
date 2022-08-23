@@ -20,7 +20,7 @@ use IvoPetkov\HTML5DOMDocument;
 class SendEmailPreview implements ShouldQueue
 {
     use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-    public $body, $subject, $imageName, $store, $sendEmail,$batchId,$campaignProcess;
+    public $body,$subject, $imageName, $store, $sendEmail,$batchId,$campaignProcess;
 
     /**
      * Create a new job instance.
@@ -65,6 +65,7 @@ class SendEmailPreview implements ShouldQueue
         info("SendEmailPreview: call event");
         event(new SendingMail($this->batchId,$this->campaignProcess));
     }
+    
     public function failed(Throwable $exception)
     {
         info("job failed: ");

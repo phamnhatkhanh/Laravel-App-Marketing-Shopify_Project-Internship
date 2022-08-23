@@ -14,7 +14,7 @@ class CampaignProcessSeeder extends Seeder
      */
     public function run()
     {
-        $campaignProcesses = CampaignProcess::factory()->times(50)->create();
+        $campaignProcesses = CampaignProcess::factory()->times(5)->create();
         foreach ($campaignProcesses as  $campaignProcess) {
             $campaignProcess->id = self::$id++;
             CampaignProcess::on('mysql_campaigns_processes_backup')->create(($campaignProcess->toArray()));
@@ -22,4 +22,4 @@ class CampaignProcessSeeder extends Seeder
         }
     }
 }
-// Database\Factories\
+

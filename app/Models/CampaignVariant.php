@@ -8,8 +8,18 @@ use App\Models\Campaign;
 class CampaignVariant extends Model
 {
     use HasFactory;
-    protected $connection = 'mysql_campaigns';
-    protected $table = 'campaign_email_content_variant';
+    /**
+     * The connection name for the model.
+     *
+     * @var string|null
+     */
+protected $connection = 'mysql_campaigns';
+    /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
+protected $table = 'campaign_email_content_variant';
 
     protected $fillable = [
         'campaign_id',

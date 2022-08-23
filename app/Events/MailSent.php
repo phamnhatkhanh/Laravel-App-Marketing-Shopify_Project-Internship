@@ -16,8 +16,25 @@ class MailSent implements ShouldBroadcast
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
 
+    /**
+     * * The primary key for job batch of group job send mail when create campaign
+     *
+     * @var string
+     */
     public $batchID;
+
+    /**
+     * * The model being created.
+     *
+     * @var \Illuminate\Database\Eloquent\Model $campaignProcess
+     */
     public $campaignProcess;
+    
+    /**
+     * * The data after excute this job.
+     *
+     * @var array
+     */
     public $payload;
 
     /**
@@ -31,6 +48,7 @@ class MailSent implements ShouldBroadcast
         $this->campaignProcess = $campaignProcess;
         $this->payload  =  $this->sendProcess($this->campaignProcess);
     }
+
     public function sendProcess($campaignProcess){
         $batch =  JobBatch::find($this->batchID);
 

@@ -13,7 +13,8 @@ use Illuminate\Support\Facades\Mail;
 class SendBill implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-private $store;
+
+    private $store;
     /**
      * Create a new job instance.
      *
