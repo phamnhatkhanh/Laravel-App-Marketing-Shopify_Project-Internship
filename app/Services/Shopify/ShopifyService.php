@@ -10,16 +10,16 @@ class ShopifyService
      *
      *
      * @param $shop
-     * @param $access_token
+     * @param $accessToken
      * @return mixed
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public static function checkLogin($shop, $access_token){
+    public static function checkLogin($shop, $accessToken){
         $client = new Client();
         $url = 'https://'.$shop.'/admin/api/2022-07/shop.json';
         $request = $client->request('get', $url,[
             'headers' => [
-                'X-Shopify-Access-Token' => $access_token
+                'X-Shopify-Access-Token' => $accessToken
             ]
         ]);
 
@@ -90,20 +90,20 @@ class ShopifyService
     public static function registerCustomerWebhookService($shop, $accessToken, $getWebhook)
     {
         info("ShopifyRepository registerCustomerWebhookService: access persmission");
-        $topic_access = [
+        $topicAccess = [
             'customers/create',
             'customers/update',
             'customers/delete',
             'app/uninstalled',
         ];
 
-        foreach ($topic_access as $topic) {
+        foreach ($topicAccess as $topic) {
             try {
                 $client = new Client();
                 $url = 'https://' . $shop . '/admin/api/2022-07/webhooks.json';
                 $request = $client->request('post', $url, [
                     'headers' => [
-                        'X-Shopify-Access-Token' => $access_token,
+                        'X-Shopify-Access-Token' => $accessToken,
                     ],
                     'form_params' => [
                         'webhook' => [
@@ -130,6 +130,7 @@ class ShopifyService
      */
     public static function countDataCustomer($shop, $accessToken)
     {
+        // info("countDataCustomer ".$accessToken . " ".$shop);
         $client = new Client();
         $url = 'https://' . $shop . '/admin/api/2022-07/customers/count.json';
         $request = $client->request('get', $url, [
@@ -138,7 +139,7 @@ class ShopifyService
             ]
         ]);
         $countCustomer = (array)json_decode($request->getBody());
-
+        // info("soune ddone customer is: " .$countCustomer);
         return $countCustomer;
     }
 

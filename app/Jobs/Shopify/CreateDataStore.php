@@ -15,7 +15,19 @@ class CreateDataStore implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    private $store, $accessToken;
+    /**
+     * Data store repsone from shopify.
+     *
+     * @var mixed
+     */
+    private $store;
+
+    /**
+     * Token of store.
+     *
+     * @var mixed
+     */
+    private $accessToken;
 
     /**
      * Create a new job instance.
@@ -29,7 +41,7 @@ class CreateDataStore implements ShouldQueue
     }
 
     /**
-     * Execute the job.
+     * Create store when get data customer from shopify and sync data in the database model cluster.
      *
      * @return void
      */
@@ -37,7 +49,7 @@ class CreateDataStore implements ShouldQueue
     {
         $store = $this->store;
         $accessToken = $this->accessToken;
-        $storeModelBuilder = getConnectDatabaseActived(new Store());
+        $storeModelBuilder = setConnectDatabaseActived(new Store());
         $storeModel = $storeModelBuilder->getModel();
 
         $password = $store['shop']['myshopify_domain'];

@@ -16,9 +16,21 @@ class SyncingCustomer implements ShouldBroadcast
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
 
+     /**
+     * * The primary key for job batch of group job create customer when sync customer.
+     *
+     * @var string
+     */
     public $batchID;
-    public $processing;
+
+    /**
+     * * The data after excute this job.
+     *
+     * @var array
+     */
     public $payload;
+
+
     /**
      * Create a new event instance.
      *

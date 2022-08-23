@@ -34,9 +34,9 @@ class SetupDatabase extends Command
     }
 
     /**
-     * Execute the console command.
+     * Refresh, setup table status database and fake data in database
      *
-     * @return int
+     * @return void
      */
     public function handle()
     {
@@ -54,28 +54,24 @@ class SetupDatabase extends Command
 
         foreach ($listPathModels as $pathModel) {
             $model = new $pathModel();
-            $connectModelDefault = getDiverDafault($model);
+            $connectModelDefault = getConnectModelDefalut($model);
             if ($connectModelDefault != "mysql") {
                 $getListDriver =  DbStatus::where(function ($query) use ($connectModelDefault) {
                     $query->where('name', 'like', $connectModelDefault . '%')
                         ->where('model_name', '=', null);
                 })->get();
                 foreach ($getListDriver as $driver) {
-                    // info($driver->name);
                     if (Schema::connection($driver->name)->hasTable($model->getTable())) {
                         DbStatus::create(['name' => $driver->name, 'status' => 'actived', 'model_name' => $model->getTable()]);
                     }
                 }
             }
         }
-        
-        $this->info("Faker data in database...");
-        DbStatus::where('model_name', '=', null)
-            ->orWhereNull('model_name')->delete();
+        DbStatus::where('model_name', '=', null)->orWhereNull('model_name')->delete();
 
+        $this->info("Faker data in database...");
         Artisan::call('db:seed');
 
         $this->info("Setup database done!!");
-
     }
 }

@@ -13,8 +13,18 @@ use Tymon\JWTAuth\Claims\Custom;
 class Customer extends Model
 {
     use HasFactory;
-    protected $connection = 'mysql_customers';
-    protected $table = 'customers';
+    /**
+     * The connection name for the model.
+     *
+     * @var string|null
+     */
+protected $connection = 'mysql_customers';
+    /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
+protected $table = 'customers';
 
     protected $fillable = [
         'id',

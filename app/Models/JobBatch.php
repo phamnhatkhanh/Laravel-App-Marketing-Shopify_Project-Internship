@@ -14,7 +14,12 @@ class JobBatch extends Model
      *
      * @var string
      */
-    protected $table = 'job_batches';
+    /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
+protected $table = 'job_batches';
 
     /**
      * The "type" of the primary key ID.

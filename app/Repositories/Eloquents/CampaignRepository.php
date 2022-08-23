@@ -36,10 +36,10 @@ class CampaignRepository implements CampaignRepositoryInterface
 
     public function __construct()
     {
-        $this->store = getConnectDatabaseActived(new Store());
-        $this->customer = getConnectDatabaseActived(new Customer());
-        $this->campaign = getConnectDatabaseActived(new Campaign());
-        $this->campaignProcess = getConnectDatabaseActived(new CampaignProcess());
+        $this->store = setConnectDatabaseActived(new Store());
+        $this->customer = setConnectDatabaseActived(new Customer());
+        $this->campaign = setConnectDatabaseActived(new Campaign());
+        $this->campaignProcess = setConnectDatabaseActived(new CampaignProcess());
     }
 
     /**
@@ -86,7 +86,7 @@ class CampaignRepository implements CampaignRepositoryInterface
                 $total_customers = 0;
 
             }
-            }
+
             Schema::connection($this->campaignProcess->getConnection()->getName())->disableForeignKeyConstraints();
                 $campaignProcess = $this->campaignProcess->create([
                     "process" => "0",
@@ -192,9 +192,6 @@ class CampaignRepository implements CampaignRepositoryInterface
      */
     public function sendEmailPreview(Request $request, $campaignProcess)
     {
-
-
-        // // info($request->all());
         try {
 
 
