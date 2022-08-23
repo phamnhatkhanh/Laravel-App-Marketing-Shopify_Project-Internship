@@ -33,13 +33,13 @@ class CreateCustomer implements ShouldQueue
     }
 
     /**
-     * Execute the job.
+     * Sync save Customer when create Customer on Shopify
      *
      * @return void
      */
     public function handle()
     {
-        
+
         $customerModelBuilder = getConnectDatabaseActived(new Customer());
         $customerModel = $customerModelBuilder->getModel();
         $storeModelBuilder = getConnectDatabaseActived(new Store());

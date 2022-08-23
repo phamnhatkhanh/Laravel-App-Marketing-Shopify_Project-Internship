@@ -25,7 +25,7 @@ private $store;
     }
 
     /**
-     * Execute the job.
+     * Send bill payment to shop owner
      *
      * @return void
      */
@@ -33,7 +33,7 @@ private $store;
     {
         $store = $this->store;
 
-        Mail::send('showNotification', compact('store'), function ($email) use ($store) {
+        Mail::send('mail.billEmail', compact('store'), function ($email) use ($store) {
             $email->from('huskadian@huska.husky.russian')
                 ->subject('Thank you payment')
                 ->to($store->email);

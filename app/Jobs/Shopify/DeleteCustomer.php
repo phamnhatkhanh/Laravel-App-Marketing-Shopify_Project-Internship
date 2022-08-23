@@ -31,7 +31,7 @@ class DeleteCustomer implements ShouldQueue
     }
 
     /**
-     * Execute the job.
+     * Sync Delete Customer when Delete Customer on Shopify
      *
      * @return void
      */

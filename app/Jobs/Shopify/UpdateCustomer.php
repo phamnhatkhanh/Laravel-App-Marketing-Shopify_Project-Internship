@@ -33,7 +33,7 @@ class UpdateCustomer implements ShouldQueue
     }
 
     /**
-     * Execute the job.
+     * Sync Update Customer when update Customer on Shopify
      *
      * @return void
      */
