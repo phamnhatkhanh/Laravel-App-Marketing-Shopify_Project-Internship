@@ -12,6 +12,9 @@ use App\Models\CampaignProcess;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Tymon\JWTAuth\Facades\JWTAuth;
+
+use Illuminate\Support\Facades\Bus;
+use Illuminate\Bus\Batch;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -22,7 +25,16 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 | contains the "web" middleware group. Now create something great!
 |
 */
+Route::get('job',function(){
+    $batch = Bus::batch([])
+                ->then(function (Batch $batch) {
+                })->finally(function (Batch $batch) {
+                    info ("SUCESS sync customers");
+                    info("-call event: SynchronizedCustomer");
+                    event(new SynchronizedCustomer($batch->id));
+                })->onQueue('jobs')->dispatch();
 
+});
 //Get all Customer display the interface
 Route::get('/getCustomer', [CustomerController::class, 'getCustomer']);
 

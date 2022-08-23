@@ -79,7 +79,6 @@ class SyncDatabaseAfterDisconnect  implements ShouldQueue
                             }
                             $syncModelRow->delete();
                         }
-
                         DbStatus::where('name',$event->dbModelConnect)->update([ "status" =>"actived"]);
                         break;
                     }

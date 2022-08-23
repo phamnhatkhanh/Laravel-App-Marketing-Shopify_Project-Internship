@@ -204,8 +204,8 @@ class CampaignRepository implements CampaignRepositoryInterface
                     ]);
 
                     $connect = ($campaignProcess->getConnection()->getName());
-                    event(new UpdatedModel($connect, $campaignProcess));
                     event(new MailSent($batch->id, $campaignProcess));
+                    event(new UpdatedModel($connect, $campaignProcess));
                 })->onQueue('jobs')->dispatch();
             $batchId = $batch->id;
 

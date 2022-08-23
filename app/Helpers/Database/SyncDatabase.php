@@ -18,6 +18,8 @@ if (!function_exists('SyncDatabaseAfterCreatedModel')) {
      * @return void
      */
     function SyncDatabaseAfterCreatedModel($dbConnectName,$model){
+
+        info("--SyncDatabaseAfterCreatedModel: create model ".$model->getTable());
         $listDatabaseModel = DbStatus::where('model_name', '=', $model->getTable())->get();
 
         $dataCreatedModel = $model->toArray();
@@ -61,6 +63,7 @@ if (!function_exists('SyncDatabaseAfterUpdatedModel')) {
      */
     function SyncDatabaseAfterUpdatedModel($dbConnectName,$model){
 
+        info("--SyncDatabaseAfterUpdatedModel: update model ".$model->getTable());
         $listDatabaseModel = DbStatus::where('model_name', '=', $model->getTable())->get();
         if(!empty($model)){
             $dataUpdateModel = $model->toArray();
@@ -98,6 +101,7 @@ if (!function_exists('SyncDatabaseAfterDeletedModel')) {
      * @return void
      */
     function SyncDatabaseAfterDeletedModel($dbConnectName,$model){
+        info("--SyncDatabaseAfterDeletedModel: delete model ".$model->getTable());
         $listDatabaseModel = DbStatus::where('model_name', '=', $model->getTable())->get();
         if(!empty($model)){
             foreach ($listDatabaseModel as $dbModel) {

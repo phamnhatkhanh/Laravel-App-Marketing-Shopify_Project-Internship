@@ -44,7 +44,7 @@ class SynchronizedCustomer implements ShouldBroadcast
     }
 
     public function sendProcess(){
-        info('comleted sync customer: '. $this->batchID);
+        info('SynchronizedCustomer: COMPOLETE SYNC CUSTOMER FROM SHOPIFY');
         $batch =  JobBatch::find($this->batchID);
         $customer_model_builder = setConnectDatabaseActived(new Customer());
         $customer = $customer_model_builder->getModel();

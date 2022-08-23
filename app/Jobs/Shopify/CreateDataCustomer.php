@@ -27,7 +27,7 @@ class CreateDataCustomer implements ShouldQueue
      *
      * @var string
      */
-    private $storeId;
+    public $storeId;
 
     /**
      * Create a new job instance.

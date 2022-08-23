@@ -24,6 +24,11 @@ class CampaignProcess extends Model
     protected $table = 'campaign_processes';
 
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
     protected $fillable = [
         'id',
         'store_id',
@@ -37,11 +42,24 @@ class CampaignProcess extends Model
         'created_at'
     ];
 
+    /**
+     * Get campaign belongs to this campaign process.
+     *
+     * @return Illuminate\Database\Eloquent;
+     */
     public function campaign()
     {
         return $this->belongsTo(Campaign::class);
     }
 
+    /**
+     * Get list campagin process if exist keyword in columns.
+     *
+     * @param object $query
+     * @param object $params
+     *
+     * @return Illuminate\Database\Eloquent\Collection;
+     */
     public function scopeSearchCampaign($query, $params)
     {
         if (!empty($params['keywords']) && trim($params['keywords']) !== '') {
@@ -56,6 +74,14 @@ class CampaignProcess extends Model
         return $query;
     }
 
+    /**
+     * Get list campagin process has by sort date create.
+     *
+     * @param object $query
+     * @param object $params
+     *
+     * @return Illuminate\Database\Eloquent\Collection;
+     */
     public function scopeSort($query, $params)
     {
         if (isset($params['sort']) && trim($params['sort'] !== '')) {
@@ -64,6 +90,14 @@ class CampaignProcess extends Model
         return $query;
     }
 
+     /**
+     * Get list campagin process has by sort their campaign process status.
+     *
+     * @param object $query
+     * @param object $params
+     *
+     * @return Illuminate\Database\Eloquent\Collection;
+     */
     public function scopeStatus($query, $params)
     {
         if (isset($params['status']) && trim($params['status'] !== '')) {
@@ -75,6 +109,14 @@ class CampaignProcess extends Model
         return $query;
     }
 
+    /**
+     * Get list campagin process if exist keyword in name column.
+     *
+     * @param object $query
+     * @param object $params
+     *
+     * @return Illuminate\Database\Eloquent\Collection;
+     */
     public function scopeName($query, $params)
     {
         if (!empty($params['keywords']) && trim($params['keywords']) !== '') {

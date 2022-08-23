@@ -54,7 +54,7 @@ class SendEmailPreview implements ShouldQueue
      * @var object
      */
     private $sendEmail;
-    private $batchId;
+    public $batchId;
     private $campaignProcess;
 
 
@@ -84,21 +84,20 @@ class SendEmailPreview implements ShouldQueue
     public function handle()
     {
         // try {
-        info("SendEmailPreview: campaignProcess id" . $this->campaignProcess->id);
-        info("SendEmailPreview: batch id" . $this->batchId);
+
         info("SendEmailPreview: send mail " . $this->sendEmail);
 
         $bodyEmail = $this->body;
         $subject = $this->subject;
         $store = $this->store;
         $sendEmail = $this->sendEmail;
-        info("SendEmailPreview: send mail......");
-        // info("body ".$this->batchId ."  processed". $this->campaignProcess->id);
+
+
         Mail::send('mail.emailPreview', compact('bodyEmail'), function ($email) use ($subject, $store, $sendEmail) {
             $email->from($store->email);
             $email->to($sendEmail)->subject($subject);
         });
-        info("SendEmailPreview: call event");
+
         event(new SendingMail($this->batchId, $this->campaignProcess));
     }
 

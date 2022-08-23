@@ -24,6 +24,11 @@ class Campaign extends Model
      */
     protected $table = 'campaigns';
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
     protected $fillable = [
         'store_id',
         'name',
@@ -39,18 +44,21 @@ class Campaign extends Model
         'button_text_color'
     ];
 
-    public function background()
-    {
-    	return $this->hasOne(CampaignVariant::class);
-    }
-    public function button()
-    {
-    	return $this->hasOne(CampaignButton::class);
-    }
+    /**
+     * Get the campaigns campaign variant list.
+     *
+     * @return Illuminate\Database\Eloquent\Collection;
+     */
     public function variants()
     {
     	return $this->hasMany(CampaignVariant::class);
     }
+
+    /**
+     * Get store belongs to this campaign
+     *
+     * @return Illuminate\Database\Eloquent;
+     */
     public function store()
     {
     	return $this->belongsTo(Store::class);

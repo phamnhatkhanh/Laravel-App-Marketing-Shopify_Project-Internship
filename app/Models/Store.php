@@ -19,14 +19,23 @@ class Store extends Authenticatable  implements JWTSubject
      *
      * @var string|null
      */
-protected $connection = 'mysql_stores';
+    protected $connection = 'mysql_stores';
+
     /**
      * The table associated with the model.
      *
      * @var string
      */
-protected $table = 'stores';
+    protected $table = 'stores';
 
+    public $timestamps = false;
+    protected $guarded = [];
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
     protected $fillable = [
         'id',
         'name_merchant',
@@ -48,26 +57,43 @@ protected $table = 'stores';
 
     ];
 
-    public $timestamps = false;
-    protected $guarded = [];
-
+    /**
+     * Get the stores customer list
+     *
+     * @return Illuminate\Database\Eloquent\Collection;
+     */
     public function customers()
     {
     	return $this->hasMany(Customer::class);
     }
+
+    /**
+     * Get the store campaigns list
+     *
+     * @return Illuminate\Database\Eloquent\Collection;
+     */
     public function campaigns()
     {
     	return $this->hasMany(Campaign::class);
     }
 
+    /**
+     * Get the identifier that will be stored in the subject claim of the JWT.
+     *
+     * @return mixed
+     */
     public function getJWTIdentifier()
-    {        return $this->getKey();
-    }    /**
+    {
+        return $this->getKey();
+    }
+
+    /**
      * Return a key value array, containing any custom claims to be added to the JWT.
      *
      * @return array
      */
     public function getJWTCustomClaims()
-    {        return [];
+    {
+        return [];
     }
 }

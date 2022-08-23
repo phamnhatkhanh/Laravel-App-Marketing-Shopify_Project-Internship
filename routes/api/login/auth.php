@@ -6,7 +6,6 @@ use Illuminate\Support\Facades\Route;
 
 //Input Name Shop
 Route::middleware(['throttle:api'])->group(function () {
-
     Route::any('/login', [ShopifyController::class, 'login'])->name('login');
     Route::any('/authen', [ShopifyController::class, 'authen'])->name('authen');
 });
