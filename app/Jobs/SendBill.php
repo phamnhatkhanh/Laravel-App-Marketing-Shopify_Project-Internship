@@ -13,7 +13,14 @@ use Illuminate\Support\Facades\Mail;
 class SendBill implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-private $store;
+
+    /**
+     * Get Shop owner information have token
+     *
+     * @var array
+     */
+    private $store;
+
     /**
      * Create a new job instance.
      *

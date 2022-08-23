@@ -20,14 +20,49 @@ use IvoPetkov\HTML5DOMDocument;
 class SendEmailPreview implements ShouldQueue
 {
     use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-    public $body, $subject, $imageName, $store, $sendEmail,$batchId,$campaignProcess;
+
+    /**
+     * Get body Email after handle with dom
+     *
+     * @var object
+     */
+    public $body;
+
+    /**
+     * Get subject Email after handle with dom
+     *
+     * @var object
+     */
+    private $subject;
+
+    /**
+     * Get name image
+     *
+     * @var object
+     */
+    private $imageName;
+
+    /**
+     * Get Shop owner information have token
+     *
+     * @var array
+     */
+    private $store;
+
+    /**
+     *
+     * @var object
+     */
+    private $sendEmail;
+    private $batchId;
+    private $campaignProcess;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($sendEmail,$batchId,$campaignProcess, $body, $subject, $imageName, $store)
+    public function __construct($sendEmail, $batchId, $campaignProcess, $body, $subject, $imageName, $store)
     {
         $this->connection = 'database';
 
@@ -48,9 +83,9 @@ class SendEmailPreview implements ShouldQueue
     public function handle()
     {
         // try {
-        info("SendEmailPreview: campaignProcess id". $this->campaignProcess->id);
-        info("SendEmailPreview: batch id". $this->batchId);
-        info("SendEmailPreview: send mail ". $this->sendEmail);
+        info("SendEmailPreview: campaignProcess id" . $this->campaignProcess->id);
+        info("SendEmailPreview: batch id" . $this->batchId);
+        info("SendEmailPreview: send mail " . $this->sendEmail);
 
         $bodyEmail = $this->body;
         $subject = $this->subject;
@@ -58,13 +93,14 @@ class SendEmailPreview implements ShouldQueue
         $sendEmail = $this->sendEmail;
         info("SendEmailPreview: send mail......");
         // info("body ".$this->batchId ."  processed". $this->campaignProcess->id);
-        Mail::send('mail.emailPreview', compact('bodyEmail' ), function ($email) use ($subject, $store, $sendEmail) {
+        Mail::send('mail.emailPreview', compact('bodyEmail'), function ($email) use ($subject, $store, $sendEmail) {
             $email->from($store->email);
             $email->to($sendEmail)->subject($subject);
         });
         info("SendEmailPreview: call event");
-        event(new SendingMail($this->batchId,$this->campaignProcess));
+        event(new SendingMail($this->batchId, $this->campaignProcess));
     }
+
     public function failed(Throwable $exception)
     {
         info("job failed: ");
