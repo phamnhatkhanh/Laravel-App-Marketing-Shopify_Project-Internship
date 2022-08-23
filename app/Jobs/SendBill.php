@@ -14,7 +14,15 @@ class SendBill implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+
+    /**
+     * Get Shop owner information have token
+     *
+     * @var array
+     */
     private $store;
+
+
     /**
      * Create a new job instance.
      *

@@ -44,7 +44,7 @@ class ShopifyController extends Controller
     }
 
     /**
-     * Get all Customer display the interface
+     * Get Store display the interface
      *
      * @return resource
      */

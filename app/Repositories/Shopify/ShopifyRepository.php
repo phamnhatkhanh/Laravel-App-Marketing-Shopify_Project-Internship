@@ -385,7 +385,7 @@ class ShopifyRepository implements ShopifyRepositoryInterface
     }
 
     /**
-     * Get all Customer display the interface
+     * Get Store display the interface
      *
      * @return resource
      */
