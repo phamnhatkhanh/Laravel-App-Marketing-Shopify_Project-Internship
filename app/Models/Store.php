@@ -23,6 +23,7 @@ class Store extends Authenticatable  implements JWTSubject
         'email',
         'password',
         'phone',
+        'status',
         'password',
         'myshopify_domain',
         'domain',

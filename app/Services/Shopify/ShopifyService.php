@@ -7,6 +7,28 @@ use GuzzleHttp\Client;
 class ShopifyService
 {
     /**
+     *
+     *
+     * @param $shop
+     * @param $access_token
+     * @return mixed
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public static function checkLogin($shop, $access_token){
+        $client = new Client();
+        $url = 'https://'.$shop.'/admin/api/2022-07/shop.json';
+        $request = $client->request('get', $url,[
+            'headers' => [
+                'X-Shopify-Access-Token' => $access_token
+            ]
+        ]);
+
+        $response = json_decode($request->getBody(), true);
+
+        return $response;
+    }
+
+    /**
      * Get accessToken from the Shopify
      *
      * @param string $code
@@ -67,7 +89,6 @@ class ShopifyService
      */
     public static function registerCustomerWebhookService($shop, $accessToken, $getWebhook)
     {
-
         info("ShopifyRepository registerCustomerWebhookService: access persmission");
         $topic_access = [
             'customers/create',
@@ -77,20 +98,25 @@ class ShopifyService
         ];
 
         foreach ($topic_access as $topic) {
-            $client = new Client();
-            $url = 'https://' . $shop . '/admin/api/2022-07/webhooks.json';
-            $request = $client->request('post', $url, [
-                'headers' => [
-                    'X-Shopify-Access-Token' => $accessToken,
-                ],
-                'form_params' => [
-                    'webhook' => [
-                        'topic' => $topic,
-                        'format' => 'json',
-                        'address' => config('shopify.ngrok') . '/api/shopify/webhook',
+            try {
+                $client = new Client();
+                $url = 'https://' . $shop . '/admin/api/2022-07/webhooks.json';
+                $request = $client->request('post', $url, [
+                    'headers' => [
+                        'X-Shopify-Access-Token' => $access_token,
                     ],
-                ]
-            ]);
+                    'form_params' => [
+                        'webhook' => [
+                            'topic' => $topic,
+                            'format' => 'json',
+                            'address' => config('shopify.ngrok') . '/api/shopify/webhook',
+                        ],
+                    ]
+                ]);
+            } catch (\Exception $exception) {
+                info('ShopifyService: '.$exception);
+                continue;
+            }
         }
     }
 

@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Bus\Batch;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Http;
 use Throwable;
 use GuzzleHttp\Client;
 use App\Http\Controllers\LoginController;
@@ -68,21 +69,27 @@ class ShopifyRepository implements ShopifyRepositoryInterface
             $scope = 'read_customers,write_customers';
             $shop = $request->myshopify_domain;
 
+            $url = 'https://'.$shop.'/admin/api/2022-07/shop.json';
+            $request = Http::get($url);
+            $statusCode = $request->getStatusCode();
+            if ($statusCode == 401){
+                $redirect_uri = 'http://localhost:8000/api/auth/authen';
+                // $redirect_uri = 'http://192.168.101.83:8080/login';
 
-          //  $redirect_uri = 'http://localhost:8000/api/auth/authen';
-            // $redirect_uri = 'http://192.168.101.83:8080/login';
-
-            $redirect_uri = $request->header("origin")."/login";
-
-            info( $redirect_uri);
-
-
-            $url = 'https://' . $shop . '/admin/oauth/authorize?client_id=' . $apiKey . '&scope=' . $scope . '&redirect_uri=' . $redirect_uri;
-            info($url);
-            return response()->json([
-                "status" => true,
-                "url"=> $url
-            ]);
+//            $redirect_uri = $request->header("origin") . "/login";
+                info($redirect_uri);
+                $url = 'https://' . $shop . '/admin/oauth/authorize?client_id=' . $apiKey . '&scope=' . $scope . '&redirect_uri=' . $redirect_uri;
+                info($url);
+                return response()->json([
+                    "status" => true,
+                    "url" => $url
+                ]);
+            } else {
+                return response()->json([
+                    'message' => 'Có lỗi: '.$statusCode,
+                    'status' => false,
+                ], $statusCode);
+            }
         }
     }
 
@@ -156,6 +163,9 @@ class ShopifyRepository implements ShopifyRepositoryInterface
         return "setup store sucess";
     }
 
+    public function checkLogin($shop, $access_token){
+        return ShopifyService::checkLogin($shop, $access_token);
+    }
     /**
      * Get accessToken from the Shopify
      *
@@ -265,8 +275,8 @@ class ShopifyRepository implements ShopifyRepositoryInterface
             'fields' => 'id, first_name, last_name, email, phone, addresses, orders_count, total_spent, created_at, updated_at',
             'limit' => $limit,
         ];
+        $client = new Client();
         for ($i = 0; $i < $numberRequest; $i++) {
-            $client = new Client();
             $url = 'https://' . $shop . '/admin/api/2022-07/customers.json';
             $request = $client->request('get', $url, [
                 'headers' => [
@@ -391,8 +401,6 @@ class ShopifyRepository implements ShopifyRepositoryInterface
         // return "add successfully store";
 
 
-
-
     }
 
     public function update($request, $storeId)
@@ -416,7 +424,7 @@ class ShopifyRepository implements ShopifyRepositoryInterface
         $store = $this->store->where('id', $storeId)->first();
         if (!empty($store)) {
             $connect = ($this->store->getConnection()->getName());
-            event(new DeletedModel($connect,$store));
+            event(new DeletedModel($connect, $store));
             return $store;
         }
     }

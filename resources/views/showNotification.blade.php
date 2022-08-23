@@ -1,180 +1,516 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Demo Application</title>
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-    <style>.dropdown-container{position:absolute;top:100%;left:0;z-index:1000;display:none;float:left;min-width:200px;max-width:330px;margin:2px 0 0;list-style:none;font-size:14px;background-color:#fff;border:1px solid #ccc;border:1px solid rgba(0,0,0,0.15);border-radius:4px;-webkit-box-shadow:0 6px 12px rgba(0,0,0,0.175);box-shadow:0 6px 12px rgba(0,0,0,0.175);background-clip:padding-box}.dropdown-container>.dropdown-menu{position:static;z-index:1000;float:none !important;padding:10px 0;margin:0;border:0;background:transparent;border-radius:0;-webkit-box-shadow:none;box-shadow:none;max-height:330px;overflow-y:auto}.dropdown-container>.dropdown-menu+.dropdown-menu{padding-top:0}.dropdown-menu>li>a{overflow:hidden;white-space:nowrap;word-wrap:normal;text-decoration:none;text-overflow:ellipsis;-o-text-overflow:ellipsis;-webkit-transition:none;-o-transition:none;transition:none}.dropdown-toggle{cursor:pointer}.dropdown-header{white-space:nowrap}.open>.dropdown-container>.dropdown-menu,.open>.dropdown-container{display:block}.dropdown-toolbar{padding-top:6px;padding-left:20px;padding-right:20px;padding-bottom:5px;background-color:#fff;border-bottom:1px solid rgba(0,0,0,0.15);border-radius:4px 4px 0 0}.dropdown-toolbar>.form-group{margin:5px -10px}.dropdown-toolbar .dropdown-toolbar-actions{float:right}.dropdown-toolbar .dropdown-toolbar-title{margin:0;font-size:14px}.dropdown-footer{padding:5px 20px;border-top:1px solid #ccc;border-top:1px solid rgba(0,0,0,0.15);border-radius:0 0 4px 4px}.anchor-block small{display:none}@media (min-width:992px){.anchor-block small{display:block;font-weight:normal;color:#777777}.dropdown-menu>li>a.anchor-block{padding-top:6px;padding-bottom:6px}}@media (min-width:992px){.dropdown.hoverable:hover>ul{display:block}}.dropdown-position-topright{top:auto;right:0;bottom:100%;left:auto;margin-bottom:2px}.dropdown-position-topleft{top:auto;right:auto;bottom:100%;left:0;margin-bottom:2px}.dropdown-position-bottomright{right:0;left:auto}.dropmenu-item-label{white-space:nowrap}.dropmenu-item-content{position:absolute;text-align:right;max-width:60px;right:20px;color:#777777;overflow:hidden;white-space:nowrap;word-wrap:normal;-o-text-overflow:ellipsis;text-overflow:ellipsis}small.dropmenu-item-content{line-height:20px}.dropdown-menu>li>a.dropmenu-item{position:relative;padding-right:66px}.dropdown-submenu .dropmenu-item-content{right:40px}.dropdown-menu>li.dropdown-submenu>a.dropmenu-item{padding-right:86px}.dropdown-inverse .dropdown-menu{background-color:rgba(0,0,0,0.8);border:1px solid rgba(0,0,0,0.9)}.dropdown-inverse .dropdown-menu .divider{height:1px;margin:9px 0;overflow:hidden;background-color:#2b2b2b}.dropdown-inverse .dropdown-menu>li>a{color:#cccccc}.dropdown-inverse .dropdown-menu>li>a:hover,.dropdown-inverse .dropdown-menu>li>a:focus{color:#fff;background-color:#262626}.dropdown-inverse .dropdown-menu>.active>a,.dropdown-inverse .dropdown-menu>.active>a:hover,.dropdown-inverse .dropdown-menu>.active>a:focus{color:#fff;background-color:#337ab7}.dropdown-inverse .dropdown-menu>.disabled>a,.dropdown-inverse .dropdown-menu>.disabled>a:hover,.dropdown-inverse .dropdown-menu>.disabled>a:focus{color:#777777}.dropdown-inverse .dropdown-header{color:#777777}.table>thead>tr>th.col-actions{padding-top:0;padding-bottom:0}.table>thead>tr>th.col-actions .dropdown-toggle{color:#777777}.notifications{list-style:none;padding:0}.notification{display:block;padding:9.6px 12px;border-width:0 0 1px 0;border-style:solid;border-color:#eeeeee;background-color:#fff;color:#333333;text-decoration:none}.notification:last-child{border-bottom:0}.notification:hover,.notification.active:hover{background-color:#f9f9f9;border-color:#eeeeee}.notification.active{background-color:#f4f4f4}a.notification:hover{text-decoration:none}.notification-title{font-size:15px;margin-bottom:0}.notification-desc{margin-bottom:0}.notification-meta{color:#777777}.dropdown-notifications>.dropdown-container,.dropdown-notifications>.dropdown-menu{width:450px;max-width:450px}.dropdown-notifications .dropdown-menu{padding:0}.dropdown-notifications .dropdown-toolbar,.dropdown-notifications .dropdown-footer{padding:9.6px 12px}.dropdown-notifications .dropdown-toolbar{background:#fff}.dropdown-notifications .dropdown-footer{background:#eeeeee}.notification-icon{margin-right:6.8775px}.notification-icon:after{position:absolute;content:attr(data-count);margin-left:-6.8775px;margin-top:-6.8775px;padding:0 4px;min-width:13.755px;height:13.755px;line-height:13.755px;background:red;border-radius:10px;color:#fff;text-align:center;vertical-align:middle;font-size:11.004px;font-weight:600;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif}.notification .media-body{padding-top:5.6px}.btn-lg .notification-icon:after{margin-left:-8.253px;margin-top:-8.253px;min-width:16.506px;height:16.506px;line-height:16.506px;font-size:13.755px}.btn-xs .notification-icon:after{content:'';margin-left:-4.1265px;margin-top:-2.06325px;min-width:6.25227273px;height:6.25227273px;line-height:6.25227273px;padding:0}.btn-xs .notification-icon{margin-right:3.43875px}</style>
-    <!--[if lt IE 9]>
-    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <!--[if (gte mso 9)|(IE)]>
+    <xml>
+        <o:OfficeDocumentSettings>
+            <o:AllowPNG/>
+            <o:PixelsPerInch>96</o:PixelsPerInch>
+        </o:OfficeDocumentSettings>
+    </xml>
     <![endif]-->
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1"> <!-- So that mobile will display zoomed in -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"> <!-- enable media queries for windows phone 8 -->
+    <meta name="format-detection" content="telephone=no"> <!-- disable auto telephone linking in iOS -->
+    <meta name="format-detection" content="date=no"> <!-- disable auto date linking in iOS -->
+    <meta name="format-detection" content="address=no"> <!-- disable auto address linking in iOS -->
+    <meta name="format-detection" content="email=no"> <!-- disable auto email linking in iOS -->
+    <meta name="author" content="Simple-Pleb.com">
+    <title>{{ __('pleb.mail.Payment Thank You Title') }} | {{ config('app.name') }}</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+
+    <style type="text/css">
+        /*Basics*/
+        body {margin:0px !important; padding:0px !important; display:block !important; min-width:100% !important; width:100% !important; -webkit-text-size-adjust:none;}
+        table {border-spacing:0; mso-table-lspace:0pt; mso-table-rspace:0pt;}
+        table td {border-collapse: collapse;mso-line-height-rule:exactly;}
+        td img {-ms-interpolation-mode:bicubic; width:auto; max-width:auto; height:auto; margin:auto; display:block!important; border:0px;}
+        td p {margin:0; padding:0;}
+        td div {margin:0; padding:0;}
+        td a {text-decoration:none; color: inherit;}
+        /*Outlook*/
+        .ExternalClass {width: 100%;}
+        .ExternalClass,.ExternalClass p,.ExternalClass span,.ExternalClass font,.ExternalClass td,.ExternalClass div {line-height:inherit;}
+        .ReadMsgBody {width:100%; background-color: #ffffff;}
+        /* iOS BLUE LINKS */
+        a[x-apple-data-detectors] {color:inherit !important; text-decoration:none !important; font-size:inherit !important; font-family:inherit !important; font-weight:inherit !important; line-height:inherit !important;}
+        /*Gmail blue links*/
+        u + #body a {color:inherit;text-decoration:none;font-size:inherit;font-family:inherit;font-weight:inherit;line-height:inherit;}
+        /*Buttons fix*/
+        .undoreset a, .undoreset a:hover {text-decoration:none !important;}
+        .yshortcuts a {border-bottom:none !important;}
+        .ios-footer a {color:#aaaaaa !important;text-decoration:none;}
+        /*Responsive*/
+        @media screen and (max-width: 799px) {
+            table.row {width: 100%!important;max-width: 100%!important;}
+            td.row {width: 100%!important;max-width: 100%!important;}
+            .img-responsive img {width:100%!important;max-width: 100%!important;height: auto!important;margin: auto;}
+            .center-float {float: none!important;margin:auto!important;}
+            .center-text{text-align: center!important;}
+            .container-padding {width: 100%!important;padding-left: 15px!important;padding-right: 15px!important;}
+            .container-padding10 {width: 100%!important;padding-left: 10px!important;padding-right: 10px!important;}
+            .hide-mobile {display: none!important;}
+            .menu-container {text-align: center !important;}
+            .autoheight {height: auto!important;}
+            .m-padding-10 {margin: 10px 0!important;}
+            .m-padding-15 {margin: 15px 0!important;}
+            .m-padding-20 {margin: 20px 0!important;}
+            .m-padding-30 {margin: 30px 0!important;}
+            .m-padding-40 {margin: 40px 0!important;}
+            .m-padding-50 {margin: 50px 0!important;}
+            .m-padding-60 {margin: 60px 0!important;}
+            .m-padding-top10 {margin: 30px 0 0 0!important;}
+            .m-padding-top15 {margin: 15px 0 0 0!important;}
+            .m-padding-top20 {margin: 20px 0 0 0!important;}
+            .m-padding-top30 {margin: 30px 0 0 0!important;}
+            .m-padding-top40 {margin: 40px 0 0 0!important;}
+            .m-padding-top50 {margin: 50px 0 0 0!important;}
+            .m-padding-top60 {margin: 60px 0 0 0!important;}
+            .m-height10 {font-size:10px!important;line-height:10px!important;height:10px!important;}
+            .m-height15 {font-size:15px!important;line-height:15px!important;height:15px!important;}
+            .m-height20 {font-size:20px!important;line-height:20px!important;height:20px!important;}
+            .m-height25 {font-size:25px!important;line-height:25px!important;height:25px!important;}
+            .m-height30 {font-size:30px!important;line-height:30px!important;height:30px!important;}
+            .rwd-on-mobile {display: inline-block!important;padding: 5px;}
+            .center-on-mobile {text-align: center!important;}
+        }
+    </style>
+
 </head>
-<body>
-<nav class="navbar navbar-inverse">
-    <div class="container-fluid">
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-9" aria-expanded="false">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="#">Demo App</a>
-        </div>
 
-        <div class="collapse navbar-collapse">
-            <ul class="nav navbar-nav">
-                <li class="dropdown dropdown-notifications">
-                    <a href="#notifications-panel" class="dropdown-toggle" data-toggle="dropdown">
-                        <i data-count="0" class="glyphicon glyphicon-bell notification-icon"></i>
-                    </a>
+<body  style="margin-top: 0; margin-bottom: 0; padding-top: 0; padding-bottom: 0; width: 100%; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%;" bgcolor="#f0f0f0">
 
-                    <div style="width: 1050px;
-    max-width: 1050px;" class="dropdown-container">
-                        <div class="dropdown-toolbar">
-                            <div class="dropdown-toolbar-actions">
-                                <a href="#">Mark all as read</a>
-                            </div>
-                            <h3 class="dropdown-toolbar-title">Notifications (<span class="notif-count">0</span>)</h3>
-                        </div>
-                        <ul class="dropdown-menu">
-                        </ul>
-                        <div class="dropdown-footer text-center">
-                            <a href="#">View All</a>
-                        </div>
-                    </div>
-                </li>
-                <li><a href="#">Timeline</a></li>
-                <li><a href="#">Friends</a></li>
-            </ul>
-        </div>
-    </div>
-</nav>
+<span class="preheader-text"  style="color: transparent; height: 0; max-height: 0; max-width: 0; opacity: 0; overflow: hidden; visibility: hidden; width: 0; display: none; mso-hide: all;"></span>
 
-<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
-<script src="//js.pusher.com/3.1/pusher.min.js"></script>
-<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<div   style="display:none; font-size:0px; line-height:0px; max-height:0px; max-width:0px; opacity:0; overflow:hidden; visibility:hidden; mso-hide:all;"></div>
 
-<script type="text/javascript">
-    var notificationsWrapper   = $('.dropdown-notifications');
-    var notificationsToggle    = notificationsWrapper.find('a[data-toggle]');
-    var notificationsCountElem = notificationsToggle.find('i[data-count]');
-    var notificationsCount     = parseInt(notificationsCountElem.data('count'));
-    var notifications          = notificationsWrapper.find('ul.dropdown-menu');
+<table border="0" align="center" cellpadding="0" cellspacing="0" width="100%" style="width:100%;max-width:100%;">
+    <tr><!-- Outer Table -->
+        <td align="center"  bgcolor="#f0f0f0" data-composer>
 
-    if (notificationsCount <= 0) {
-        notificationsWrapper.hide();
-    }
+            <table border="0" align="center" cellpadding="0" cellspacing="0" role="presentation" width="100%" style="width:100%;max-width:100%;" >
+                <!-- lotus-header-18-->
+                <tr>
+                    <td align="center"  bgcolor="#343e9e" class="container-padding">
 
-    //Thay giá trị PUSHER_APP_KEY vào chỗ xxx này nhé
-    var pusher = new Pusher('2fa54eacf3ffb2274748', {
-        encrypted: true,
-        cluster: "ap1"
-    });
+                        <!-- Content -->
+                        <table border="0" align="center" cellpadding="0" cellspacing="0" role="presentation" class="row" width="580" style="width:580px;max-width:580px;">
+                            <tr>
+                                <td height="40" style="font-size:40px;line-height:40px;" >&nbsp;</td>
+                            </tr>
+                            <tr  >
+                                <td align="center">
+                                    <!-- Logo & Webview -->
+                                    <table border="0" align="center" cellpadding="0" cellspacing="0" role="presentation" width="100%" style="width:100%;max-width:100%;">
+                                        <tr>
+                                            <td align="center" class="container-padding">
 
-    var channel_1 = pusher.subscribe('customers_syncing');
-
-    // Bind a function to a Event (the full Laravel class)
-    channel_1.bind('syncing_customer', function(data) {
-        var existingNotifications = notifications.html();
-        var avatar = Math.floor(Math.random() * (71 - 20 + 1)) + 20;
-        var newNotificationHtml = `
-          <li class="notification active">
-              <div class="media">
-                <div class="media-left">
-                  <div class="media-object">
-                    <img src="https://api.adorable.io/avatars/71/`+avatar+`.png" class="img-circle" alt="50x50" style="width: 50px; height: 50px;">
-                  </div>
-                </div>
-                <div class="media-body">
-                  <strong class="notification-title">`+data.payload+`</strong>
-                  <!--p class="notification-desc">Extra description can go here</p-->
-                  <div class="notification-meta">
-                    <small class="timestamp">about a minute ago</small>
-                  </div>
-                </div>
-              </div>
-          </li>
-        `;
-        notifications.html(newNotificationHtml + existingNotifications);
-
-        notificationsCount += 1;
-        notificationsCountElem.attr('data-count', notificationsCount);
-        notificationsWrapper.find('.notif-count').text(notificationsCount);
-        notificationsWrapper.show();
-    });
-
-    // Subscribe to the channel we specified in our Laravel Event
-    var channel = pusher.subscribe('campaigns');
-    // Bind a function to a Event (the full Laravel class)
-    channel.bind('send_mail', function(data) {
-        var existingNotifications = notifications.html();
-        var avatar = Math.floor(Math.random() * (71 - 20 + 1)) + 20;
-        var newNotificationHtml = `
-          <li class="notification active">
-              <div class="media">
-                <div class="media-left">
-                  <div class="media-object">
-                    <img src="https://api.adorable.io/avatars/71/`+avatar+`.png" class="img-circle" alt="50x50" style="width: 50px; height: 50px;">
-                  </div>
-                </div>
-                <div class="media-body">
-                  <strong class="notification-title">`+data.payload+`</strong>
-                  <!--p class="notification-desc">Extra description can go here</p-->
-                  <div class="notification-meta">
-                    <small class="timestamp">about a minute ago</small>
-                  </div>
-                </div>
-              </div>
-          </li>
-        `;
-        notifications.html(newNotificationHtml + existingNotifications);
-
-        notificationsCount += 1;
-        notificationsCountElem.attr('data-count', notificationsCount);
-        notificationsWrapper.find('.notif-count').text(notificationsCount);
-        notificationsWrapper.show();
-    });
+                                                <!--[if (gte mso 9)|(IE)]><table border="0" cellpadding="0" cellspacing="0" dir="rtl"><tr><td><![endif]-->
 
 
 
+                                                <!--[if (gte mso 9)|(IE)]></td><td><![endif]-->
 
-     var channel_2 = pusher.subscribe('helloPusherEvent');
+                                                <!-- gap -->
+                                                <table border="0" align="right" cellpadding="0" cellspacing="0" role="presentation" class="row" width="20" style="width:20px;max-width:20px;">
+                                                    <tr>
+                                                        <td height="20" style="font-size:20px;line-height:20px;">&nbsp;</td>
+                                                    </tr>
+                                                </table>
+                                                <!-- gap -->
 
-    // Bind a function to a Event (the full Laravel class)
-    channel_2.bind('send-mess-hello-word', function(data) {
-        var existingNotifications = notifications.html();
-        var avatar = Math.floor(Math.random() * (71 - 20 + 1)) + 20;
-        var newNotificationHtml = `
-          <li class="notification active">
-              <div class="media">
-                <div class="media-left">
-                  <div class="media-object">
-                    <img src="https://api.adorable.io/avatars/71/`+avatar+`.png" class="img-circle" alt="50x50" style="width: 50px; height: 50px;">
-                  </div>
-                </div>
-                <div class="media-body">
-                  <strong class="notification-title">`+data.payload+`</strong>
-                  <!--p class="notification-desc">Extra description can go here</p-->
-                  <div class="notification-meta">
-                    <small class="timestamp">about a minute ago</small>
-                  </div>
-                </div>
-              </div>
-          </li>
-        `;
-        notifications.html(newNotificationHtml + existingNotifications);
+                                                <!--[if (gte mso 9)|(IE)]></td><td><![endif]-->
 
-        notificationsCount += 1;
-        notificationsCountElem.attr('data-count', notificationsCount);
-        notificationsWrapper.find('.notif-count').text(notificationsCount);
-        notificationsWrapper.show();
-    });
-</script>
+                                                <!-- column -->
+                                                <table border="0" align="right" cellpadding="0" cellspacing="0" role="presentation" class="row" width="280" style="width:280px;max-width:280px;">
+                                                    <tr  >
+                                                        <td align="left" class="center-text">
+                                                            <a href="{{ url('/') }}"><img style="width:72px;border:0px;display: inline!important;" src="{{ config('pleb.mail.top_logo') }}" width="72" border="0"  alt="{{ config('app.name') }}"></a>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                                <!-- column -->
+
+                                                <!--[if (gte mso 9)|(IE)]></td></tr></table><![endif]-->
+
+                                            </td>
+                                        </tr>
+                                    </table>
+                                    <!-- Logo & Webview -->
+                                </td>
+                            </tr>
+                            <tr  >
+                                <td height="40" style="font-size:40px;line-height:40px;" >&nbsp;</td>
+                            </tr>
+                            <tr  >
+                                <td align="center" class="center-text">
+                                    <img style="width:190px;border:0px;display: inline!important;" src="{{ asset('assets/img/emails/Email-18_Intro.png') }}" width="190" border="0"       alt="intro">
+                                </td>
+                            </tr>
+                            <tr  >
+                                <td height="40" style="font-size:40px;line-height:40px;" >&nbsp;</td>
+                            </tr>
+                            <tr  >
+                                <td class="center-text"  align="center" style="font-family:'Roboto Slab',Arial,Helvetica,sans-serif;font-size:42px;line-height:52px;font-weight:400;font-style:normal;color:#FFFFFF;text-decoration:none;letter-spacing:0px;">
+
+                                    <div  >
+                                        {{ __('pleb.mail.Thanks for your payment') }}
+                                    </div>
+
+                                </td>
+                            </tr>
+                            <tr  >
+                                <td height="10" style="font-size:10px;line-height:10px;" >&nbsp;</td>
+                            </tr>
+                            <tr  >
+                                <td class="center-text"  align="center" style="font-family:'Roboto Slab',Arial,Helvetica,sans-serif;font-size:26px;line-height:36px;font-weight:400;font-style:normal;color:#d7e057;text-decoration:none;letter-spacing:0px;">
+
+                                    <div  >
+                                        {{ __('pleb.mail.Attached your receipt') }}.
+                                    </div>
+
+                                </td>
+                            </tr>
+                            <tr  >
+                                <td height="20" style="font-size:20px;line-height:20px;" >&nbsp;</td>
+                            </tr>
+                            <tr  >
+                                <td class="center-text"  align="center" style="font-family:'Poppins',Arial,Helvetica,sans-serif;font-size:16px;line-height:26px;font-weight:300;font-style:normal;color:#FFFFFF;text-decoration:none;letter-spacing:0px;">
+
+                                    <div  >
+                                        {{ __('pleb.mail.Thank you paragraph') }}
+                                    </div>
+
+                                </td>
+                            </tr>
+                            <tr>
+                                <td height="40" style="font-size:40px;line-height:40px;" >&nbsp;</td>
+                            </tr>
+                        </table>
+                        <!-- Content -->
+
+                    </td>
+                </tr>
+            </table>
+
+            <table border="0" align="center" cellpadding="0" cellspacing="0" role="presentation" width="100%" style="width:100%;max-width:100%;" >
+                <!-- lotus-arrow-divider -->
+                <tr  >
+                    <td align="center"  bgcolor="#FFFFFF">
+                        <img style="width:50px;border:0px;display: inline!important;" src="{{ asset('assets/img/emails/Arrow.png') }}" width="50" border="0"       alt="arrow">
+                    </td>
+                </tr>
+            </table>
+
+            <table border="0" align="center" cellpadding="0" cellspacing="0" role="presentation" width="100%" style="width:100%;max-width:100%;" >
+                <!-- lotus-content-18 -->
+                <tr>
+                    <td align="center"  bgcolor="#FFFFFF" class="container-padding">
+
+                        <!-- Content -->
+                        <table border="0" align="center" cellpadding="0" cellspacing="0" role="presentation" class="row" width="580" style="width:580px;max-width:580px;">
+                            <tr>
+                                <td height="40" style="font-size:40px;line-height:40px;" >&nbsp;</td>
+                            </tr>
+                            <tr  >
+                                <td align="center"  bgcolor="#f4f5fa">
+                                    <!-- Content -->
+                                    <table border="0" align="center" cellpadding="0" cellspacing="0" role="presentation" class="row" width="480" style="width:480px;max-width:480px;">
+                                        <tr>
+                                            <td height="40" style="font-size:40px;line-height:40px;">&nbsp;</td>
+                                        </tr>
+                                        <tr>
+                                            <td align="center">
+                                                <!--[if (gte mso 9)|(IE)]><table border="0" cellpadding="0" cellspacing="0"><tr><td><![endif]-->
+                                                <!-- Column -->
+                                                <table border="0" align="left" cellpadding="0" cellspacing="0" role="presentation" class="row" width="225" style="width:225px;max-width:225px;">
+                                                    <tr  >
+                                                        <td class="center-text"  align="left" style="font-family:'Roboto Slab',Arial,Helvetica,sans-serif;font-size:20px;line-height:26px;font-weight:400;font-style:normal;color:#343e9e;text-decoration:none;letter-spacing:0px;">
+
+                                                            <div  >
+                                                                {{ __('pleb.mail.Invoice ID') }}:
+                                                            </div>
+
+                                                        </td>
+                                                    </tr>
+                                                    <tr  >
+                                                        <td height="10" style="font-size:10px;line-height:10px;">&nbsp;</td>
+                                                    </tr>
+                                                    <tr  >
+                                                        <td class="center-text"  align="left" style="font-family:'Poppins',Arial,Helvetica,sans-serif;font-size:16px;line-height:24px;font-weight:400;font-style:normal;color:#282828;text-decoration:none;letter-spacing:0px;">
+
+                                                            <div  >
+
+                                                            </div>
+
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                                <!-- Column -->
+                                                <!--[if (gte mso 9)|(IE)]></td><td><![endif]-->
+                                                <!-- gap -->
+                                                <table border="0" align="left" cellpadding="0" cellspacing="0" role="presentation" width="30" style="width:30px;max-width:30px;">
+                                                    <tr>
+                                                        <td height="20" style="font-size:20px;line-height:20px;">&nbsp;</td>
+                                                    </tr>
+                                                </table>
+                                                <!-- gap -->
+                                                <!--[if (gte mso 9)|(IE)]></td><td><![endif]-->
+                                                <!-- Column -->
+                                                <table border="0" align="left" cellpadding="0" cellspacing="0" role="presentation" class="row" width="225" style="width:225px;max-width:225px;">
+                                                    <tr  >
+                                                        <td class="center-text"  align="left" style="font-family:'Roboto Slab',Arial,Helvetica,sans-serif;font-size:20px;line-height:26px;font-weight:400;font-style:normal;color:#343e9e;text-decoration:none;letter-spacing:0px;">
+
+                                                            <div  >
+                                                                {{ __('pleb.mail.Total') }}:
+                                                            </div>
+
+                                                        </td>
+                                                    </tr>
+                                                    <tr  >
+                                                        <td height="10" style="font-size:10px;line-height:10px;">&nbsp;</td>
+                                                    </tr>
+                                                    <tr  >
+                                                        <td class="center-text"  align="left" style="font-family:'Poppins',Arial,Helvetica,sans-serif;font-size:16px;line-height:24px;font-weight:400;font-style:normal;color:#282828;text-decoration:none;letter-spacing:0px;">
+
+                                                            <div  >
+
+                                                            </div>
+
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                                <!-- Column -->
+                                                <!--[if (gte mso 9)|(IE)]></td></tr></table><![endif]-->
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td height="40" style="font-size:40px;line-height:40px;">&nbsp;</td>
+                                        </tr>
+                                    </table>
+                                    <!-- Content -->
+                                </td>
+                            </tr>
+                            <tr  >
+                                <td height="30" style="font-size:30px;line-height:30px;" >&nbsp;</td>
+                            </tr>
+                            <tr  >
+                                <td align="center">
+                                    <!-- Paragraphs -->
+                                    <table border="0" cellspacing="0" cellpadding="0" role="presentation" align="center" class="row" width="480" style="width:480px;max-width:480px;">
+                                        <tr>
+                                            <td class="center-text"  align="center" style="font-family:'Poppins',Arial,Helvetica,sans-serif;font-size:14px;line-height:26px;font-weight:400;font-style:italic;color:#6e6e6e;text-decoration:none;letter-spacing:0px;">
+
+                                                <div  >
+                                                    ({{ __('If you have any questions or feedback, just') }} <a href="mailto:{{ config('pleb.mail.info_email') }}" style="color:#ed6e7a;text-decoration: underline;">{{ __('reply to this email') }}</a>)
+                                                </div>
+
+                                            </td>
+                                        </tr>
+                                    </table>
+                                    <!-- Paragraphs -->
+                                </td>
+                            </tr>
+                            <tr  >
+                                <td height="30" style="font-size:30px;line-height:30px;" >&nbsp;</td>
+                            </tr>
+                            <tr  >
+                                <td align="center">
+
+                                    <!-- Buttons -->
+                                    <table border="0" cellspacing="0" cellpadding="0" role="presentation" align="center" class="center-float">
+                                        <tr>
+                                            <td align="center"    bgcolor="#d6df58" style="border-radius: 6px;">
+                                                <!--[if (gte mso 9)|(IE)]>
+                                                <table border="0" cellpadding="0" cellspacing="0" align="center">
+                                                    <tr>
+                                                        <td align="center" width="50"></td>
+                                                        <td align="center" height="50" style="height:50px;">
+                                                <![endif]-->
+
+                                                <a href="#" target="_blank"    style="font-family:'Roboto Slab',Arial,Helvetica,sans-serif;font-size:16px;line-height:19px;font-weight:700;font-style:normal;color:#000000;text-decoration:none;letter-spacing:0px;padding: 20px 50px 20px 50px;display: inline-block;"><span>{{ __('pleb.mail.Download Now') }}</span></a>
+
+                                                <!--[if (gte mso 9)|(IE)]>
+                                                </td>
+                                                <td align="center" width="50"></td>
+                                                </tr>
+                                                </table>
+                                                <![endif]-->
+                                            </td>
+                                        </tr>
+                                    </table>
+                                    <!-- Buttons -->
+
+                                </td>
+                            </tr>
+                            <tr>
+                                <td height="40" style="font-size:40px;line-height:40px;" >&nbsp;</td>
+                            </tr>
+                        </table>
+                        <!-- Content -->
+
+                    </td>
+                </tr>
+            </table>
+
+            <table border="0" align="center" cellpadding="0" cellspacing="0" role="presentation" width="100%" style="width:100%;max-width:100%;" >
+                <!-- lotus-footer-18 -->
+                <tr>
+                    <td align="center"  bgcolor="#f0f0f0" class="container-padding">
+
+                        <!-- Content -->
+                        <table border="0" align="center" cellpadding="0" cellspacing="0" role="presentation" class="row" width="580" style="width:580px;max-width:580px;">
+                            <tr>
+                                <td height="50" style="font-size:50px;line-height:50px;" >&nbsp;</td>
+                            </tr>
+                            <tr  >
+                                <td align="center">
+                                    <!-- Social Icons -->
+                                    <table border="0" align="center" cellpadding="0" cellspacing="0" role="presentation" width="100%" style="width:100%;max-width:100%;">
+                                        <tr>
+                                            <td align="center">
+                                                <table border="0" align="center" cellpadding="0" cellspacing="0" role="presentation">
+                                                    <tr>
+                                                        <td   class="rwd-on-mobile" align="center" valign="middle" height="36" style="height: 36px;">
+                                                            @if( config('pleb.mail.instagram_url') != '')
+                                                                <table border="0" align="center" cellpadding="0" cellspacing="0" role="presentation">
+                                                                    <tr>
+                                                                        <td width="10"></td>
+                                                                        <td align="center">
+                                                                            <a href="{{ config('pleb.mail.facebook_url') }}"><img style="width:36px;border:0px;display: inline!important;" src="{{ asset('assets/img/emails/Facebook.png') }}" width="36" border="0"       alt="icon"></a>
+                                                                        </td>
+                                                                        <td width="10"></td>
+                                                                    </tr>
+                                                                </table>
+                                                            @endif
+                                                        </td>
+                                                        <td   class="rwd-on-mobile" align="center" valign="middle" height="36" style="height: 36px;">
+                                                            @if( config('pleb.mail.instagram_url') != '')
+                                                                <table border="0" align="center" cellpadding="0" cellspacing="0" role="presentation">
+                                                                    <tr>
+                                                                        <td width="10"></td>
+                                                                        <td align="center">
+                                                                            <a href="{{ config('pleb.mail.instagram_url') }}"><img style="width:36px;border:0px;display: inline!important;" src="{{ asset('assets/img/emails/Instagram.png') }}" width="36" border="0"       alt="icon"></a>
+                                                                        </td>
+                                                                        <td width="10"></td>
+                                                                    </tr>
+                                                                </table>
+                                                            @endif
+                                                        </td>
+                                                        <td   class="rwd-on-mobile" align="center" valign="middle" height="36" style="height: 36px;">
+                                                            @if( config('pleb.mail.twitter_url') != '')
+                                                                <table border="0" align="center" cellpadding="0" cellspacing="0" role="presentation">
+                                                                    <tr>
+                                                                        <td width="10"></td>
+                                                                        <td align="center">
+                                                                            <a href="{{ config('pleb.mail.twitter_url') }}"><img style="width:36px;border:0px;display: inline!important;" src="{{ asset('assets/img/emails/Twitter.png') }}" width="36" border="0"       alt="icon"></a>
+                                                                        </td>
+                                                                        <td width="10"></td>
+                                                                    </tr>
+                                                                </table>
+                                                            @endif
+                                                        </td>
+                                                        <td   class="rwd-on-mobile" align="center" valign="middle" height="36" style="height: 36px;">
+                                                            @if( config('pleb.mail.pinterest_url') != '')
+                                                                <table border="0" align="center" cellpadding="0" cellspacing="0" role="presentation">
+                                                                    <tr>
+                                                                        <td width="10"></td>
+                                                                        <td align="center">
+                                                                            <a href="{{ config('pleb.mail.pinterest_url') }}"><img style="width:36px;border:0px;display: inline!important;" src="{{ asset('assets/img/emails/Pinterest.png') }}" width="36" border="0"       alt="icon"></a>
+                                                                        </td>
+                                                                        <td width="10"></td>
+                                                                    </tr>
+                                                                </table>
+                                                            @endif
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                    <!-- Social Icons -->
+                                </td>
+                            </tr>
+                            <tr  >
+                                <td height="30" style="font-size:30px;line-height:30px;" >&nbsp;</td>
+                            </tr>
+                            <tr  >
+                                <td class="center-text"  align="center" style="font-family:'Poppins',Arial,Helvetica,sans-serif;font-size:14px;line-height:24px;font-weight:400;font-style:normal;color:#6e6e6e;text-decoration:none;letter-spacing:0px;">
+
+                                    <div  >
+                                        {{ config('pleb.mail.street_address') }}
+                                    </div>
+
+                                </td>
+                            </tr>
+                            <tr  >
+                                <td class="center-text"  align="center" style="font-family:'Poppins',Arial,Helvetica,sans-serif;font-size:14px;line-height:24px;font-weight:400;font-style:normal;color:#6e6e6e;text-decoration:none;letter-spacing:0px;">
+
+                                    <a href="tel:{{ config('pleb.mail.phone_number') }}"    style="color:#6e6e6e;"><span>{{ config('pleb.mail.phone_number') }}</span></a>
+
+                                </td>
+                            </tr>
+                            <tr  >
+                                <td class="center-text"  align="center" style="font-family:'Poppins',Arial,Helvetica,sans-serif;font-size:14px;line-height:24px;font-weight:400;font-style:normal;color:#6e6e6e;text-decoration:none;letter-spacing:0px;">
+
+                                    <a href="mailto:{{ config('pleb.mail.info_email') }}"    style="color:#6e6e6e;"><span>{{ config('pleb.mail.info_email') }}</span></a> - <a href="{{ url('/') }}"    style="color:#6e6e6e;"><span>{{ url('/') }}</span></a>
+
+                                </td>
+                            </tr>
+                            <tr>
+                                <td height="30" style="font-size:30px;line-height:30px;" >&nbsp;</td>
+                            </tr>
+                            <tr  >
+                                <td align="center">
+                                    @if( config('pleb.mail.play_url') != '' || config('pleb.mail.ios_url') != '' )
+                                        <!-- Buttons -->
+                                        <table border="0" align="center" cellpadding="0" cellspacing="0" role="presentation" class="row" width="100%" style="width:100%;max-width:100%;">
+                                            <tr>
+                                                <td align="center">
+                                                    <!-- column -->
+                                                    <table border="0" align="center" cellpadding="0" cellspacing="0" role="presentation">
+                                                        <tr  >
+                                                            <td align="center">
+                                                                <a href="{{config('pleb.mail.ios_url')}}"><img style="display:block;width:100%;max-width:117px;border:0px;"    width="117" src="{{ asset('assets/img/emails/App-Store.png') }}" border="0"  alt="icon"></a>
+                                                            </td>
+                                                            <td width="10" style="width: 10px;"></td>
+                                                            <td align="center">
+                                                                <a href="{{config('pleb.mail.play_url')}}"><img style="display:block;width:100%;max-width:117px;border:0px;"    width="117" src="{{ asset('assets/img/emails/Google-play.png') }}" border="0"  alt="icon"></a>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                    <!-- column -->
+                                                </td>
+                                            </tr>
+                                        </table>
+                                        <!-- Buttons -->
+                                    @endif
+                                </td>
+                            </tr>
+                            <tr  >
+                                <td height="30" style="font-size:30px;line-height:30px;" >&nbsp;</td>
+                            </tr>
+                            <tr  >
+                                <td align="center">
+
+                                </td>
+                            </tr>
+                            <tr>
+                                <td height="50" style="font-size:50px;line-height:50px;" >&nbsp;</td>
+                            </tr>
+                        </table>
+                        <!-- Content -->
+
+                    </td>
+                </tr>
+            </table>
+
+        </td>
+    </tr><!-- Outer-Table -->
+</table>
+
 </body>
 </html>
-
-

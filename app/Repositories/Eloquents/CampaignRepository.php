@@ -86,6 +86,7 @@ class CampaignRepository implements CampaignRepositoryInterface
                 $total_customers = 0;
 
             }
+            }
             Schema::connection($this->campaignProcess->getConnection()->getName())->disableForeignKeyConstraints();
                 $campaignProcess = $this->campaignProcess->create([
                     "process" => "0",
@@ -192,8 +193,10 @@ class CampaignRepository implements CampaignRepositoryInterface
     public function sendEmailPreview(Request $request, $campaignProcess)
     {
 
-        // info($request->all());
+
+        // // info($request->all());
         try {
+
 
             $batch = Bus::batch([])
                 ->then(function (Batch $batch) {
@@ -216,6 +219,7 @@ class CampaignRepository implements CampaignRepositoryInterface
 
 
             if ($request->has("list_mail_customers")) {
+                info("SendMail: list mail");
                 info("SendMail: list mail");
                 $listCustomersId =  json_decode($request->list_mail_customers, true);
                 $listCustomers =  $this->customer->whereIn('id', $listCustomersId)->get();

@@ -3,6 +3,8 @@
 namespace App\Console\Commands;
 
 use App\Exports\CustomerExport;
+use App\Models\Customer;
+use App\Services\Customers\CustomerService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
@@ -35,7 +37,7 @@ class ExportFileToDrive extends Command
     }
 
     /**
-     * Execute the console command.
+     * Upload File Backup Data Customers to Google Drive
      *
      * @return int
      */
@@ -43,18 +45,20 @@ class ExportFileToDrive extends Command
     {
         $this->info('Bắt đầu Backup dữ liệu mỗi ngày');
 
-        $locationExport = 'backup/customers/';
+//        $storeID = GetStoreID();
+        $locationExport = storage_path('app/backup/customers/');
         $dateExport = date('d-m-Y_H-i-s');
         $location = $locationExport.'customer_'.$dateExport;
-        $fileNameSever = $location.'.csv';
-        // Excel::store(new CustomerExport(), $fileNameSever);
+        $fileName = $location.'.csv';
 
-        $filePath = storage_path('app/'.$fileNameSever);
-        $fileData = File::get($filePath);
+        $getCustomer = Customer::get();
+        CustomerService::exportCustomer($fileName, $getCustomer);
+
+        $fileData = File::get($fileName);
         $fileNameDrive = 'customer_'.$dateExport.'.csv';
         Storage::disk('google')->put($fileNameDrive,$fileData);
 
-        Storage::delete($fileNameSever);
+        unlink($fileName);
 
         $this->info('Backup dữ liệu mỗi ngày thành công. File được lưu trữ ở SendEmailExport trên GoogleDrive');
 
