@@ -18,9 +18,8 @@ class CustomerFactory extends Factory
     {
         return [
             'id' => self::$id++,
-            'store_id'=> 65147142383,
-            // 'store_id'=>getRandomModelId(Store::class),
-            // 'campaign_id'=>getRandomModelId(Campaign::class),
+            // 'store_id'=> 65147142383,
+            'store_id'=>getRandomModelId(Store::class),
             'first_name'=>$this->faker->firstNameMale,
             'last_name'=>$this->faker->lastName,
             'email'=> $this->faker->email,

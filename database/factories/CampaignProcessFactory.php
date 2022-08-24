@@ -20,7 +20,7 @@ class CampaignProcessFactory extends Factory
 
         return [
             'id' => self::$id++,
-            // 'store_id'=>getRandomModelId(Store::class),
+            'store_id'=>getRandomModelId(Store::class),
             // 'campaign_id'=>getRandomModelId(Campaign::class),
 
             'name'=>$this->faker->userName,
