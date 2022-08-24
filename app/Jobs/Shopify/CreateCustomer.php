@@ -59,7 +59,6 @@ class CreateCustomer implements ShouldQueue
 
 
         $customerModelBuilder = setConnectDatabaseActived(new Customer());
-
         $customerModel = $customerModelBuilder->getModel();
         $storeModelBuilder = setConnectDatabaseActived(new Store());
         $storeModel = $storeModelBuilder->getModel();

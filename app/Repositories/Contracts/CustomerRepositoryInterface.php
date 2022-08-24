@@ -22,12 +22,6 @@ interface CustomerRepositoryInterface
      */
     public function index(Request $request);
 
-    /**
-     * Get All Customer display the interface
-     *
-     * @return mixed
-     */
-    public function getCustomer();
 
     /**
      * Receive request from FontEnd send all Customer or select Customer and Create File to send Mail

@@ -29,7 +29,6 @@ class CreateCampaignProcessesTable extends Migration
             $table->string('name', 50);
             $table->string('status')->nullable()->default(null);
             $table->integer('process')->default(0);
-            // $table->double('process',10,2)->default(0);
             $table->integer('send_email_done')->unsigned()->default(0);
             $table->integer('send_email_fail')->unsigned()->default(0);
             $table->integer('total_customers')->unsigned()->default(0);
@@ -74,9 +73,9 @@ class CreateCampaignProcessesTable extends Migration
 
                 $table->dropForeign('campaignProcess_stores_backup');
                 $table->dropForeign(['store_id']);
-                
+
                 $table->dropColumn('campaign_id');
-                
+
             });
             Schema::connection('mysql_campaigns_processes')->dropIfExists('campaign_processes');
         }
