@@ -1,11 +1,12 @@
 <?php
 
-use Illuminate\Support\Facades\DB;
-use App\Models\ObserveModel;
-use App\Models\DbStatus;
-// use Throwable;
 use Carbon\Carbon;
+
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+
+use App\Models\DbStatus;
+use App\Models\ObserveModel;
 
 if (!function_exists('SyncDatabaseAfterCreatedModel')) {
 

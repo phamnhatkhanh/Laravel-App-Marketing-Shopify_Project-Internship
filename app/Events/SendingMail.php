@@ -9,6 +9,7 @@ use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
+
 use App\Models\JobBatch;
 
 class SendingMail implements ShouldBroadcast
@@ -29,7 +30,7 @@ class SendingMail implements ShouldBroadcast
      * @var \Illuminate\Database\Eloquent\Model $campaignProcess
      */
     public $campaignProcess;
-    
+
     /**
      * * The data after excute this job.
      *

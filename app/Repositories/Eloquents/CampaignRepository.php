@@ -2,29 +2,34 @@
 
 namespace App\Repositories\Eloquents;
 
-use App\Services\Campaigns\CampaignService;
-use Illuminate\Support\Facades\Bus;
+use Throwable;
+
 use Illuminate\Bus\Batch;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Bus;
+use Illuminate\Support\Facades\Schema;
+
 use App\Models\Store;
 use App\Models\Campaign;
 use App\Models\CampaignProcess;
 use App\Models\Customer;
-use App\Jobs\SendMail;
+
 use App\Events\MailSent;
 use App\Events\Database\CreatedModel;
 use App\Events\Database\UpdatedModel;
 use App\Events\Database\DeletedModel;
+
+use App\Jobs\SendMail;
 use App\Jobs\SendEmailPreview;
 use App\Jobs\SendTestPreview;
-use App\Repositories\Contracts\CampaignRepositoryInterface;
-use Illuminate\Http\Request;
-use Throwable;
 
-use Tymon\JWTAuth\Exceptions\JWTException;
-use Tymon\JWTAuth\Exceptions\TokenExpiredException;
-use Tymon\JWTAuth\Exceptions\TokenInvalidException;
-use Tymon\JWTAuth\Facades\JWTAuth;
-use Illuminate\Support\Facades\Schema;
+use App\Services\Campaigns\CampaignService;
+use App\Repositories\Contracts\CampaignRepositoryInterface;
+
+// use Tymon\JWTAuth\Exceptions\JWTException;
+// use Tymon\JWTAuth\Exceptions\TokenExpiredException;
+// use Tymon\JWTAuth\Exceptions\TokenInvalidException;
+// use Tymon\JWTAuth\Facades\JWTAuth;
 
 class CampaignRepository implements CampaignRepositoryInterface
 {

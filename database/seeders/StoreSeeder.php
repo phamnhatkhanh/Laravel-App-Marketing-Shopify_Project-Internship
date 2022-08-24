@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\Store;
+
 class StoreSeeder extends Seeder
 {
     /**

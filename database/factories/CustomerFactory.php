@@ -5,6 +5,7 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 use App\Models\Store;
+
 class CustomerFactory extends Factory
 {
     /**

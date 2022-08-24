@@ -3,8 +3,10 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+
 use App\Models\Campaign;
 use App\Models\CampaignProcess;
+
 class CampaignSeeder extends Seeder
 {
     private static $id = 1;
@@ -14,7 +16,7 @@ class CampaignSeeder extends Seeder
      *
      * @return void
      */
-    
+
     public function run()
     {
 

@@ -3,7 +3,9 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+
 use App\Models\Store;
+
 class DeleteCustomer extends Command
 {
     /**

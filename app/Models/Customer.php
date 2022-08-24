@@ -46,6 +46,11 @@ class Customer extends Model
         'updated_at',
     ];
 
+     /**
+     * Indicates if the model should be timestamped.
+     *
+     * @var bool
+     */
     public $timestamps = false;
 
 

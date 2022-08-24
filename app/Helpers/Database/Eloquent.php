@@ -1,8 +1,10 @@
 <?php
 
 use Illuminate\Support\Facades\DB;
-use App\Models\DbStatus;
+
 use App\Events\Database\SyncDatabase;
+
+use App\Models\DbStatus;
 
 if (!function_exists('setConnectDatabaseActived')) {
     /**

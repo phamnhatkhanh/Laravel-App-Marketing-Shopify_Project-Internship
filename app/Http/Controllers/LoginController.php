@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use JWT;
+
 use Symfony\Component\HttpFoundation\Response;
 
 use Illuminate\Http\Request;
@@ -14,8 +16,8 @@ use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuthExceptions\JWTException;
 use Tymon\JWTAuth\Contracts\JWTSubject as JWTSubject;
 use Tymon\JWTAuth\Facades\JWTAuth as FacadesJWTAuth;
-use JWT;
 use Tymon\JWTAuth\Facades\JWTAuth;
+
 use App\Http\Requests;
 use App\Http\Requests\LoginRequest;
 
@@ -103,8 +105,8 @@ class LoginController extends Controller
     /**
      * Get the authenticated User.
      *
-     * 
-     * 
+     *
+     *
      * @return \Illuminate\Http\JsonResponse
      */
     public function userProfile()

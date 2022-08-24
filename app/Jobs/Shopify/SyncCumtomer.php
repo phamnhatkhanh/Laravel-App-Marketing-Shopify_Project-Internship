@@ -2,7 +2,7 @@
 
 namespace App\Jobs\Shopify;
 
-use App\Events\Database\UpdatedModel;
+
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -12,7 +12,9 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
 use App\Events\Database\CreatedModel;
+use App\Events\Database\UpdatedModel;
 use App\Events\SyncingCustomer;
+
 use App\Models\Customer;
 
 
