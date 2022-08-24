@@ -27,4 +27,5 @@ class UpdateCustomerRequest extends FormRequest
             //
         ];
     }
+
 }
