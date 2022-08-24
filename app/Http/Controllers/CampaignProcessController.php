@@ -2,13 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
+
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
+
 use App\Events\Database\CreatedModel;
 use App\Events\Database\UpdatedModel;
 use App\Events\Database\DeletedModel;
-use Carbon\Carbon;
 
-use Illuminate\Support\Facades\Schema;
 use App\Models\CampaignProcess;
 
 
@@ -17,7 +19,7 @@ class CampaignProcessController extends Controller
     protected $campaignProcess;
 
     public function __construct(){
-        $this->campaignProcess = getConnectDatabaseActived(new CampaignProcess());
+        $this->campaignProcess = setConnectDatabaseActived(new CampaignProcess());
     }
 
     /**
@@ -29,8 +31,6 @@ class CampaignProcessController extends Controller
     {
         return $this->campaignProcess->get();
     }
-
-
 
     /**
      * Store a newly created resource in storage.
@@ -48,8 +48,6 @@ class CampaignProcessController extends Controller
             $campaignProcess = $this->campaignProcess->create($request->all());
         Schema::connection($this->campaignProcess->getConnection()->getName())->enableForeignKeyConstraints();
 
-            // dd($campaignProcess);
-        // $campaignProcess = $this->campaignProcess->where('id', $request['id'])->first();
         $connect = ($this->campaignProcess->getConnection()->getName());
         event(new CreatedModel($connect,$campaignProcess));
         return response([
@@ -66,13 +64,10 @@ class CampaignProcessController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // dd("yktjyuom");
 
-         $this->campaignProcess->where('id',$id)->update($request->all());
-         $campaignProcess  = ($this->campaignProcess->where('id',$id)->first());
-        //  dd($campaignProcess);
+        $this->campaignProcess->where('id',$id)->update($request->all());
+        $campaignProcess  = ($this->campaignProcess->where('id',$id)->first());
         $connect = ($this->campaignProcess->getConnection()->getName());
-        // dd($connect);
         event(new UpdatedModel($connect,$campaignProcess));
 
         return response([
@@ -88,13 +83,10 @@ class CampaignProcessController extends Controller
      */
     public function destroy($id)
     {
-        // dd("t4673829wijs");
         $campaignProcess = $this->campaignProcess->where('id',$id)->first();
         if(!empty($campaignProcess)){
             $connect = ($this->campaignProcess->getConnection()->getName());
             event(new DeletedModel($connect,$campaignProcess));
-            // $campaignProcess->delete();
-            // return $campaignProcess;
             return response([
                 'data' => $campaignProcess,
                 'mess' => "dleete campaignProcess done"

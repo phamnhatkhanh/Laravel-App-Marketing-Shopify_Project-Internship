@@ -11,18 +11,27 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
 class CreatedModel
-// SyncDBCreatedModel
-
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $db_server;
+    /**
+     * The current connection of model
+     *
+     * @var string
+     */
+    public $dbConnectName;
+
+    /**
+     * * The model being created.
+     *
+     * @var \Illuminate\Database\Eloquent\Model
+     */
     public $model;
 
 
-    public function __construct($db_server,$model)
+    public function __construct($dbConnectName,$model)
     {
-        $this->db_server = $db_server;
+        $this->dbConnectName = $dbConnectName;
         $this->model = $model;
 
     }

@@ -3,16 +3,11 @@
 namespace App\Http\Controllers\Shopify;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Session;
-use phpDocumentor\Reflection\Types\This;
 
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\LoginController;
 use App\Repositories\Shopify\ShopifyRepository;
 
-use App\Models\Customer;
-use App\Models\Store;
+
 
 class ShopifyController extends Controller
 {
@@ -32,7 +27,6 @@ class ShopifyController extends Controller
      */
     public function login(Request $request)
     {
-        // info("shopify controller login");
         return $this->shopifyRepository->login($request);
     }
 
@@ -49,7 +43,7 @@ class ShopifyController extends Controller
     }
 
     /**
-     * Get all Customer display the interface
+     * Get Store display the interface
      *
      * @return resource
      */
@@ -77,6 +71,7 @@ class ShopifyController extends Controller
     public function destroy($id)
     {
         $store = $this->shopifyRepository->destroy( $id);
+        
         return response([
             'data' => $store,
             'mess' => "dleete customer done"

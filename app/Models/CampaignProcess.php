@@ -2,23 +2,34 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
 use App\Models\Campaign;
 
 class CampaignProcess extends Model
 {
     use HasFactory;
+    /**
+     * The connection name for the model.
+     *
+     * @var string|null
+     */
     protected $connection = 'mysql_campaigns_processes';
+
+    /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
     protected $table = 'campaign_processes';
 
-    // protected $store;
-    // public function __construct(){
-    //     $this->customer = getConnectDatabaseActived(new Customer());
-    //     $this->store = getConnectDatabaseActived(new Store());
 
-    // }
-
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
     protected $fillable = [
         'id',
         'store_id',
@@ -31,12 +42,25 @@ class CampaignProcess extends Model
         'total_customers',
         'created_at'
     ];
-    
+
+    /**
+     * Get campaign belongs to this campaign process.
+     *
+     * @return Illuminate\Database\Eloquent;
+     */
     public function campaign()
     {
         return $this->belongsTo(Campaign::class);
     }
 
+    /**
+     * Get list campagin process if exist keyword in columns.
+     *
+     * @param object $query
+     * @param object $params
+     *
+     * @return Illuminate\Database\Eloquent\Collection;
+     */
     public function scopeSearchCampaign($query, $params)
     {
         if (!empty($params['keywords']) && trim($params['keywords']) !== '') {
@@ -51,6 +75,14 @@ class CampaignProcess extends Model
         return $query;
     }
 
+    /**
+     * Get list campagin process has by sort date create.
+     *
+     * @param object $query
+     * @param object $params
+     *
+     * @return Illuminate\Database\Eloquent\Collection;
+     */
     public function scopeSort($query, $params)
     {
         if (isset($params['sort']) && trim($params['sort'] !== '')) {
@@ -59,6 +91,14 @@ class CampaignProcess extends Model
         return $query;
     }
 
+     /**
+     * Get list campagin process has by sort their campaign process status.
+     *
+     * @param object $query
+     * @param object $params
+     *
+     * @return Illuminate\Database\Eloquent\Collection;
+     */
     public function scopeStatus($query, $params)
     {
         if (isset($params['status']) && trim($params['status'] !== '')) {
@@ -70,6 +110,14 @@ class CampaignProcess extends Model
         return $query;
     }
 
+    /**
+     * Get list campagin process if exist keyword in name column.
+     *
+     * @param object $query
+     * @param object $params
+     *
+     * @return Illuminate\Database\Eloquent\Collection;
+     */
     public function scopeName($query, $params)
     {
         if (!empty($params['keywords']) && trim($params['keywords']) !== '') {

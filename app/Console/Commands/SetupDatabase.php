@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schema;
+
 use App\Models\DbStatus;
 
 class SetupDatabase extends Command
@@ -34,50 +35,44 @@ class SetupDatabase extends Command
     }
 
     /**
-     * Execute the console command.
+     * Refresh, setup table status database and fake data in database
      *
-     * @return int
+     * @return void
      */
     public function handle()
     {
         $this->info("Run Command: php artisan migrate:refresh");
         Artisan::call('migrate:refresh');
 
-        // Artisan
         $this->info("Create and setup database...");
-        $listNameConnectionMysql = config('database.connections');
-        foreach ($listNameConnectionMysql as $key => $value) {
+        $listDBConnectionMysql = config('database.connections');
+        foreach ($listDBConnectionMysql as $key => $value) {
             DbStatus::create(['name' => $key, 'status' => 'actived']);
         }
+
         $path = app_path() . "/Models";
-        $listPathModel = getListModels($path);
-        // dd($listPathModel);
-        foreach ($listPathModel as $pathModel) {
+        $listPathModels = getListModels($path);
+
+        foreach ($listPathModels as $pathModel) {
             $model = new $pathModel();
-            // dd($model);
-            $driverDefaultModel = getDiverDafault($model);
-            if ($driverDefaultModel != "mysql") {
-                //  dd($driverDefaultModel);
-                $get_list_driver =  DbStatus::where(function ($query) use ($driverDefaultModel) {
-                    $query->where('name', 'like', $driverDefaultModel . '%')
+            $connectModelDefault = getConnectModelDefalut($model);
+            if ($connectModelDefault != "mysql") {
+                $getListDriver =  DbStatus::where(function ($query) use ($connectModelDefault) {
+                    $query->where('name', 'like', $connectModelDefault . '%')
                         ->where('model_name', '=', null);
                 })->get();
-                // dd($get_list_driver);
-                foreach ($get_list_driver as $driver) {
-                    // info($driver->name);
+                foreach ($getListDriver as $driver) {
                     if (Schema::connection($driver->name)->hasTable($model->getTable())) {
                         DbStatus::create(['name' => $driver->name, 'status' => 'actived', 'model_name' => $model->getTable()]);
                     }
                 }
             }
         }
-        $this->info("Faker data in database...");
-        DbStatus::where('model_name', '=', null)
-            ->orWhereNull('model_name')->delete();
+        DbStatus::where('model_name', '=', null)->orWhereNull('model_name')->delete();
 
+        $this->info("Faker data in database...");
         Artisan::call('db:seed');
 
         $this->info("Setup database done!!");
-
     }
 }

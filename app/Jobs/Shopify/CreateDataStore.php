@@ -2,8 +2,6 @@
 
 namespace App\Jobs\Shopify;
 
-use App\Events\Database\CreatedModel;
-use App\Models\Store;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -11,33 +9,52 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
+use App\Events\Database\CreatedModel;
+
+use App\Models\Store;
+
 class CreateDataStore implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    private $store, $access_token;
+    /**
+     * Data store repsone from shopify.
+     *
+     * @var mixed
+     */
+    private $store;
+
+    /**
+     * Token of store.
+     *
+     * @var mixed
+     */
+    private $accessToken;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($store, $access_token)
+    public function __construct($store, $accessToken)
     {
         $this->store = $store;
-        $this->access_token = $access_token;
+        $this->accessToken = $accessToken;
     }
 
     /**
-     * Execute the job.
+
+     * Create store when get data customer from shopify and sync data in the database model cluster.
+
      *
      * @return void
      */
     public function handle()
     {
         $store = $this->store;
-        $access_token = $this->access_token;
-        $storeModel = new Store();
+        $accessToken = $this->accessToken;
+        $storeModelBuilder = setConnectDatabaseActived(new Store());
+        $storeModel = $storeModelBuilder->getModel();
 
         $password = $store['shop']['myshopify_domain'];
 
@@ -65,7 +82,7 @@ class CreateDataStore implements ShouldQueue
             'phone' => $getData['phone'],
             'myshopify_domain' => $getData['myshopify_domain'],
             'domain' => $getData['domain'],
-            'access_token' => $access_token,
+            'access_token' => $accessToken,
             'address' => $getData['address1'],
             'province' => $getData['province'],
             'city' => $getData['city'],
@@ -77,19 +94,29 @@ class CreateDataStore implements ShouldQueue
 
         $findStore = $storeModel->where('id', $data['id'])->first();
         if (empty($findStore)) {
-            info('Save information Shop: '.$getData['id']);
-            $storeModel->create($data);
-            $store_elo =  $storeModel->where("id",$data['id'])->first();
-            // $storeModel->save();
-            info("store .....".  json_encode($storeModel,true));
-            info("store .....".  json_encode($store_elo,true));
-            $connect = ($store_elo->getConnection()->getName());
-            SyncDatabaseAfterCreatedModel($connect, $store_elo);
+            try {
+                //code...
+                info('Save information Shop: '.$getData['id']);
+                $storeModel->create($data);
+                $store_elo =  $storeModel->where("id",$data['id'])->first();
+                // $storeModel->save();
+                info("store .....".  json_encode($storeModel,true));
+                info("store .....".  json_encode($store_elo,true));
+                $connect = ($store_elo->getConnection()->getName());
+                SyncDatabaseAfterCreatedModel($connect, $store_elo);
+            } catch (\Throwable $th) {
+                throw $th;
+            }
         } else {
-            info('Update information Shop');
-            $findStore->update($data);
-            $connect = ($findStore->getConnection()->getName());
-            SyncDatabaseAfterUpdatedModel($connect,$findStore);
+            try {
+                //code...
+                info('Update information Shop');
+                $findStore->update($data);
+                $connect = ($findStore->getConnection()->getName());
+                SyncDatabaseAfterUpdatedModel($connect,$findStore);
+            } catch (\Throwable $th) {
+                throw $th;
+            }
         }
     }
 }

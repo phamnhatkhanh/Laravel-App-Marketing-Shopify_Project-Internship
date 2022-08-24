@@ -2,19 +2,19 @@
 
 namespace App\Listeners\Database;
 
+use Throwable;
+
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Support\Facades\DB;
 
 use App\Models\ObserveModel;
 use App\Models\DbStatus;
-use Illuminate\Support\Facades\DB;
-use Throwable;
 
 class SyncDatabaseAfterUpdatedModel  implements ShouldQueue
-// UpdatedProductListener
 {
     /**
-     * Create the event listener.
+     * Update and synchronize data in the database model cluster.
      *
      * @return void
      */
@@ -32,7 +32,7 @@ class SyncDatabaseAfterUpdatedModel  implements ShouldQueue
 
     public function handle($event)
     {
-        SyncDatabaseAfterUpdatedModel($event->db_server,$event->model);
+        SyncDatabaseAfterUpdatedModel($event->dbConnectName,$event->model);
     }
 }
 

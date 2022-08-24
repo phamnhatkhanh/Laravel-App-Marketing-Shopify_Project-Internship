@@ -5,6 +5,7 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 use App\Models\Store;
+
 class CustomerFactory extends Factory
 {
     /**
@@ -15,13 +16,9 @@ class CustomerFactory extends Factory
     private static $id = 1;
     public function definition()
     {
-         static $number;
         return [
-            // 'id' => $this->faker->numberBetween(1,2000),
             'id' => self::$id++,
-            'store_id'=>function(){
-                return Store::all()->random()->id;
-            },
+            'store_id'=> 65147142383,
             // 'store_id'=>getRandomModelId(Store::class),
             'first_name'=>$this->faker->firstNameMale,
             'last_name'=>$this->faker->lastName,
@@ -30,8 +27,8 @@ class CustomerFactory extends Factory
             'country'=>$this->faker->country,
             'orders_count'=>$this->faker->numberBetween(0,500),
             'total_spent'=>$this->faker->numberBetween(500,4000),
-            'created_at'=>$this->faker->dateTime(),
-            'updated_at'=>$this->faker->dateTime(),
+            'created_at'=>$this->faker->dateTimeThisYear(),
+            'updated_at'=>$this->faker->dateTimeThisMonth(),
         ];
     }
 }

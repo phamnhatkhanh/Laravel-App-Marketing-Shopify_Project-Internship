@@ -9,40 +9,70 @@ use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
+
 use App\Models\JobBatch;
 use App\Models\Customer;
+use App\Models\Store;
 
 class SynchronizedCustomer implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
 
-    public $batch_id;
+    /**
+     * * The primary key for job batch of group job create customer when sync customer.
+     *
+     * @var string
+     */
+    public $batchID;
+    /**
+     * * The primary key of store.
+     *
+     * @var string
+     */
+    public $storeID;
 
-
+    /**
+     * * The data after excute this job.
+     *
+     * @var array
+     */
     public $payload;
+
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct($batch_id)
+    public function __construct($batchID,$storeID)
     {
 
-        $this->batch_id = $batch_id;
+        $this->batchID = $batchID;
+        $this->storeID = $storeID;
         $this->payload  = $this->sendProcess();
     }
 
     public function sendProcess(){
-        info('comleted sync customer: '. $this->batch_id);
-        $batches =  JobBatch::find($this->batch_id);
-        $customer = new Customer();
+        info('SynchronizedCustomer: COMPOLETE SYNC CUSTOMER FROM SHOPIFY');
+        $batch =  JobBatch::find($this->batchID);
+        $storeModelBuilder = setConnectDatabaseActived(new Store());
+        $store = $storeModelBuilder->where('id',$this->storeID)->first();
+
+        if(empty($store)){
+            return [
+                "status" => true,
+                "message" => "Success sync customer",
+                'processing'=> $batch->progress(),
+                "totat" => 0,
+                "data" => []
+            ];
+        }
         return [
             "status" => true,
             "message" => "Success sync customer",
-            'processing'=> $batches->progress(),
-            "totat" => $customer->count(),
-            "data" => $customer->simplePaginate(15)
+            'processing'=> $batch->progress(),
+            "totat" => $store->customers()->count(),
+            "data" => $store->customers()->simplePaginate(15)
         ];
     }
 
@@ -54,18 +84,5 @@ class SynchronizedCustomer implements ShouldBroadcast
     public function broadcastAs(){
         return 'syncing_customer';
     }
-    // public function broadcastOn()
-    // {
-    //     return ['customers_synchronized'];
-    // }
-    // public function broadcastAs(){
-    //     return 'synchronized_customer';
-    // }
-    // public function broadcastOn()
-    // {
-    //     return ['MailSent'];
-    // }
-    // public function broadcastAs(){
-    //     return 'send-done';
-    // }
+
 }

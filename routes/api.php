@@ -2,13 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Shopify\ShopifyController;
-use App\Http\Requests\LoginRequest;
-use App\Http\Requests\ProductRequest;
-use App\Models\Customer;
-use App\Models\Store;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Redis;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -29,8 +23,6 @@ Route::prefix('auth')->group(function () {
     includeRouteFiles(__DIR__ . '/api/login');
 });
 
-// Route::group(function () {
-// });
 includeRouteFiles(__DIR__ . '/api/client');
 
 Route::prefix('shopify')->group(function () {

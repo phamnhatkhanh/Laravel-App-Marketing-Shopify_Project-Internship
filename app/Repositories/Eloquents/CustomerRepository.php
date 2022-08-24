@@ -1,26 +1,28 @@
 <?php
-// app/Repositories/Eloquents/ProductRepository.php
+
 
 namespace App\Repositories\Eloquents;
-use App\Services\Customers\CustomerService;
+
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Http\Request;
 use Illuminate\Bus\Batch;
-use Carbon\Carbon;
-use App\Repositories\Contracts\CustomerRepositoryInterface;
-use App\Repositories\Shopify\ShopifyRepository;
+
+use App\Jobs\SendEmail;
 use App\Models\Customer;
 use App\Models\Store;
-use App\Jobs\SendEmail;
 use App\Events\Database\CreatedModel;
 use App\Events\Database\UpdatedModel;
 use App\Events\Database\DeletedModel;
 use App\Events\SynchronizedCustomer;
-use Illuminate\Support\Facades\Auth;
-use Tymon\JWTAuth\Exceptions\JWTException;
-use Tymon\JWTAuth\Exceptions\TokenExpiredException;
-use Tymon\JWTAuth\Exceptions\TokenInvalidException;
-use Tymon\JWTAuth\Facades\JWTAuth;
+use App\Services\Customers\CustomerService;
+use App\Repositories\Shopify\ShopifyRepository;
+use App\Repositories\Contracts\CustomerRepositoryInterface;
+// use Illuminate\Support\Facades\Auth;
+// use Tymon\JWTAuth\Exceptions\JWTException;
+// use Tymon\JWTAuth\Exceptions\TokenExpiredException;
+// use Tymon\JWTAuth\Exceptions\TokenInvalidException;
+// use Tymon\JWTAuth\Facades\JWTAuth;
 
 class CustomerRepository implements CustomerRepositoryInterface
 {
@@ -29,8 +31,8 @@ class CustomerRepository implements CustomerRepositoryInterface
 
     public function __construct()
     {
-        $this->customer = getConnectDatabaseActived(new Customer());
-        $this->store = getConnectDatabaseActived(new Store());
+        $this->store = setConnectDatabaseActived(new Store());
+        $this->customer = setConnectDatabaseActived(new Customer());
     }
 
     /**
@@ -40,16 +42,16 @@ class CustomerRepository implements CustomerRepositoryInterface
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
     public function syncCutomerFromShopify(Request $request)
-
     {
 
-        // $store_id = "60157821137";
-        $store_id = getStoreID();
+        // $storeID = "65147142383";
+        $storeID = getStoreID();
 
-        $store = $this->store->where('id',  $store_id)->first();
+        $store = $this->store->where('id',  $storeID)->first();
 
 
         $shopifyRepository = new ShopifyRepository();
+
 
         $shopifyRepository->syncCustomer($store->myshopify_domain, $store->access_token, $store);
 
@@ -67,12 +69,12 @@ class CustomerRepository implements CustomerRepositoryInterface
      */
     public function index(Request $request)
     {
-        $store_id = getStoreID();
+        $storeID = getStoreID();
 
-        $store = Store::where('id', $store_id)->first();
+        $store = $this->store->where('id', $storeID)->first();
 
         if (isset($store)) {
-            $totalpage = 0;
+            $totalPage = 0;
             if ($request->has('list_customer')) {
                 $arr = explode(',', $request['list_customer']);
 
@@ -103,17 +105,20 @@ class CustomerRepository implements CustomerRepositoryInterface
                     ->date($params)
                     ->simplePaginate(15);
 
-                $total = $this->customer
+
+                $totalSearchCustomer = $this->customer
                     ->where("store_id", $store->id)
                     ->searchcustomer($params)->count();
-                $totalpage = (int)ceil($total / 15);
+                    info("---total_customers store in condition ".$totalSearchCustomer);
+                $totalPage = (int)ceil($totalSearchCustomer / 15);
+
             }
 
-            $total = Customer::where("store_id", $store->id)->count();
-
+            $total = $this->customer->where("store_id", $store->id)->count();
+            info("---total_customers store ".$total);
             return response([
                 "total_customers" => $total,
-                "totalPage" => $totalpage ? $totalpage : 0,
+                "totalPage" => $totalPage ? $totalPage : 0,
                 "data" => $users,
                 "status" => true
             ], 200);
@@ -142,15 +147,14 @@ class CustomerRepository implements CustomerRepositoryInterface
      */
     public function exportCustomerCSV(Request $request)
     {
-        info($request->all());
-        $storeID = GetStoreID();
+        $storeID = getStoreID();
 
         info("Customer hash token: " . $storeID);
 
         $locationExport = storage_path('app/backup/customers/');
         $dateExport = date('d-m-Y_H-i-s');
 
-        $fileName = $locationExport . 'customer_' . $dateExport . '.csv';
+        $fileName = $locationExport . 'customer_'.$storeID.'_' . $dateExport . '.csv';
         if (!empty($request->list_customer || !empty($request->except_customer))) {
             if ($request->has('list_customer')) {
                 $listCustomers = $request->list_customer;
@@ -170,36 +174,22 @@ class CustomerRepository implements CustomerRepositoryInterface
             $store = $this->store->where('id', $storeID)->first();
             dispatch(new SendEmail($fileName, $store));
         } else {
-            $users = $this->customer->get();
+            $store = $this->store->where('id', $storeID)->first();
+            $users = $store->customers;
 
             $this->exportCustomer($fileName, $users);
-
-            $store = $this->store->where('id', $storeID)->first();
-
             dispatch(new SendEmail($fileName, $store));
         }
 
         return response()->json([
             'message' => 'Export CSV Done',
             'status' => true,
-        ], 204);
+        ], 200);
     }
 
-    /**
-     * Get All Customer display the interface
-     *
-     * @return resource
-     */
-    public function getCustomer()
-    {
-        return $this->customer->get();
-    }
 
     public function store($request)
     {
-      // $elo = $this->customer->getModel();
-      // $elo = new Customer();
-      // dd($elo->all());
         $request['id'] = $this->customer->max('id') + 1;
         // dd($request['id'] );
         $request['created_at'] = Carbon::now()->format('Y-m-d H:i:s');
@@ -208,44 +198,35 @@ class CustomerRepository implements CustomerRepositoryInterface
         Schema::connection($this->customer->getConnection()->getName())->disableForeignKeyConstraints();
             $customer = $this->customer->create($request->all());
         Schema::connection($this->customer->getConnection()->getName())->enableForeignKeyConstraints();
-        // dd($customer);
+
         $customer = $this->customer->where('id', $request['id'])->first();
         $connect = ($this->customer->getConnection()->getName());
         event(new CreatedModel($connect, $customer));
 
         return  $customer;
-
-        // return "create successfully customer";
     }
 
     /**
      *
      * @return resource
      */
-    public function update($request, $customer_id)
+    public function update($request, $customerID)
     {
-
-        // dd($this->customer->getConnection()->getName());
-        // dd("update function ".$customer_id);
-        // info("Repostty: inside update");
-        $customer = $this->customer->where('id', $customer_id)->first();
+        $customer = $this->customer->where('id', $customerID)->first();
         if (!empty($customer)) {
             $customer->update($request->all());
             $connect = ($this->customer->getConnection()->getName());
-            // dd($connect);
             event(new UpdatedModel($connect, $customer));
         }
 
-        // info("pass connect");
-        // $this->customer;
         return $customer;
     }
 
 
-    public function destroy($customer_id)
+    public function destroy($customerID)
     {
-        // dd("dleete function ".$customer_id);
-        $customer = $this->customer->where('id', $customer_id)->first();
+        // dd("dleete function ".$customerID);
+        $customer = $this->customer->where('id', $customerID)->first();
         if (!empty($customer)) {
             // $customer->delete();
             $connect = ($this->customer->getConnection()->getName());

@@ -2,7 +2,7 @@
 
 namespace App\Jobs\Shopify;
 
-use App\Events\Database\UpdatedModel;
+
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -12,68 +12,77 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
 use App\Events\Database\CreatedModel;
+use App\Events\Database\UpdatedModel;
 use App\Events\SyncingCustomer;
+
 use App\Models\Customer;
 
 
-class SyncCumtomer
- implements ShouldQueue
+class SyncCumtomer implements ShouldQueue
 {
 
     use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
+    /**
+     * List data customer get from shopify.
+     *
+     * @var mixed
+     */
+    private $customers;
+
+    /**
+     * The primary key of the store.
+     *
+     * @var string
+     */
+    public $storeID;
+
+    /**
+     * The primary key of the job batch.
+     *
+     * @var string
+     */
+    public $batchID;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public $customers;
-    public $store_id;
-    public $batch_id;
-    public function __construct($batch_id,$store_id,$customers)
+    public function __construct($batchID,$storeID,$customers)
     {
         $this->customers = $customers;
-        $this->store_id = $store_id;
-        $this->batch_id = $batch_id;
-
+        $this->storeID = $storeID;
+        $this->batchID = $batchID;
     }
 
     /**
-     * Execute the job.
+     * Get customer from shopify and update in database.
      *
      * @return void
      */
     public function handle()
     {
+        info("1...Sycncustoemr: get connect actived");
+        $customerModelBuilder = setConnectDatabaseActived(new Customer());
+        $customerModel = $customerModelBuilder->getModel();
 
-      info("---verify connect");
-      // info(json_encode($this->customers,true));
-        // $customer_model = (new Customer());
-        $customer_model_builder = getConnectDatabaseActived(new Customer());
-        $customer_model = $customer_model_builder->getModel();
-
-        $store_id = $this->store_id;
+        $storeID = $this->storeID;
         $customers = $this->customers;
 
-        // $customers = $this->customers;
-      info("---get connect active ");
-        data_set($customers, '*.store_id', $store_id);
-      // info("Shopify: save customers: ".$customer_model->getConnection()->getName());
-      // info("Shopify: get ta customers: ".$customer_model->getModels()->getTable());
-        // $getCustomer = $customer_model->all();
-        // info('All customer: '. json_encode($getCustomer, true));
+        data_set($customers, '*.store_id', $storeID);
 
         foreach ($customers as $customer) {
             $created_at = str_replace(array('T', '+07:00'), array(' ', ''), $customer['created_at']);
             $updated_at = str_replace(array('T', '+07:00'), array(' ', ''), $customer['updated_at']);
-            info("--Customer Shopiyfy: ".json_encode($customer,true));
+
 
             foreach ($customer['addresses'] as $item) {
                 $country = $item['country'];
-                info("--Customer Addresre: ".$customer['email']);
+
                 $data = [
                     'id' => $customer['id'],
-                    'store_id' => $store_id,
+                    'store_id' => $storeID,
                     'email' => $customer['email'],
                     'first_name' => $customer['first_name'],
                     'last_name' => $customer['last_name'],
@@ -85,38 +94,28 @@ class SyncCumtomer
                     'updated_at' => $updated_at,
                 ];
 
+                $findCustomer =  $customerModel->where('id', $data['id'])->first();
 
-                $findCustomer =  $customer_model->where('id', $data['id'])->first();
-                // info('Id cua Customer:'.json_encode($findCustomer, true));
-                info("--name: ".json_encode($findCustomer,true));
                 if (empty($findCustomer)) {
-
                   try {
-                    $customer_model->create($data);
-                    $customer_eloquent = $customer_model->where("id",$data['id'])->first();
-                    info("Create Customer: ...  ". json_encode($customer_eloquent, true));
-                    $connect = ($customer_model->getConnection()->getName());
-                    SyncDatabaseAfterCreatedModel($connect,$customer_eloquent);
+                    $customerModel->create($data);
+                    $customer = $customerModel->where("id",$data['id'])->first();
+                    info("-SyncCumtomer Create Customer: ...  ". json_encode($customer, true));
+                    $connect = ($customerModel->getConnection()->getName());
+                    SyncDatabaseAfterCreatedModel($connect,$customer);
                   } catch (\Throwable $th) {
-                    info("Sync customer form shopiuf: ". $th);
+                    info("Sync create customer form shopify: ". $th);
                   }
-
                 } else {
-                    info('Update Customer: ...'.  json_encode($findCustomer, true));
+                    info('-SyncCumtomer Update Customer: ...'.  json_encode($findCustomer, true));
                     $findCustomer->update($data);
-                    $connect = ($customer_model->getConnection()->getName());
+                    $connect = ($customerModel->getConnection()->getName());
                     SyncDatabaseAfterUpdatedModel($connect,$findCustomer);
 
                 }
             }
-
-
-            // event(new CreatedModel($connect,$data,$customer_model->getTable()));
-              info("CreatedModel: show log in function sycn custoemr: ");
-
-            // $model->create($data);
-
         }
-        event(new SyncingCustomer($this->batch_id));
+        info("2...Sycncustoemr: get success connect actived");
+        event(new SyncingCustomer($this->batchID));
     }
 }

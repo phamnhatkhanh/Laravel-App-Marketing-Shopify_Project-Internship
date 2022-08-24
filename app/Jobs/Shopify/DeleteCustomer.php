@@ -16,37 +16,45 @@ use App\Events\Database\DeletedModel;
 class DeleteCustomer implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-    private $data_customer;
-    private $customer;
+    
+    /**
+     * Data customer get from shopify.
+     *
+     * @var mixed
+     */
+    private $dataCustomer;
+
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($data_customer)
+    public function __construct($dataCustomer)
     {
-        $this->data_customer = $data_customer;
-        // $this->customer = getConnectDatabaseActived(new Customer());
+        $this->dataCustomer = $dataCustomer;
+
 
     }
 
     /**
-     * Execute the job.
+     * Delete customer when get data customer from shopify and sync data in the database model cluster.
+
      *
      * @return void
      */
     public function handle()
     {
-        $customer_model = new Customer();
+        $customerModelBuilder = setConnectDatabaseActived(new Customer());
+        $customerModel = $customerModelBuilder->getModel();
 
-        $data_customer = $this->data_customer;
-        $id = $data_customer['id'];
-        $customer = $customer_model->where('id', $id)->first();
+
+        $dataCustomer = $this->dataCustomer;
+        $id = $dataCustomer['id'];
+        $customer = $customerModel->where('id', $id)->first();
 
         if (!empty($customer)) {
-            $connect = ($customer_model->getConnection()->getName());
-            event(new DeletedModel($connect, $customer));
-
+            $connect = ($customerModel->getConnection()->getName());
+            SyncDatabaseAfterDeletedModel($connect, $customer);
         }
     }
 }

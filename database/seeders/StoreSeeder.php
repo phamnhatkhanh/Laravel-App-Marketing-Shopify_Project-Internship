@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\Store;
+
 class StoreSeeder extends Seeder
 {
     /**
@@ -14,11 +15,10 @@ class StoreSeeder extends Seeder
     private static $id = 1;
     public function run()
     {
-        $stores = Store::factory()->times(5)->create();
-        // info("data_fake_store" . $stores);
+        $stores = Store::factory()->times(1)->create();
         foreach ($stores as  $store) {
+            // $store->id = 65147142383;
             $store->id = self::$id++;
-            // info("data_fake_store_id: ".$store->id);
             Store::on('mysql_stores_backup')->create(($store->toArray()));
         }
     }

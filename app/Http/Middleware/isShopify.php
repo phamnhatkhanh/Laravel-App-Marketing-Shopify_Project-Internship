@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 class isShopify
 {
     /**
-     * Handle an incoming request.
+     * Check if the request is coming from shopify.
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \Closure(\Illuminate\Http\Request): (\Illuminate\Http\Response|\Illuminate\Http\RedirectResponse)  $next

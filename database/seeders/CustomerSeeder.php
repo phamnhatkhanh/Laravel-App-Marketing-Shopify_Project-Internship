@@ -3,7 +3,9 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+
 use App\Models\Customer;
+
 class CustomerSeeder extends Seeder
 {
     /**
@@ -14,8 +16,7 @@ class CustomerSeeder extends Seeder
     private static $id = 1;
     public function run()
     {
-        // $customers = Customer::factory()->times(1)->create();
-        $customers = Customer::factory()->times(5)->create();
+        $customers = Customer::factory()->times(200)->create();
 
         foreach ($customers as  $customer) {
             $customer->id = self::$id++;

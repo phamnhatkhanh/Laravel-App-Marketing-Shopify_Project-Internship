@@ -4,10 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-// use MichaelAChrisco\ReadOnly\ReadOnlyTrait;
+
 class JobBatch extends Model
 {
-    // use ReadOnlyTrait;
 
     /**
      * The table associated with the model.
@@ -36,6 +35,12 @@ class JobBatch extends Model
      * @var bool
      */
     public $timestamps = false;
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
     protected $casts = [
         'options'      => 'collection',
         'failed_jobs'  => 'integer',
@@ -43,6 +48,12 @@ class JobBatch extends Model
         'cancelled_at' => 'datetime',
         'finished_at'  => 'datetime',
     ];
+
+    /**
+     * Get the number of jobs executed.
+     *
+     * @return int
+     */
     public function processedJobs()
     {
         return $this->total_jobs - $this->pending_jobs;
@@ -87,8 +98,6 @@ class JobBatch extends Model
     {
         return !is_null($this->finished_at);
     }
-
-
 
     /**
      * Determine if all jobs failed.

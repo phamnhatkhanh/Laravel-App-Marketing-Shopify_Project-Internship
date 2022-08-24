@@ -22,7 +22,7 @@ class CampaignService
      */
     public static function previewEmail($request, $array)
     {
-        info('previewEmail: inside Fisrt');
+
         $imageName = self::$imageNameTemp;
         if (empty($imageName) && $request->hasFile('background_banner')){
             $request->validate(
@@ -52,16 +52,14 @@ class CampaignService
                 }
             }
         }
-        info('previewEmail: handle Body');
 
         if (!empty($image)) {
             $img = $domBody->getElementsByTagName('img')[0];
-            $img->setAttribute('src', asset('uploads/' . $image));
+            $img->setAttribute('src',config('shopify.ngrok').'/uploads/' . $image);
+//             $img->setAttribute('src', asset('uploads/' . $image));
         }
-        info('previewEmail: Handle Image');
 
         $bodyEmail = $domBody->saveHTML();
-        info('previewEmail: save body');
 
         return $bodyEmail;
     }

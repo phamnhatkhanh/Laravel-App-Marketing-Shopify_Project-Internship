@@ -12,21 +12,35 @@ use Illuminate\Queue\SerializesModels;
 
 class SyncDatabase
 {
+
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     /**
-     * Create a new event instance.
+     * The current connection of model
      *
-     * @return void
+     * @var string
      */
-    public $databaseSync;
-    public $databaseChooseSync;
-    public $model;
-    public function __construct($databaseSync,$model,$databaseChooseSync=null)
+    public $dbConnectName;
+
+    /**
+     * Get the last database connection name of the model before the model can't connect to the database
+     *
+     * @var  string|null
+     */
+    public $dbLastedActivedModelConnect;
+
+    /**
+     * * The table model connect in database.
+     *
+     * @var string
+     */
+    public $tableModel;
+
+    public function __construct($dbModelConnect,$tableModel,$dbLastedActivedModelConnect=null)
     {
-        $this->databaseSync = $databaseSync;
-        $this->model = $model;
-        $this->databaseChooseSync = $databaseChooseSync;
+        $this->dbModelConnect = $dbModelConnect;
+        $this->tableModel = $tableModel;
+        $this->dbLastedActivedModelConnect = $dbLastedActivedModelConnect;
     }
 
     /**

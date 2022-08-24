@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Symfony\Component\HttpFoundation\Response;
+use JWT;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -14,10 +15,7 @@ use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuthExceptions\JWTException;
 use Tymon\JWTAuth\Contracts\JWTSubject as JWTSubject;
 use Tymon\JWTAuth\Facades\JWTAuth as FacadesJWTAuth;
-
-use JWTAuth;
-use JWT;
-
+use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Http\Requests;
 use App\Http\Requests\LoginRequest;
 
@@ -33,7 +31,7 @@ class LoginController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login', 'register', 'store']]);
+        $this->middleware('auth:api', ['except' => ['login', 'register', 'store','refresh']]);
     }
     /**
      * Get a JWT via given credentials.
@@ -64,12 +62,23 @@ class LoginController extends Controller
         }
         $access_Token = $this->createNewToken($token);
 
-        // info("token ". $access_Token);
 
+        if ($request->has("first_install_app")) {
+            info("LoginController: first install app");
+            return response([
+                'data' => $access_Token,
+                'first_install' => true,
+                'status' => true,
+            ], 200);
+        }
+
+        info("LoginController: login app");
         return response([
             'data' => $access_Token,
             'status' => true,
         ], 200);
+
+
     }
 
     /**
@@ -96,11 +105,18 @@ class LoginController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function refresh()
+    public function refresh(Request $request)
     {
+        $refresh = $this->createNewToken(auth()->refresh());
+        return response([
+            'data' => $refresh,
+            'status' => true,
+        ], 200);
     }
     /**
      * Get the authenticated User.
+     *
+     *
      *
      * @return \Illuminate\Http\JsonResponse
      */
@@ -120,6 +136,7 @@ class LoginController extends Controller
             'access_token' => $token,
             'token_type' => 'bearer',
             'expires_in' => auth()->factory()->getTTL() * 60,
+
             // 'user' => auth()->user()
         ]);
     }

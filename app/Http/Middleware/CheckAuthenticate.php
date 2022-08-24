@@ -12,7 +12,7 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 class CheckAuthenticate
 {
     /**
-     * Handle an incoming request.
+     * Check acces token from client.
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \Closure(\Illuminate\Http\Request): (\Illuminate\Http\Response|\Illuminate\Http\RedirectResponse)  $next
@@ -32,19 +32,19 @@ class CheckAuthenticate
             return response()->json([
                 "message" => 'token_expired',
                 "status" => 401
-            ]);
+            ],401);
         } catch (TokenInvalidException $e) {
 
             return response()->json([
                 "message" => "token_invalid",
                 "status" => 401
-            ]);
+            ],401);
         } catch (JWTException $e) {
 
             return response()->json([
                 "message" => 'token_absent',
                 "status" => 401
-            ]);
+            ],401);
         }
 
         return response()->json(compact('store'));

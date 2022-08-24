@@ -2,15 +2,18 @@
 
 
 if (!function_exists('includeRouteFiles')) {
+    /**
+     * Import file php in floder to specifical file.
+     *
+     * @param  string  $folder
+     * @return void
+     */
     function includeRouteFiles(string $folder)
     {
-        // iterate thru the v1 folder recursively
         $dirIterator = new \RecursiveDirectoryIterator($folder);
-
         /** @var \RecursiveDirectoryIterator | \RecursiveIteratorIterator $it */
         $it = new \RecursiveIteratorIterator($dirIterator);
 
-        // require the file in each iteration
         while ($it->valid()){
             if(!$it->isDot()
                 && $it->isFile()

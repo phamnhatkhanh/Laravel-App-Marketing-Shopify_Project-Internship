@@ -13,9 +13,25 @@ use Tymon\JWTAuth\Claims\Custom;
 class Customer extends Model
 {
     use HasFactory;
+    /**
+     * The connection name for the model.
+     *
+     * @var string|null
+     */
     protected $connection = 'mysql_customers';
+
+    /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
     protected $table = 'customers';
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
     protected $fillable = [
         'id',
         'store_id',
@@ -30,12 +46,32 @@ class Customer extends Model
         'updated_at',
     ];
 
+     /**
+     * Indicates if the model should be timestamped.
+     *
+     * @var bool
+     */
+    public $timestamps = false;
+
+
+    /**
+     * Get store belongs to this customer
+     *
+     * @return Illuminate\Database\Eloquent;
+     */
     public function store()
     {
         return $this->belongsTo(Store::class);
     }
-    public $timestamps = false;
 
+    /**
+     * Get list customer if exist keyword in columns.
+     *
+     * @param object $query
+     * @param object $params
+     *
+     * @return Illuminate\Database\Eloquent\Collection;
+     */
     public function scopeSearchCustomer($query, $params)
     {
         if (!empty($params['keywords']) && trim($params['keywords']) !== '') {
@@ -51,6 +87,14 @@ class Customer extends Model
         return $query;
     }
 
+    /**
+     * Get list customer has oder in (between orders_from - orders_to).
+     *
+     * @param object $query
+     * @param object $params
+     *
+     * @return Illuminate\Database\Eloquent\Collection;
+     */
     public function scopeOrder($query, $params)
     {
         if (isset($params['orders_from']) && isset($params['orders_to'])) {
@@ -72,6 +116,14 @@ class Customer extends Model
         return $query;
     }
 
+    /**
+     * Get list customer has total spent in (between spent_from - spent_to).
+     *
+     * @param object $query
+     * @param object $params
+     *
+     * @return Illuminate\Database\Eloquent\Collection;
+     */
     public function scopeTotalSpent($query, $params)
     {
         if (isset($params['spent_from']) && isset($params['spent_to'])) {
@@ -92,6 +144,14 @@ class Customer extends Model
         return $query;
     }
 
+    /**
+     * Get list customer has by sort date create.
+     *
+     * @param object $query
+     * @param object $params
+     *
+     * @return Illuminate\Database\Eloquent\Collection;
+     */
     public function scopeSort($query, $params)
     {
         if (isset($params['sort']) && trim($params['sort'] !== '')) {
@@ -101,6 +161,14 @@ class Customer extends Model
         return $query;
     }
 
+    /**
+     * Get list customer has datatime in (between date_from - date_to).
+     *
+     * @param object $query
+     * @param object $params
+     *
+     * @return Illuminate\Database\Eloquent\Collection;
+     */
     public function scopeDate($query, $params)
     {
         $now = date('Y-m-d H:i:s');

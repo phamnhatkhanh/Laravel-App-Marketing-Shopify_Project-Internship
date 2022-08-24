@@ -1,7 +1,9 @@
 <?php
 
 namespace App\Repositories\Contracts;
+
 use Illuminate\Http\Request;
+
 interface CampaignRepositoryInterface
 {
     /**
@@ -32,7 +34,7 @@ interface CampaignRepositoryInterface
      * Receive request from saveCampaign put in Job. Send mail for selected customers and use Pusher the display mail number of successes, failures
      *
      * @param Request $request
-     * @param $campaignProcess
+     * @param Illuminate\Database\Eloquent\Model $campaignProcess
      * @return mixed
      */
     public function sendEmailPreview(Request $request, $campaignProcess);

@@ -3,14 +3,15 @@
 namespace App\Http\Controllers\Client;
 
 
+use Illuminate\Http\Request;
+
 use App\Http\Controllers\Controller;
 use App\Repositories\Eloquents\CustomerRepository;
-use Illuminate\Http\Request;
 
 class CustomerController extends Controller
 {
-    protected $customerRepository;
     protected $customer;
+    protected $customerRepository;
 
     public function __construct(CustomerRepository $customerRepository)
     {

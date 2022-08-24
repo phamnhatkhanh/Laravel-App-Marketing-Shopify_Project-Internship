@@ -1,12 +1,18 @@
 <?php
 
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Client\CustomerController;
 use App\Http\Controllers\Shopify\ShopifyController;
+use App\Services\Customers\CustomerService;
 use App\Models\DbStatus;
 use App\Models\Customer;
-use Illuminate\Support\Facades\Schema;
-use Tymon\JWTAuth\Facades\JWTAuth;
+use App\Models\Campaign;
+use App\Models\CampaignProcess;
+
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -18,18 +24,10 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 |
 */
 
-
-Route::get('/getCustomer', [CustomerController::class, 'getCustomer']);
-Route::get('/getStore', [ShopifyController::class, 'getStore']);
-
 Route::get('/', function () {
     return view('showNotification');
 });
 
 
-// Auth::routes();
-
-
-// Route::get('/home', [HomeController::class, 'index'])->name('home');
 
 

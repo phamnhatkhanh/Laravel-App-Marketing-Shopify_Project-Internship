@@ -15,6 +15,7 @@
         "nao-pon/flysystem-google-drive": "~1.1",
         "predis/predis": "^2.0",
         "pusher/pusher-php-server": "^7.0",
+        "twilio/sdk": "^6.40",
         "tymon/jwt-auth": "^1.0"
     },
     "require-dev": {
@@ -35,7 +36,7 @@
             "app/Helpers/JsonRespone/formatJson.php",
             "app/Helpers/Routes/RouteHelper.php",
             "app/Helpers/Database/Eloquent.php",
-            "app/Helpers/Routes/DecodeHelper.php",
+            "app/Helpers/Routes/JwtHelper.php",
             "app/Helpers/Database/SyncDatabase.php"
 
         ]
@@ -74,6 +75,3 @@
     "minimum-stability": "dev",
     "prefer-stable": true
 }
-
-
-

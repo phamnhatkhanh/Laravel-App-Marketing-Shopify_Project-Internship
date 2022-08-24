@@ -2,13 +2,17 @@
 
 namespace App\Listeners\Database;
 
+use Throwable;
+
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
+
 use App\Models\ObserveModel;
 use App\Models\DbStatus;
-use DB;
-use Throwable;
+
 class SyncDatabaseAfterDisconnect  implements ShouldQueue
 {
     /**
@@ -22,81 +26,65 @@ class SyncDatabaseAfterDisconnect  implements ShouldQueue
     }
 
     /**
-     * Handle the event.
+     * Synchronize the data model after the model reconnects to the database.
      *
      * @param  object  $event
      * @return void
      */
     public function handle($event)
     {
-        // info("all disconnect ".$event->databaseChooseSync);
-        $listDatabaseModelConnect = DbStatus::where('model_name', '=', $event->model)->get();
-        $listDataNeedSync = ObserveModel::where('database',$event->databaseSync)->get();
-        info("SyncDatabaseAfterDisconnect list item sync: ".json_encode($listDataNeedSync));
+        $listDatabaseModelConnect = DbStatus::where('model_name', '=', $event->tableModel)->get();
+        $listSyncModelRow = ObserveModel::where('database',$event->dbModelConnect)->get();
         foreach ($listDatabaseModelConnect as $dbModel) {
-             info("find db active: ".$dbModel->name. " " .$dbModel->status);
             try {
                 $dbModelActived = DbStatus::where("name",$dbModel->name)->first();
 
-                if(  !empty($event->databaseChooseSync) || DB::connection($dbModel->name)->getPdo() ){
-                    // info("SyncDatabaseAfterDisconnect: choose sync ". $dbModel->name);
-                    // info("SyncDatabaseAfterDisconnect: find db connect ".$dbModel);
-                    if(( !empty($event->databaseChooseSync)||$dbModelActived->status == "actived" ) ){
-                        // info("SyncDatabaseAfterDisconnect: choose sync ". $dbModel->name);
+                if(!empty($event->dbLastedActivedModelConnect) || DB::connection($dbModel->name)->getPdo() ){
+                    if(( !empty($event->dbLastedActivedModelConnect)||$dbModelActived->status == "actived" ) ){
                     // if DB status db_sync is just it -> change status to actived.
-                        // && ($dbModel != $event->databaseSync)
-                        info("SyncDatabaseAfterDisconnect: get DB is active in DB ".$dbModel->name);
-                        if(!empty($event->databaseChooseSync)){
-                            $dbModelActived->name = $event->databaseChooseSync;
-                            info("SyncDatabaseAfterDisconnect: all db nto connect choose sync ". $dbModelActived->name);
+                        // && ($dbModel != $event->dbModelConnect)
+                        if(!empty($event->dbLastedActivedModelConnect)){
+                            $dbModelActived->name = $event->dbLastedActivedModelConnect;
                         }
-                        foreach ($listDataNeedSync as $dataNeedSync) {
-                            if($dataNeedSync->action  == "delete") {
+                        foreach ($listSyncModelRow as $syncModelRow) {
+                            if($syncModelRow->action  == "delete") {
                                 //row not exist.
-                                info("SyncDatabaseAfterDisconnect: delete product ".$dataNeedSync->id_row);
-                                DB::connection($event->databaseSync)
-                                    ->table($dataNeedSync->table)
-                                    ->where('id', $dataNeedSync->id_row)
+                                DB::connection($event->dbModelConnect)
+                                    ->table($syncModelRow->table)
+                                    ->where('id', $syncModelRow->id_row)
                                     ->delete();
                             }else{
                                 // have exist row in DB
                                 // get row_data in DB connect
-                                $latestData = DB::connection($dbModelActived->name)
-                                ->table($dataNeedSync->table)
-                                ->where('id', $dataNeedSync->id_row)
+                                $latestDataModel = DB::connection($dbModelActived->name)
+                                ->table($syncModelRow->table)
+                                ->where('id', $syncModelRow->id_row)
                                 ->first();
 
-                                info("SyncDatabaseAfterDisconnect data: ".json_encode($latestData));
-                                if(!is_null($latestData)){
-                                    $data = json_decode(json_encode($latestData), true);
-                                    if($dataNeedSync->action  == "update") {
-                                        info("SyncDatabaseAfterDisconnect: ".$dataNeedSync->action." product ".$dataNeedSync->id_row);
-                                        DB::connection($event->databaseSync)
-                                        ->table($dataNeedSync->table)
-                                        ->where('id', $dataNeedSync->id_row)
+                                if(!is_null($latestDataModel)){
+                                    $data = json_decode(json_encode($latestDataModel), true);
+                                    if($syncModelRow->action  == "update") {
+                                        DB::connection($event->dbModelConnect)
+                                        ->table($syncModelRow->table)
+                                        ->where('id', $syncModelRow->id_row)
                                         ->update($data);
                                     }else{
-                                        info("SyncDatabaseAfterDisconnect: ".$dataNeedSync->action." product ".$dataNeedSync->id_row);
-                                        Schema::connection($event->databaseSync)->disableForeignKeyConstraints();
+                                        Schema::connection($event->dbModelConnect)->disableForeignKeyConstraints();
 
-                                            DB::connection($event->databaseSync)
-                                            ->table($dataNeedSync->table)
+                                            DB::connection($event->dbModelConnect)
+                                            ->table($syncModelRow->table)
                                             ->insert($data);
-                                        Schema::connection($event->databaseSync)->enableForeignKeyConstraints();
+                                        Schema::connection($event->dbModelConnect)->enableForeignKeyConstraints();
                                     }
                                 }
                             }
-                            $dataNeedSync->delete();
+                            $syncModelRow->delete();
                         }
-
-                        info("SyncDatabaseAfterDisconnect: update stattus and delte observer");
-                        DbStatus::where('name',$event->databaseSync)->update([ "status" =>"actived"]);
+                        DbStatus::where('name',$event->dbModelConnect)->update([ "status" =>"actived"]);
                         break;
                     }
                 }
             } catch (Throwable $th ) {
-                info($th);
-                info("SyncDatabaseAfterDisconnect: try other db active ". $dbModel->name);
                 continue;
             }
         }
@@ -104,5 +92,3 @@ class SyncDatabaseAfterDisconnect  implements ShouldQueue
     }
 }
 
-
-// 64: if sync_db not connect -> cant not get Data lasted.

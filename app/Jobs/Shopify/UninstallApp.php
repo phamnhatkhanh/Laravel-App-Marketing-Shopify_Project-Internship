@@ -2,6 +2,8 @@
 
 namespace App\Jobs\Shopify;
 
+use App\Models\Store;
+
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -13,7 +15,13 @@ class UninstallApp implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    /**
+     * Respone from shopify after uninstalled app.
+     *
+     * @var mixed
+     */
     private $payload;
+
     /**
      * Create a new job instance.
      *
@@ -25,12 +33,26 @@ class UninstallApp implements ShouldQueue
     }
 
     /**
-     * Execute the job.
+     * Uninstall App will update status Store into uninstalled
      *
      * @return void
      */
     public function handle()
     {
+        $storeModel = setConnectDatabaseActived(new Store());
+        $store = $storeModel->getModel();
 
+        $status = 'uninstalled';
+        data_set($store, '*.status', $status);
+        $data = [
+            'status' => $status,
+        ];
+
+        $findStore = $store->where('id', $this->payload['id'])->first();
+        if (!empty($findStore)){
+            $findStore->update($data);
+            $connect = ($findStore->getConnection()->getName());
+            SyncDatabaseAfterUpdatedModel($connect,$findStore);
+        }
     }
 }

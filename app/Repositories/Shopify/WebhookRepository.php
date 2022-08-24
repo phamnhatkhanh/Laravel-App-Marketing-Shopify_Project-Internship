@@ -2,25 +2,22 @@
 
 namespace App\Repositories\Shopify;
 
-use App\Jobs\Shopify\UninstallApp;
+use Session;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 
-use Session;
 
 use App\Jobs\Shopify\CreateCustomer;
 use App\Jobs\Shopify\DeleteCustomer;
 use App\Jobs\Shopify\UpdateCustomer;
+use App\Jobs\Shopify\UninstallApp;
 
 
-use App\Models\Store;
 
 class WebhookRepository
 {
-
-    protected $store;
     public function __construct(){
-        $this->store = new Store();
+
     }
 
     /**
@@ -31,7 +28,7 @@ class WebhookRepository
      */
     function webhook(Request $request){
         $topic = $request->header('X-Shopify-Topic');
-        $myshopify_domain = $request->header('X-Shopify-Shop-Domain');
+        $myShopifyDomain = $request->header('X-Shopify-Shop-Domain');
         $payload = $request->all();
 
         switch ($topic) {
@@ -42,7 +39,7 @@ class WebhookRepository
 
             case 'customers/create':
                 //Create data Product
-                $this->createFromShopify($payload, $myshopify_domain);
+                $this->createFromShopify($payload, $myShopifyDomain);
                 break;
 
             case 'customers/delete':
@@ -59,11 +56,11 @@ class WebhookRepository
      * Receive Add Customer Webhook from Shopify put in Job
      *
      * @param string $payload
-     * @param string $myshopify_domain
+     * @param string $myShopifyDomain
      * @return void
      */
-    public function createFromShopify($payload, $myshopify_domain){
-       dispatch(new CreateCustomer($payload, $myshopify_domain));
+    public function createFromShopify($payload, $myShopifyDomain){
+       dispatch(new CreateCustomer($payload, $myShopifyDomain));
     }
 
     /**

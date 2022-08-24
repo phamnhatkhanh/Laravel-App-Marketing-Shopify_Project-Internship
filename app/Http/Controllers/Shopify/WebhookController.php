@@ -2,19 +2,16 @@
 
 namespace App\Http\Controllers\Shopify;
 
-use GuzzleHttp\Client;
-use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use App\Repositories\Shopify\WebhookRepository;
 
-use App\Jobs\Shopify\CreateCustomer;
-use App\Jobs\Shopify\DeleteCustomer;
-use App\Jobs\Shopify\UpdateCustomer;
+use Illuminate\Http\Request;
+
+use App\Http\Controllers\Controller;
+
+use App\Repositories\Shopify\WebhookRepository;
 
 class WebhookController extends Controller
 {
     protected $webHookRepository;
-    // protected $product;
 
     public function __construct(WebhookRepository $webHookRepository){
         $this->webHookRepository= $webHookRepository;

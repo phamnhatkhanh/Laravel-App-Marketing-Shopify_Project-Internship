@@ -14,16 +14,12 @@ class CampaignProcessFactory extends Factory
      *
      * @return array
      */
+    private static $id = 1;
     public function definition()
     {
-        return [
-            'store_id'=>function(){
-                return Store::all()->random()->id;
-            },
 
-            'campaign_id'=>function(){
-                return Campaign::all()->random()->id;
-            },
+        return [
+            'id' => self::$id++,
             'name'=>$this->faker->userName,
             'status'=>"running",
             'process'=>$this->faker->numberBetween(0,100),
