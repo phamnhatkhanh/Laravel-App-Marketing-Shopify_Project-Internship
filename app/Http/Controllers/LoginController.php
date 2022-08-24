@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use JWT;
-
 use Symfony\Component\HttpFoundation\Response;
 
 use Illuminate\Http\Request;
@@ -17,7 +16,6 @@ use Tymon\JWTAuthExceptions\JWTException;
 use Tymon\JWTAuth\Contracts\JWTSubject as JWTSubject;
 use Tymon\JWTAuth\Facades\JWTAuth as FacadesJWTAuth;
 use Tymon\JWTAuth\Facades\JWTAuth;
-
 use App\Http\Requests;
 use App\Http\Requests\LoginRequest;
 

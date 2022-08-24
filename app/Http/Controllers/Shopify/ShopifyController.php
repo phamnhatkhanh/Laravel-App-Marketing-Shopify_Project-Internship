@@ -71,6 +71,7 @@ class ShopifyController extends Controller
     public function destroy($id)
     {
         $store = $this->shopifyRepository->destroy( $id);
+        
         return response([
             'data' => $store,
             'mess' => "dleete customer done"

@@ -68,7 +68,7 @@ class CampaignRepository implements CampaignRepositoryInterface
      */
     public function saveCampaign(Request $request)
     {
-        // $storeID = "60157821137";
+        // $storeID = "65147142383";
         $storeID = getStoreID();
         $request['store_id'] = $storeID;
 
@@ -77,7 +77,7 @@ class CampaignRepository implements CampaignRepositoryInterface
             $request['campaign_id'] = $campaign->id;
             $connect = ($this->campaign->getConnection()->getName());
             event(new CreatedModel($connect, $campaign));
-            // dd( $this->campaignProcess->getModels());
+
             if ($request->has("list_mail_customers")) {
                 $listCustomersId = json_decode($request->list_mail_customers, true);
                 $total_customers = count($listCustomersId);
@@ -91,18 +91,23 @@ class CampaignRepository implements CampaignRepositoryInterface
             } else {
                 $total_customers = 0;
             }
-            Schema::connection($this->campaignProcess->getConnection()->getName())->disableForeignKeyConstraints();
-            $campaignProcess = $this->campaignProcess->create([
-                "process" => "0",
-                "status" => "running",
-                "store_id" => $storeID,
-                "campaign_id" => $campaign->id,
-                "name" => $campaign->name,
-                "total_customers" => $total_customers,
-            ]);
-            $connect = ($this->campaignProcess->getConnection()->getName());
-            event(new CreatedModel($connect, $campaignProcess));
-            Schema::connection($this->campaignProcess->getConnection()->getName())->disableForeignKeyConstraints();
+            try {
+                //code...
+                Schema::connection($this->campaignProcess->getConnection()->getName())->disableForeignKeyConstraints();
+                $campaignProcess = $this->campaignProcess->create([
+                    "process" => "0",
+                    "status" => "running",
+                    "store_id" => $storeID,
+                    "campaign_id" => $campaign->id,
+                    "name" => $campaign->name,
+                    "total_customers" => $total_customers,
+                ]);
+                $connect = ($this->campaignProcess->getConnection()->getName());
+                event(new CreatedModel($connect, $campaignProcess));
+                Schema::connection($this->campaignProcess->getConnection()->getName())->disableForeignKeyConstraints();
+            } catch (\Throwable $th) {
+                throw $th;
+            }
 
 
             $this->sendEmailPreview($request, $campaignProcess);
@@ -184,7 +189,7 @@ class CampaignRepository implements CampaignRepositoryInterface
         return response()->json([
             'message' => 'Send Test Success',
             'status' => true,
-        ], 204);
+        ], 200);
     }
 
     /**
@@ -276,7 +281,7 @@ class CampaignRepository implements CampaignRepositoryInterface
         return response()->json([
             'message' => 'Prepare save campaign and send mail',
             'status' => true,
-        ], 204);
+        ], 200);
     }
 
     /**
@@ -338,7 +343,7 @@ class CampaignRepository implements CampaignRepositoryInterface
     {
         $campaign = $this->campaign->create($request->all());
         $connect = ($this->campaign->getConnection()->getName());
-        // event(new CreatedModel($connect, $campaign));
+        event(new CreatedModel($connect, $campaign));
         return $campaign;
     }
 
