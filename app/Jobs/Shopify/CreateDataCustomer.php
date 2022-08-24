@@ -98,10 +98,15 @@ class CreateDataCustomer implements ShouldQueue
                 }
 
             } else {
-                info('Update Customer: ...' . json_encode($findCustomer, true));
-                $findCustomer->update($data);
-                $connect = $customerModel->getConnection()->getName();
-                SyncDatabaseAfterUpdatedModel($connect, $findCustomer);
+                try {
+                    //code...
+                    info('Update Customer: ...' . json_encode($findCustomer, true));
+                    $findCustomer->update($data);
+                    $connect = $customerModel->getConnection()->getName();
+                    SyncDatabaseAfterUpdatedModel($connect, $findCustomer);
+                } catch (\Throwable $th) {
+                    throw $th;
+                }
 
             }
         }

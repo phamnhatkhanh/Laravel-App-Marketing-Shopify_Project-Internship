@@ -104,7 +104,7 @@ class SyncCumtomer implements ShouldQueue
                     $connect = ($customerModel->getConnection()->getName());
                     SyncDatabaseAfterCreatedModel($connect,$customer);
                   } catch (\Throwable $th) {
-                    info("Sync customer form shopify: ". $th);
+                    info("Sync create customer form shopify: ". $th);
                   }
                 } else {
                     info('-SyncCumtomer Update Customer: ...'.  json_encode($findCustomer, true));

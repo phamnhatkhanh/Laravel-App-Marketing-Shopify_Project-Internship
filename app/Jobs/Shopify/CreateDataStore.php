@@ -94,19 +94,29 @@ class CreateDataStore implements ShouldQueue
 
         $findStore = $storeModel->where('id', $data['id'])->first();
         if (empty($findStore)) {
-            info('Save information Shop: '.$getData['id']);
-            $storeModel->create($data);
-            $store_elo =  $storeModel->where("id",$data['id'])->first();
-            // $storeModel->save();
-            info("store .....".  json_encode($storeModel,true));
-            info("store .....".  json_encode($store_elo,true));
-            $connect = ($store_elo->getConnection()->getName());
-            SyncDatabaseAfterCreatedModel($connect, $store_elo);
+            try {
+                //code...
+                info('Save information Shop: '.$getData['id']);
+                $storeModel->create($data);
+                $store_elo =  $storeModel->where("id",$data['id'])->first();
+                // $storeModel->save();
+                info("store .....".  json_encode($storeModel,true));
+                info("store .....".  json_encode($store_elo,true));
+                $connect = ($store_elo->getConnection()->getName());
+                SyncDatabaseAfterCreatedModel($connect, $store_elo);
+            } catch (\Throwable $th) {
+                throw $th;
+            }
         } else {
-            info('Update information Shop');
-            $findStore->update($data);
-            $connect = ($findStore->getConnection()->getName());
-            SyncDatabaseAfterUpdatedModel($connect,$findStore);
+            try {
+                //code...
+                info('Update information Shop');
+                $findStore->update($data);
+                $connect = ($findStore->getConnection()->getName());
+                SyncDatabaseAfterUpdatedModel($connect,$findStore);
+            } catch (\Throwable $th) {
+                throw $th;
+            }
         }
     }
 }

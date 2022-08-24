@@ -322,14 +322,13 @@ class ShopifyRepository implements ShopifyRepositoryInterface
         info("--function: syncCustomer in shopify repository");
         try {
             $storeID = $store->id;
-            info("--1 call job batch....");
 
             $batch = Bus::batch([])
                 ->then(function (Batch $batch) {
-                })->finally(function (Batch $batch) {
+                })->finally(function (Batch $batch) use($storeID){
                     info ("SUCESS sync customers");
                     info("-call event: SynchronizedCustomer");
-                    event(new SynchronizedCustomer($batch->id));
+                    event(new SynchronizedCustomer($batch->id,$storeID));
                 })->onQueue('jobs')->dispatch();
             $batchID = $batch->id;
             info("--2 call job batch....");
@@ -374,7 +373,7 @@ class ShopifyRepository implements ShopifyRepositoryInterface
 
             info("/.......syncCustomer: done sycn customer");
         } catch (Throwable $e) {
-            info($e);
+            throw($e);
         }
 
     }

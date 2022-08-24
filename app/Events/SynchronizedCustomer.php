@@ -12,6 +12,7 @@ use Illuminate\Queue\SerializesModels;
 
 use App\Models\JobBatch;
 use App\Models\Customer;
+use App\Models\Store;
 
 class SynchronizedCustomer implements ShouldBroadcast
 {
@@ -24,6 +25,12 @@ class SynchronizedCustomer implements ShouldBroadcast
      * @var string
      */
     public $batchID;
+    /**
+     * * The primary key of store.
+     *
+     * @var string
+     */
+    public $storeID;
 
     /**
      * * The data after excute this job.
@@ -37,24 +44,35 @@ class SynchronizedCustomer implements ShouldBroadcast
      *
      * @return void
      */
-    public function __construct($batchID)
+    public function __construct($batchID,$storeID)
     {
 
         $this->batchID = $batchID;
+        $this->storeID = $storeID;
         $this->payload  = $this->sendProcess();
     }
 
     public function sendProcess(){
         info('SynchronizedCustomer: COMPOLETE SYNC CUSTOMER FROM SHOPIFY');
         $batch =  JobBatch::find($this->batchID);
-        $customer_model_builder = setConnectDatabaseActived(new Customer());
-        $customer = $customer_model_builder->getModel();
+        $storeModelBuilder = setConnectDatabaseActived(new Store());
+        $store = $storeModelBuilder->where('id',$this->storeID)->first();
+
+        if(empty($store)){
+            return [
+                "status" => true,
+                "message" => "Success sync customer",
+                'processing'=> $batch->progress(),
+                "totat" => 0,
+                "data" => []
+            ];
+        }
         return [
             "status" => true,
             "message" => "Success sync customer",
             'processing'=> $batch->progress(),
-            "totat" => $customer->count(),
-            "data" => $customer->simplePaginate(15)
+            "totat" => $store->customers()->count(),
+            "data" => $store->customers()->simplePaginate(15)
         ];
     }
 

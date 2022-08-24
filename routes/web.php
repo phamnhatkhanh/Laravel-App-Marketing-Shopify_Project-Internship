@@ -24,11 +24,11 @@ use App\Models\CampaignProcess;
 |
 */
 
-//Get all Customer display the interface
-Route::get('/getCustomer', [CustomerController::class, 'getCustomer']);
+// //Get all Customer display the interface
+// Route::get('/getCustomer', [CustomerController::class, 'getCustomer']);
 
-//Get Store display the interface
-Route::get('/getStore', [ShopifyController::class, 'getStore']);
+// //Get Store display the interface
+// Route::get('/getStore', [ShopifyController::class, 'getStore']);
 
 Route::get('/', function () {
     return view('showNotification');

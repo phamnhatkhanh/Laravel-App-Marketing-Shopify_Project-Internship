@@ -44,7 +44,7 @@ class CustomerRepository implements CustomerRepositoryInterface
     public function syncCutomerFromShopify(Request $request)
     {
 
-        // $storeID = "60157821137";
+        // $storeID = "65147142383";
         $storeID = getStoreID();
 
         $store = $this->store->where('id',  $storeID)->first();
@@ -74,7 +74,7 @@ class CustomerRepository implements CustomerRepositoryInterface
         $store = $this->store->where('id', $storeID)->first();
 
         if (isset($store)) {
-            $totalpage = 0;
+            $totalPage = 0;
             if ($request->has('list_customer')) {
                 $arr = explode(',', $request['list_customer']);
 
@@ -105,17 +105,26 @@ class CustomerRepository implements CustomerRepositoryInterface
                     ->date($params)
                     ->simplePaginate(15);
 
-                $total = $this->customer
+
+                $totalSearchCustomer = $this->customer
                     ->where("store_id", $store->id)
                     ->searchcustomer($params)->count();
-                $totalpage = (int)ceil($total / 15);
+                    info("---total_customers store in condition ".$totalSearchCustomer);
+                $totalPage = (int)ceil($totalSearchCustomer / 15);
+
+                // return response([
+                //     "total_customers" => $total,
+                //     "totalPage" => $totalPage ? $totalPage : 0,
+                //     "data" => $users,
+                //     "status" => true
+                // ], 200);
             }
 
             $total = $this->customer->where("store_id", $store->id)->count();
-
+            info("---total_customers store ".$total);
             return response([
                 "total_customers" => $total,
-                "totalPage" => $totalpage ? $totalpage : 0,
+                "totalPage" => $totalPage ? $totalPage : 0,
                 "data" => $users,
                 "status" => true
             ], 200);
@@ -144,7 +153,6 @@ class CustomerRepository implements CustomerRepositoryInterface
      */
     public function exportCustomerCSV(Request $request)
     {
-        info($request->all());
         $storeID = getStoreID();
 
         info("Customer hash token: " . $storeID);
@@ -172,30 +180,19 @@ class CustomerRepository implements CustomerRepositoryInterface
             $store = $this->store->where('id', $storeID)->first();
             dispatch(new SendEmail($fileName, $store));
         } else {
-            $users = $this->customer->get();
+            $store = $this->store->where('id', $storeID)->first();
+            $users = $store->customers;
 
             $this->exportCustomer($fileName, $users);
-
-            $store = $this->store->where('id', $storeID)->first();
-
             dispatch(new SendEmail($fileName, $store));
         }
 
         return response()->json([
             'message' => 'Export CSV Done',
             'status' => true,
-        ], 204);
+        ], 200);
     }
 
-    /**
-     * Get All Customer display the interface
-     *
-     * @return resource
-     */
-    public function getCustomer()
-    {
-        return $this->customer->get();
-    }
 
     public function store($request)
     {
@@ -208,14 +205,12 @@ class CustomerRepository implements CustomerRepositoryInterface
         Schema::connection($this->customer->getConnection()->getName())->disableForeignKeyConstraints();
             $customer = $this->customer->create($request->all());
         Schema::connection($this->customer->getConnection()->getName())->enableForeignKeyConstraints();
-        // dd($customer);
+
         $customer = $this->customer->where('id', $request['id'])->first();
         $connect = ($this->customer->getConnection()->getName());
         event(new CreatedModel($connect, $customer));
 
         return  $customer;
-
-        // return "create successfully customer";
     }
 
     /**
@@ -224,8 +219,6 @@ class CustomerRepository implements CustomerRepositoryInterface
      */
     public function update($request, $customerID)
     {
-
-
         $customer = $this->customer->where('id', $customerID)->first();
         if (!empty($customer)) {
             $customer->update($request->all());
