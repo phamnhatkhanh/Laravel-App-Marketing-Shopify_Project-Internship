@@ -25,7 +25,7 @@ class CreateCampaignProcessesBackup extends Migration
             $table->id();
             $table->unsignedBigInteger('store_id');
             $table->unsignedBigInteger('campaign_id');
-            $table->string('name', 50);
+            $table->string('name', 255);
             $table->string('status')->nullable()->default(null);
             $table->integer('process')->default(0);
             // $table->double('process',10,2)->default(0);

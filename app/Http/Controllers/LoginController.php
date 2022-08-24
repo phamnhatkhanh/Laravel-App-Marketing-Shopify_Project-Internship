@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use JWT;
 use Symfony\Component\HttpFoundation\Response;
+use JWT;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -62,10 +62,23 @@ class LoginController extends Controller
         }
         $access_Token = $this->createNewToken($token);
 
+
+        if ($request->has("first_install_app")) {
+            info("LoginController: first install app");
+            return response([
+                'data' => $access_Token,
+                'first_install' => true,
+                'status' => true,
+            ], 200);
+        }
+
+        info("LoginController: login app");
         return response([
             'data' => $access_Token,
             'status' => true,
         ], 200);
+
+
     }
 
     /**

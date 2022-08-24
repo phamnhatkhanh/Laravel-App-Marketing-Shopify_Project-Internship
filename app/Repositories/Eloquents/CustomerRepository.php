@@ -112,12 +112,6 @@ class CustomerRepository implements CustomerRepositoryInterface
                     info("---total_customers store in condition ".$totalSearchCustomer);
                 $totalPage = (int)ceil($totalSearchCustomer / 15);
 
-                // return response([
-                //     "total_customers" => $total,
-                //     "totalPage" => $totalPage ? $totalPage : 0,
-                //     "data" => $users,
-                //     "status" => true
-                // ], 200);
             }
 
             $total = $this->customer->where("store_id", $store->id)->count();
@@ -196,7 +190,6 @@ class CustomerRepository implements CustomerRepositoryInterface
 
     public function store($request)
     {
-
         $request['id'] = $this->customer->max('id') + 1;
         // dd($request['id'] );
         $request['created_at'] = Carbon::now()->format('Y-m-d H:i:s');
