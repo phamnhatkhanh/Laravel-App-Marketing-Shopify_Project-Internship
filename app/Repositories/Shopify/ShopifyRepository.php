@@ -47,10 +47,9 @@ class ShopifyRepository implements ShopifyRepositoryInterface
     {
         if (isset($request["hmac"])) {
             if ($this->verifyHmacAppInstall($request)) {
-                info(json_encode($request->all(),true));
 
                 $shop = $this->store->where("myshopify_domain", $request->shop)->first();
-                info("login: in verify");
+                
                 if (empty($shop)) {
                     $this->authen($request);
                     info("login: first install app");

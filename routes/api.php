@@ -23,8 +23,6 @@ Route::prefix('auth')->group(function () {
     includeRouteFiles(__DIR__ . '/api/login');
 });
 
-// Route::group(function () {
-// });
 includeRouteFiles(__DIR__ . '/api/client');
 
 Route::prefix('shopify')->group(function () {
