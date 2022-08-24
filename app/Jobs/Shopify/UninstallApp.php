@@ -3,6 +3,7 @@
 namespace App\Jobs\Shopify;
 
 use App\Models\Store;
+
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;

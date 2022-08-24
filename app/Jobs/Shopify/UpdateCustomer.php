@@ -5,6 +5,7 @@ namespace App\Jobs\Shopify;
 use App\Models\Customer;
 use App\Events\Database\UpdatedModel;
 use App\Events\Database\DeletedModel;
+
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -63,7 +64,7 @@ class UpdateCustomer implements ShouldQueue
             'created_at' => $createdAt,
             'updated_at' => $updatedAt,
         ]);
-        
+
         $connect = ($customer->getConnection()->getName());
         SyncDatabaseAfterUpdatedModel($connect, $customer);
     }

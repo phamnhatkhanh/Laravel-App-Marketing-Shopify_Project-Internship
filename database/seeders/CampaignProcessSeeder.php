@@ -3,7 +3,9 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+
 use App\Models\CampaignProcess;
+
 class CampaignProcessSeeder extends Seeder
 {
     private static $id = 1;

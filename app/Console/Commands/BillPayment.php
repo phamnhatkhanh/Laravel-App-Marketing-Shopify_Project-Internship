@@ -2,16 +2,18 @@
 
 namespace App\Console\Commands;
 
-use App\Jobs\SendBill;
-use App\Models\Store;
-use App\Services\SendBillSMS;
+use Twilio\Rest\Client;
+
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Mail;
-use Twilio\Rest\Client;
-use Tymon\JWTAuth\Exceptions\JWTException;
-use Tymon\JWTAuth\Exceptions\TokenExpiredException;
-use Tymon\JWTAuth\Exceptions\TokenInvalidException;
-use Tymon\JWTAuth\Facades\JWTAuth;
+
+use App\Models\Store;
+use App\Jobs\SendBill;
+use App\Services\SendBillSMS;
+// use Tymon\JWTAuth\Exceptions\JWTException;
+// use Tymon\JWTAuth\Exceptions\TokenExpiredException;
+// use Tymon\JWTAuth\Exceptions\TokenInvalidException;
+// use Tymon\JWTAuth\Facades\JWTAuth;
 
 class BillPayment extends Command
 {

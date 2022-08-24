@@ -2,15 +2,16 @@
 
 namespace App\Listeners\Database;
 
-use Illuminate\Support\Facades\Schema;
+use Throwable;
+
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
+
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 
 use App\Models\ObserveModel;
 use App\Models\DbStatus;
-
-use Throwable;
 
 class SyncDatabaseAfterDisconnect  implements ShouldQueue
 {
@@ -79,7 +80,6 @@ class SyncDatabaseAfterDisconnect  implements ShouldQueue
                             }
                             $syncModelRow->delete();
                         }
-
                         DbStatus::where('name',$event->dbModelConnect)->update([ "status" =>"actived"]);
                         break;
                     }

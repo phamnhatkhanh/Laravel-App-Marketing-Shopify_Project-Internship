@@ -1,11 +1,12 @@
 <?php
 
-use Illuminate\Support\Facades\DB;
-use App\Models\ObserveModel;
-use App\Models\DbStatus;
-// use Throwable;
 use Carbon\Carbon;
+
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+
+use App\Models\DbStatus;
+use App\Models\ObserveModel;
 
 if (!function_exists('SyncDatabaseAfterCreatedModel')) {
 
@@ -18,6 +19,8 @@ if (!function_exists('SyncDatabaseAfterCreatedModel')) {
      * @return void
      */
     function SyncDatabaseAfterCreatedModel($dbConnectName,$model){
+
+        info("--SyncDatabaseAfterCreatedModel: create model ".$model->getTable());
         $listDatabaseModel = DbStatus::where('model_name', '=', $model->getTable())->get();
 
         $dataCreatedModel = $model->toArray();
@@ -61,6 +64,7 @@ if (!function_exists('SyncDatabaseAfterUpdatedModel')) {
      */
     function SyncDatabaseAfterUpdatedModel($dbConnectName,$model){
 
+        info("--SyncDatabaseAfterUpdatedModel: update model ".$model->getTable());
         $listDatabaseModel = DbStatus::where('model_name', '=', $model->getTable())->get();
         if(!empty($model)){
             $dataUpdateModel = $model->toArray();
@@ -98,6 +102,7 @@ if (!function_exists('SyncDatabaseAfterDeletedModel')) {
      * @return void
      */
     function SyncDatabaseAfterDeletedModel($dbConnectName,$model){
+        info("--SyncDatabaseAfterDeletedModel: delete model ".$model->getTable());
         $listDatabaseModel = DbStatus::where('model_name', '=', $model->getTable())->get();
         if(!empty($model)){
             foreach ($listDatabaseModel as $dbModel) {

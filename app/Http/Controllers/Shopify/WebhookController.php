@@ -4,15 +4,14 @@ namespace App\Http\Controllers\Shopify;
 
 
 use Illuminate\Http\Request;
+
 use App\Http\Controllers\Controller;
+
 use App\Repositories\Shopify\WebhookRepository;
-
-
 
 class WebhookController extends Controller
 {
     protected $webHookRepository;
-    // protected $product;
 
     public function __construct(WebhookRepository $webHookRepository){
         $this->webHookRepository= $webHookRepository;

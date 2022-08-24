@@ -1,26 +1,28 @@
 <?php
-// app/Repositories/Eloquents/ProductRepository.php
+
 
 namespace App\Repositories\Eloquents;
-use App\Services\Customers\CustomerService;
+
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Http\Request;
 use Illuminate\Bus\Batch;
-use Carbon\Carbon;
-use App\Repositories\Contracts\CustomerRepositoryInterface;
-use App\Repositories\Shopify\ShopifyRepository;
+
+use App\Jobs\SendEmail;
 use App\Models\Customer;
 use App\Models\Store;
-use App\Jobs\SendEmail;
 use App\Events\Database\CreatedModel;
 use App\Events\Database\UpdatedModel;
 use App\Events\Database\DeletedModel;
 use App\Events\SynchronizedCustomer;
-use Illuminate\Support\Facades\Auth;
-use Tymon\JWTAuth\Exceptions\JWTException;
-use Tymon\JWTAuth\Exceptions\TokenExpiredException;
-use Tymon\JWTAuth\Exceptions\TokenInvalidException;
-use Tymon\JWTAuth\Facades\JWTAuth;
+use App\Services\Customers\CustomerService;
+use App\Repositories\Shopify\ShopifyRepository;
+use App\Repositories\Contracts\CustomerRepositoryInterface;
+// use Illuminate\Support\Facades\Auth;
+// use Tymon\JWTAuth\Exceptions\JWTException;
+// use Tymon\JWTAuth\Exceptions\TokenExpiredException;
+// use Tymon\JWTAuth\Exceptions\TokenInvalidException;
+// use Tymon\JWTAuth\Facades\JWTAuth;
 
 class CustomerRepository implements CustomerRepositoryInterface
 {
@@ -50,7 +52,7 @@ class CustomerRepository implements CustomerRepositoryInterface
 
         $shopifyRepository = new ShopifyRepository();
 
-        
+
         $shopifyRepository->syncCustomer($store->myshopify_domain, $store->access_token, $store);
 
         return response([
@@ -223,19 +225,14 @@ class CustomerRepository implements CustomerRepositoryInterface
     public function update($request, $customerID)
     {
 
-        // dd($this->customer->getConnection()->getName());
-        // dd("update function ".$customerID);
-        // info("Repostty: inside update");
+
         $customer = $this->customer->where('id', $customerID)->first();
         if (!empty($customer)) {
             $customer->update($request->all());
             $connect = ($this->customer->getConnection()->getName());
-            // dd($connect);
             event(new UpdatedModel($connect, $customer));
         }
 
-        // info("pass connect");
-        // $this->customer;
         return $customer;
     }
 

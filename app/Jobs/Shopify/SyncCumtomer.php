@@ -2,7 +2,7 @@
 
 namespace App\Jobs\Shopify;
 
-use App\Events\Database\UpdatedModel;
+
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -12,7 +12,9 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
 use App\Events\Database\CreatedModel;
+use App\Events\Database\UpdatedModel;
 use App\Events\SyncingCustomer;
+
 use App\Models\Customer;
 
 
@@ -33,14 +35,14 @@ class SyncCumtomer implements ShouldQueue
      *
      * @var string
      */
-    private $storeID;
+    public $storeID;
 
     /**
      * The primary key of the job batch.
      *
      * @var string
      */
-    private $batchID;
+    public $batchID;
 
     /**
      * Create a new job instance.
@@ -61,6 +63,7 @@ class SyncCumtomer implements ShouldQueue
      */
     public function handle()
     {
+        info("1...Sycncustoemr: get connect actived");
         $customerModelBuilder = setConnectDatabaseActived(new Customer());
         $customerModel = $customerModelBuilder->getModel();
 
@@ -72,11 +75,11 @@ class SyncCumtomer implements ShouldQueue
         foreach ($customers as $customer) {
             $created_at = str_replace(array('T', '+07:00'), array(' ', ''), $customer['created_at']);
             $updated_at = str_replace(array('T', '+07:00'), array(' ', ''), $customer['updated_at']);
-            info("--Customer Shopiyfy: ".json_encode($customer,true));
+
 
             foreach ($customer['addresses'] as $item) {
                 $country = $item['country'];
-                info("--Customer Addresre: ".$customer['email']);
+
                 $data = [
                     'id' => $customer['id'],
                     'store_id' => $storeID,
@@ -92,19 +95,19 @@ class SyncCumtomer implements ShouldQueue
                 ];
 
                 $findCustomer =  $customerModel->where('id', $data['id'])->first();
-                info("--name: ".json_encode($findCustomer,true));
+
                 if (empty($findCustomer)) {
                   try {
                     $customerModel->create($data);
                     $customer = $customerModel->where("id",$data['id'])->first();
-                    info("Create Customer: ...  ". json_encode($customer, true));
+                    info("-SyncCumtomer Create Customer: ...  ". json_encode($customer, true));
                     $connect = ($customerModel->getConnection()->getName());
                     SyncDatabaseAfterCreatedModel($connect,$customer);
                   } catch (\Throwable $th) {
-                    info("Sync customer form shopiuf: ". $th);
+                    info("Sync customer form shopify: ". $th);
                   }
                 } else {
-                    info('Update Customer: ...'.  json_encode($findCustomer, true));
+                    info('-SyncCumtomer Update Customer: ...'.  json_encode($findCustomer, true));
                     $findCustomer->update($data);
                     $connect = ($customerModel->getConnection()->getName());
                     SyncDatabaseAfterUpdatedModel($connect,$findCustomer);
@@ -112,6 +115,7 @@ class SyncCumtomer implements ShouldQueue
                 }
             }
         }
+        info("2...Sycncustoemr: get success connect actived");
         event(new SyncingCustomer($this->batchID));
     }
 }

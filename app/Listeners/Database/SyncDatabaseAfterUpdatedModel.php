@@ -2,13 +2,14 @@
 
 namespace App\Listeners\Database;
 
+use Throwable;
+
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Support\Facades\DB;
 
 use App\Models\ObserveModel;
 use App\Models\DbStatus;
-use Illuminate\Support\Facades\DB;
-use Throwable;
 
 class SyncDatabaseAfterUpdatedModel  implements ShouldQueue
 {

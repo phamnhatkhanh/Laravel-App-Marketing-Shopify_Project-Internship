@@ -2,25 +2,25 @@
 
 namespace App\Repositories\Shopify;
 
-use App\Jobs\Shopify\UninstallApp;
+use Session;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 
-use Session;
 
 use App\Jobs\Shopify\CreateCustomer;
 use App\Jobs\Shopify\DeleteCustomer;
 use App\Jobs\Shopify\UpdateCustomer;
+use App\Jobs\Shopify\UninstallApp;
 
 
-use App\Models\Store;
 
 class WebhookRepository
 {
 
-    protected $store;
+
+
     public function __construct(){
-        $this->store = new Store();
+
     }
 
     /**

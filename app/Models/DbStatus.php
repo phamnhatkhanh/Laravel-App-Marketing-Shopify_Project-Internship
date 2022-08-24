@@ -13,12 +13,19 @@ class DbStatus extends Model
      *
      * @var string|null
      */
-protected $connection = 'mysql';
+    protected $connection = 'mysql';
+
     /**
      * The table associated with the model.
      *
      * @var string
      */
-protected $table = 'db_statuses';
+    protected $table = 'db_statuses';
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
     protected $fillable = ['name','status','model_name'];
 }

@@ -44,10 +44,6 @@ class SendMail implements ShouldQueue
         if (Mail::failures() != 0) {
             return "Email has been sent successfully.";
         }
-        // info ('please check server');
-
-// php artisan queue:work --queue=event
-// php artisan queue:work --queue=default
     }
 
 
