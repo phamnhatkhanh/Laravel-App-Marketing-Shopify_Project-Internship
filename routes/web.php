@@ -24,19 +24,10 @@ use App\Models\CampaignProcess;
 |
 */
 
-// //Get all Customer display the interface
-// Route::get('/getCustomer', [CustomerController::class, 'getCustomer']);
-
-// //Get Store display the interface
-// Route::get('/getStore', [ShopifyController::class, 'getStore']);
-
 Route::get('/', function () {
     return view('showNotification');
 });
 
-// Auth::routes();
 
-
-// Route::get('/home', [HomeController::class, 'index'])->name('home');
 
 

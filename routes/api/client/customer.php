@@ -8,7 +8,6 @@ use App\Http\Controllers\LoginController;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\ProductRequest;
 
-
 Route::middleware("CheckAuthenticate")->prefix('customer')->group(function () {
 
     //Sync Customer on Shopify back to Database.
