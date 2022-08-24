@@ -25,12 +25,6 @@ class CampaignService
 
         $imageName = self::$imageNameTemp;
         if (empty($imageName) && $request->hasFile('background_banner')){
-            $request->validate(
-                [
-                    'background_banner' => 'required|image|mimes:jpeg,png,jpg,gif|max:5120',
-                ]
-            );
-
             $name = time() . '.' . $request->background_banner->extension();
             $request->background_banner->move(public_path('uploads'), $name);
             self::$imageNameTemp = $name;

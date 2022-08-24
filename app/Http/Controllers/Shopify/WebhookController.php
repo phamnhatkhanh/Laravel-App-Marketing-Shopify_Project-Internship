@@ -28,19 +28,35 @@ class WebhookController extends Controller
         $this->webHookRepository->webhook($request);
     }
 
-    //Đưa vào Queue để lưu những khách hàng đã được tạo trên Shopify vào DB
+    /**
+     * Receive Add Customer Webhook from Shopify put in Job
+     *
+     * @param string $payload
+     * @param string $myShopifyDomain
+     * @return void
+     */
     public function createFromShopify($payload,$myshopify_domain)
     {
         $this->webHookRepository->createFromShopify($payload, $myshopify_domain);
     }
 
-    //Đưa vào Queue để tự động lưu những khách hàng đã được sửa trên Shopify vào DB
+    /**
+     * Receive Edit Customer Webhook from Shopify put in Job
+     *
+     * @param string $payload
+     * @return void
+     */
     public function updateFromShopify($payload)
     {
         $this->webHookRepository->updateFromShopify($payload);
     }
 
-    //Đưa vào Queue để tự động xóa khách hàng đã xóa trên Shopify trong DB
+    /**
+     * Receive Delete Customer Webhook from Shopify put in Job
+     *
+     * @param string $payload
+     * @return void
+     */
     public function deleteFromShopify($payload)
     {
         $this->webHookRepository->deleteFromShopify($payload);

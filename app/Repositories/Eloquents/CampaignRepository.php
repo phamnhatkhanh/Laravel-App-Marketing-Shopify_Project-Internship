@@ -2,6 +2,7 @@
 
 namespace App\Repositories\Eloquents;
 
+use App\Http\Requests\UpdateCampaignRequest;
 use Throwable;
 
 use Illuminate\Bus\Batch;
@@ -148,10 +149,10 @@ class CampaignRepository implements CampaignRepositoryInterface
     /**
      * Receive request from FrontEnd put in Job and send mail to the person receiving the request
      *
-     * @param Request $request
+     * @param UpdateCampaignRequest $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function SendEmail(Request $request)
+    public function SendEmail(UpdateCampaignRequest $request)
     {
         info('SendTestMail Success');
         $storeID = getStoreID();
@@ -195,11 +196,11 @@ class CampaignRepository implements CampaignRepositoryInterface
     /**
      * Receive request from saveCampaign put in Job. Send mail for selected customers and use Pusher the display mail number of successes, failures
      *
-     * @param Request $request
+     * @param UpdateCampaignRequest $request
      * @param $campaignProcess
      * @return \Illuminate\Http\JsonResponse
      */
-    public function sendEmailPreview(Request $request, $campaignProcess)
+    public function sendEmailPreview(UpdateCampaignRequest $request, $campaignProcess)
     {
         try {
             $batch = Bus::batch([])

@@ -2,6 +2,7 @@
 
 namespace App\Repositories\Contracts;
 
+use App\Http\Requests\UpdateCampaignRequest;
 use Illuminate\Http\Request;
 
 interface CampaignRepositoryInterface
@@ -25,19 +26,19 @@ interface CampaignRepositoryInterface
     /**
      * Receive request from FrontEnd put in Job and send mail to the person receiving the request
      *
-     * @param Request $request
+     * @param UpdateCampaignRequest $request
      * @return mixed
      */
-    public function SendEmail(Request $request);
+    public function SendEmail(UpdateCampaignRequest $request);
 
     /**
      * Receive request from saveCampaign put in Job. Send mail for selected customers and use Pusher the display mail number of successes, failures
      *
-     * @param Request $request
+     * @param UpdateCampaignRequest $request
      * @param Illuminate\Database\Eloquent\Model $campaignProcess
      * @return mixed
      */
-    public function sendEmailPreview(Request $request, $campaignProcess);
+    public function sendEmailPreview(UpdateCampaignRequest $request, $campaignProcess);
 }
 
 
