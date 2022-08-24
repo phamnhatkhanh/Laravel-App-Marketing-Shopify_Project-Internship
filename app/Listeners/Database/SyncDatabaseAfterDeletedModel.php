@@ -8,7 +8,7 @@ use Illuminate\Queue\InteractsWithQueue;
 class SyncDatabaseAfterDeletedModel implements ShouldQueue
 {
     /**
-     * Create the event listener.
+     * Delete and synchronize data in the database model cluster.
      *
      * @return void
      */

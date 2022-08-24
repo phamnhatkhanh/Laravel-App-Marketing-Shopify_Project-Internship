@@ -10,7 +10,18 @@ class Campaign extends Model
 {
     use HasFactory;
 
+    /**
+     * The connection name for the model.
+     *
+     * @var string|null
+     */
     protected $connection = 'mysql_campaigns';
+
+    /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
     protected $table = 'campaigns';
 
     protected $fillable = [
@@ -27,6 +38,7 @@ class Campaign extends Model
         'button_background_color',
         'button_text_color'
     ];
+
     public function background()
     {
     	return $this->hasOne(CampaignVariant::class);

@@ -19,8 +19,21 @@ class CreateCustomer implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    private $dataCustomer, $myShopifyDomain;
-    protected $store;
+    /**
+     * Data customer get from shopify.
+     *
+     * @var mixed
+     */
+    private $dataCustomer;
+
+    /**
+     * Original domain store shopify
+     *
+     * @var string
+     */
+    private $myShopifyDomain;
+
+
     /**
      * Create a new job instance.
      *
@@ -33,16 +46,20 @@ class CreateCustomer implements ShouldQueue
     }
 
     /**
-     * Execute the job.
+
+     * Create customer when get data customer from shopify and sync data in the database model cluster.
+
      *
      * @return void
      */
     public function handle()
     {
-        
-        $customerModelBuilder = getConnectDatabaseActived(new Customer());
+
+
+        $customerModelBuilder = setConnectDatabaseActived(new Customer());
+
         $customerModel = $customerModelBuilder->getModel();
-        $storeModelBuilder = getConnectDatabaseActived(new Store());
+        $storeModelBuilder = setConnectDatabaseActived(new Store());
         $storeModel = $storeModelBuilder->getModel();
 
         $dataCustomer = $this->dataCustomer;
@@ -53,7 +70,6 @@ class CreateCustomer implements ShouldQueue
 
         $store = $storeModel->where('myshopify_domain', $myShopifyDomain)->first();
 
-        info("Job CreatedModel: ".$store->id);
         $data = [
             'id' => $dataCustomer['id'],
             'store_id' => $store->id,

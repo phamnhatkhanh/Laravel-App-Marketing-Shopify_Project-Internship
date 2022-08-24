@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Bus\Batch;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Http;
 use Throwable;
 use GuzzleHttp\Client;
 use App\Http\Controllers\LoginController;
@@ -30,8 +31,8 @@ class ShopifyRepository implements ShopifyRepositoryInterface
 
     public function __construct()
     {
-        $this->customer = getConnectDatabaseActived(new Customer());
-        $this->store = getConnectDatabaseActived(new Store());
+        $this->customer = setConnectDatabaseActived(new Customer());
+        $this->store = setConnectDatabaseActived(new Store());
     }
 
     /**
@@ -53,7 +54,6 @@ class ShopifyRepository implements ShopifyRepositoryInterface
                 if (empty($shop)) {
                     info("get acces token ");
                     $this->authen($request);
-
                 }
 
                 $LoginController = new LoginController;
@@ -68,21 +68,33 @@ class ShopifyRepository implements ShopifyRepositoryInterface
             $scope = 'read_customers,write_customers';
             $shop = $request->myshopify_domain;
 
+            $hostLink = $request->header("origin");
 
-          //  $redirect_uri = 'http://localhost:8000/api/auth/authen';
-            // $redirect_uri = 'http://192.168.101.83:8080/login';
+            $url = 'https://'.$shop.'/admin/api/2022-07/shop.json';
 
-            $redirect_uri = $request->header("origin")."/login";
+            $request = Http::get($url);
 
-            info( $redirect_uri);
+            $statusCode = $request->getStatusCode();
 
+            if ($statusCode == 401){
+                // $redirect_uri = 'http://localhost:8000/api/auth/authen';
+                // $redirect_uri = 'https://firegroup-team2.herokuapp.com/login';
 
-            $url = 'https://' . $shop . '/admin/oauth/authorize?client_id=' . $apiKey . '&scope=' . $scope . '&redirect_uri=' . $redirect_uri;
-            info($url);
-            return response()->json([
-                "status" => true,
-                "url"=> $url
-            ]);
+                $redirect_uri = $hostLink . "/login";
+
+                info($redirect_uri);
+                $url = 'https://' . $shop . '/admin/oauth/authorize?client_id=' . $apiKey . '&scope=' . $scope . '&redirect_uri=' . $redirect_uri;
+                info($url);
+                return response()->json([
+                    "status" => true,
+                    "url" => $url
+                ]);
+            } else {
+                return response()->json([
+                    'message' => 'Có lỗi: ' . $statusCode,
+                    'status' => false,
+                ], $statusCode);
+            }
         }
     }
 
@@ -140,7 +152,7 @@ class ShopifyRepository implements ShopifyRepositoryInterface
 
         // $store->customers
 
-// =======
+        // =======
 
 
 
@@ -156,6 +168,10 @@ class ShopifyRepository implements ShopifyRepositoryInterface
         return "setup store sucess";
     }
 
+    public function checkLogin($shop, $access_token)
+    {
+        return ShopifyService::checkLogin($shop, $access_token);
+    }
     /**
      * Get accessToken from the Shopify
      *
@@ -265,8 +281,8 @@ class ShopifyRepository implements ShopifyRepositoryInterface
             'fields' => 'id, first_name, last_name, email, phone, addresses, orders_count, total_spent, created_at, updated_at',
             'limit' => $limit,
         ];
+        $client = new Client();
         for ($i = 0; $i < $numberRequest; $i++) {
-            $client = new Client();
             $url = 'https://' . $shop . '/admin/api/2022-07/customers.json';
             $request = $client->request('get', $url, [
                 'headers' => [
@@ -302,12 +318,12 @@ class ShopifyRepository implements ShopifyRepositoryInterface
      */
     public function syncCustomer($shop, $accessToken, $store)
     {
+
         // get store.
         try {
             $storeID = $store->id;
             $batch = Bus::batch([])
                 ->then(function (Batch $batch) {
-
                 })->finally(function (Batch $batch) {
 
                     event(new SynchronizedCustomer($batch->id));
@@ -316,10 +332,11 @@ class ShopifyRepository implements ShopifyRepositoryInterface
 
             $limit = 10;
 
+            info("--run coundata ");
             //Count number Customers
             $countCustomer = $this->countDataCustomer($shop, $accessToken);
             $ceilRequest = (int)ceil($countCustomer['count'] / $limit);
-
+            info("--end run coundata ");
             //Calculate the number of iterations to be able to save all customers to the DB
             $numberRequest = $countCustomer > $limit ? $ceilRequest : 1;
             $log = [];
@@ -368,7 +385,7 @@ class ShopifyRepository implements ShopifyRepositoryInterface
     }
 
     /**
-     * Get all Customer display the interface
+     * Get Store display the interface
      *
      * @return resource
      */
@@ -389,8 +406,6 @@ class ShopifyRepository implements ShopifyRepositoryInterface
         event(new CreatedModel($connect, $store));
         return $store;
         // return "add successfully store";
-
-
 
 
     }
@@ -416,10 +431,8 @@ class ShopifyRepository implements ShopifyRepositoryInterface
         $store = $this->store->where('id', $storeId)->first();
         if (!empty($store)) {
             $connect = ($this->store->getConnection()->getName());
-            event(new DeletedModel($connect,$store));
+            event(new DeletedModel($connect, $store));
             return $store;
         }
     }
-
-
 }

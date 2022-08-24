@@ -14,7 +14,40 @@ class SendTestPreview implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    private $bodyEmail, $subject, $imageName, $store, $sendEmail;
+    /**
+     * get body Email after handle with dom
+     *
+     * @var object
+     */
+    private $bodyEmail;
+
+    /**
+     * Get subject Email after handle with dom
+     *
+     * @var object
+     */
+    private $subject;
+
+    /**
+     * Get name image
+     *
+     * @var object
+     */
+    private $imageName;
+
+    /**
+     * Get shop owner information have token
+     *
+     * @var array
+     */
+    private $store;
+
+    /**
+     * Get information receiver
+     *
+     * @var object
+     */
+    private $sendEmail;
 
     /**
      * Create a new job instance.
@@ -31,7 +64,7 @@ class SendTestPreview implements ShouldQueue
     }
 
     /**
-     * Execute the job.
+     * Send Test mail Campaign to chosen one
      *
      * @return void
      */

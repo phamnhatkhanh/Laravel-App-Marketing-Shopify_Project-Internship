@@ -8,6 +8,15 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Schema;
 
 if (!function_exists('SyncDatabaseAfterCreatedModel')) {
+
+    /**
+     * * Create and synchronize data in the database model cluster.
+     *
+     * @param string $dbConnectName
+     * @param $model
+     *
+     * @return void
+     */
     function SyncDatabaseAfterCreatedModel($dbConnectName,$model){
         $listDatabaseModel = DbStatus::where('model_name', '=', $model->getTable())->get();
 
@@ -42,6 +51,14 @@ if (!function_exists('SyncDatabaseAfterCreatedModel')) {
 }
 
 if (!function_exists('SyncDatabaseAfterUpdatedModel')) {
+    /**
+     * * Update and synchronize data in the database model cluster.
+     *
+     * @param string $dbConnectName
+     * @param $model
+     *
+     * @return void
+     */
     function SyncDatabaseAfterUpdatedModel($dbConnectName,$model){
 
         $listDatabaseModel = DbStatus::where('model_name', '=', $model->getTable())->get();
@@ -52,15 +69,7 @@ if (!function_exists('SyncDatabaseAfterUpdatedModel')) {
             foreach ($listDatabaseModel as $dbModel) {
                 try {
                     if(DB::connection($dbModel->name)->getPdo()){
-                        // $dbModelConnect = DbStatus::where('name',$dbModel->name)->first();
-                        // if($dbModelConnect->status == 'actived'){
-                            // if($dbModel->name == $dbConnectName){continue;}
-                            $model::on($dbModel->name)->where('id',$model->id)->update($dataUpdateModel);
-                        // }else{
-                        //     // syncing or retry connect but status still disconnected
-                        //     // throw new Throwable(); // not do sync update.
-                        //     continue;
-                        // }
+                        $model::on($dbModel->name)->where('id',$model->id)->update($dataUpdateModel);
                     }
                 } catch (Throwable $th ) {
                     $dataObserveModel = [
@@ -79,11 +88,19 @@ if (!function_exists('SyncDatabaseAfterUpdatedModel')) {
 }
 
 if (!function_exists('SyncDatabaseAfterDeletedModel')) {
+
+    /**
+     * * Delete and synchronize data in the database model cluster.
+     *
+     * @param string $dbConnectName
+     * @param $model
+     *
+     * @return void
+     */
     function SyncDatabaseAfterDeletedModel($dbConnectName,$model){
         $listDatabaseModel = DbStatus::where('model_name', '=', $model->getTable())->get();
         if(!empty($model)){
             foreach ($listDatabaseModel as $dbModel) {
-                // if($dbModel->name == $event->dbConnectName){continue;}
                 try {
                     if(DB::connection($dbModel->name)->getPdo()){
                         $model::on($dbModel->name)->where('id',$model->id)->delete();

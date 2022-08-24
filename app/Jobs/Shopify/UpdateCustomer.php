@@ -17,8 +17,12 @@ class UpdateCustomer implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    /**
+     * Data customer get from shopify.
+     *
+     * @var mixed
+     */
     private $dataCustomer;
-    private $customer;
 
     /**
      * Create a new job instance.
@@ -28,19 +32,17 @@ class UpdateCustomer implements ShouldQueue
     public function __construct($dataCustomer)
     {
         $this->dataCustomer = $dataCustomer;
-
-
     }
 
     /**
-     * Execute the job.
+     * Update customer when get data customer from shopify and sync data in the database model cluster.
      *
      * @return void
      */
     public function handle()
     {
         info("UpdateCustomer: inside function ");
-        $customerModelBuilder = getConnectDatabaseActived(new Customer());
+        $customerModelBuilder = setConnectDatabaseActived(new Customer());
         $customerModel = $customerModelBuilder->getModel();
         $dataCustomer = $this->dataCustomer;
         $dataCustomerID = $dataCustomer['id'];
@@ -52,7 +54,6 @@ class UpdateCustomer implements ShouldQueue
 
         $customer = $customerModel->where('id', $dataCustomerID)->first();
         $customer->update([
-
             'email' => $dataCustomer['email'],
             'first_name' => $dataCustomer['first_name'],
             'last_name' => $dataCustomer['last_name'],
@@ -62,7 +63,8 @@ class UpdateCustomer implements ShouldQueue
             'created_at' => $createdAt,
             'updated_at' => $updatedAt,
         ]);
+        
         $connect = ($customer->getConnection()->getName());
-        event(new UpdatedModel($connect, $customer));
+        SyncDatabaseAfterUpdatedModel($connect, $customer);
     }
 }

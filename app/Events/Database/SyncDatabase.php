@@ -16,13 +16,26 @@ class SyncDatabase
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     /**
-     * Create a new event instance.
+     * The current connection of model
      *
-     * @return void
+     * @var string
      */
-    public $dbModelConnect;
-    public $tableModel;
+    public $dbConnectName;
+
+    /**
+     * Get the last database connection name of the model before the model can't connect to the database
+     *
+     * @var  string|null
+     */
     public $dbLastedActivedModelConnect;
+
+    /**
+     * * The table model connect in database.
+     *
+     * @var string
+     */
+    public $tableModel;
+
     public function __construct($dbModelConnect,$tableModel,$dbLastedActivedModelConnect=null)
     {
         $this->dbModelConnect = $dbModelConnect;

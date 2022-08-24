@@ -14,8 +14,18 @@ class Store extends Authenticatable  implements JWTSubject
 {
     use HasFactory;
 
-    protected $connection = 'mysql_stores';
-    protected $table = 'stores';
+    /**
+     * The connection name for the model.
+     *
+     * @var string|null
+     */
+protected $connection = 'mysql_stores';
+    /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
+protected $table = 'stores';
 
     protected $fillable = [
         'id',
@@ -23,6 +33,7 @@ class Store extends Authenticatable  implements JWTSubject
         'email',
         'password',
         'phone',
+        'status',
         'password',
         'myshopify_domain',
         'domain',
