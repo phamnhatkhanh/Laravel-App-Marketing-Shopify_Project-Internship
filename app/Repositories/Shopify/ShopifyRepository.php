@@ -49,9 +49,7 @@ class ShopifyRepository implements ShopifyRepositoryInterface
         if (isset($request["hmac"])) {
             info("have hash mac ");
             if ($this->verifyHmacAppInstall($request)) {
-
-                $shop = $this->store->where("myshopify_domain", "manh-store123.myshopify.com")->first();
-                // $shop = $this->store->where("myshopify_domain", $request->myshopify_domain)->first();
+                $shop = $this->store->where("myshopify_domain", $request->shop)->first();
 
                 if (empty($shop)) {
                     info("get acces token ");
