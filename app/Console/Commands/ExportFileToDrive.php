@@ -2,13 +2,14 @@
 
 namespace App\Console\Commands;
 
-use App\Exports\CustomerExport;
-use App\Models\Customer;
-use App\Services\Customers\CustomerService;
+use Maatwebsite\Excel\Facades\Excel;
+
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
-use Maatwebsite\Excel\Facades\Excel;
+
+use App\Models\Customer;
+use App\Services\Customers\CustomerService;
 
 class ExportFileToDrive extends Command
 {

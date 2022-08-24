@@ -4,18 +4,15 @@
 namespace App\Repositories\Shopify;
 
 
-use App\Jobs\Shopify\CreateDataCustomer;
-use App\Jobs\Shopify\CreateDataStore;
-use App\Services\Shopify\ShopifyService;
+use Throwable;
+use Carbon\Carbon;
+use GuzzleHttp\Client;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Bus\Batch;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\Http;
-use Throwable;
-use GuzzleHttp\Client;
-use App\Http\Controllers\LoginController;
-use App\Repositories\Contracts\ShopifyRepositoryInterface;
+
 use App\Models\Customer;
 use App\Models\Store;
 use App\Events\Database\CreatedModel;
@@ -23,6 +20,11 @@ use App\Events\Database\UpdatedModel;
 use App\Events\Database\DeletedModel;
 use App\Events\SynchronizedCustomer;
 use App\Jobs\Shopify\SyncCumtomer;
+use App\Jobs\Shopify\CreateDataStore;
+use App\Jobs\Shopify\CreateDataCustomer;
+use App\Services\Shopify\ShopifyService;
+use App\Http\Controllers\LoginController;
+use App\Repositories\Contracts\ShopifyRepositoryInterface;
 
 class ShopifyRepository implements ShopifyRepositoryInterface
 {
@@ -79,7 +81,6 @@ class ShopifyRepository implements ShopifyRepositoryInterface
             if ($statusCode == 401){
                 // $redirect_uri = 'http://localhost:8000/api/auth/authen';
                 // $redirect_uri = 'https://firegroup-team2.herokuapp.com/login';
-
                 $redirect_uri = $hostLink . "/login";
 
                 info($redirect_uri);
@@ -233,15 +234,14 @@ class ShopifyRepository implements ShopifyRepositoryInterface
             ],
             'query' => $params
         ]);
-        $responseStore = (array)json_decode($request->getBody(), true);
 
+        $responseStore = (array)json_decode($request->getBody(), true);
         $store = !empty($responseStore) ? $responseStore : [];
 
         info("createDataStore...");
         dispatch(new CreateDataStore($store, $accessToken));
 
         $getData = $store['shop'];
-
         return $getData['id'];
     }
 
@@ -319,24 +319,26 @@ class ShopifyRepository implements ShopifyRepositoryInterface
     public function syncCustomer($shop, $accessToken, $store)
     {
 
-        // get store.
+        info("--function: syncCustomer in shopify repository");
         try {
             $storeID = $store->id;
+            info("--1 call job batch....");
+
             $batch = Bus::batch([])
                 ->then(function (Batch $batch) {
                 })->finally(function (Batch $batch) {
-
+                    info ("SUCESS sync customers");
+                    info("-call event: SynchronizedCustomer");
                     event(new SynchronizedCustomer($batch->id));
                 })->onQueue('jobs')->dispatch();
             $batchID = $batch->id;
+            info("--2 call job batch....");
+            $limit = 100;
 
-            $limit = 10;
-
-            info("--run coundata ");
             //Count number Customers
             $countCustomer = $this->countDataCustomer($shop, $accessToken);
             $ceilRequest = (int)ceil($countCustomer['count'] / $limit);
-            info("--end run coundata ");
+
             //Calculate the number of iterations to be able to save all customers to the DB
             $numberRequest = $countCustomer > $limit ? $ceilRequest : 1;
             $log = [];
@@ -344,6 +346,8 @@ class ShopifyRepository implements ShopifyRepositoryInterface
                 'fields' => 'id, first_name, last_name, email, phone, orders_count, total_spent, addresses, created_at, updated_at',
                 'limit' => $limit,
             ];
+
+            $arrCustomers = [];
             for ($i = 0; $i < $numberRequest; $i++) {
                 $client = new Client();
                 $url = 'https://' . $shop . '/admin/api/2022-07/customers.json';
@@ -360,16 +364,19 @@ class ShopifyRepository implements ShopifyRepositoryInterface
 
                 $responseCustomer = (array)json_decode($request->getBody(), true);
                 $customers = !empty($responseCustomer['customers']) ? $responseCustomer['customers'] : [];
-
+                $arrCustomers[] =  $customers;
+                // $batch->add(new SyncCumtomer($batchID, $storeID, $customers));
+            }
+            foreach ($arrCustomers as $customers) {
                 $batch->add(new SyncCumtomer($batchID, $storeID, $customers));
             }
+            // $batch;
 
-            info("syncCustomer done sycn customer");
+            info("/.......syncCustomer: done sycn customer");
         } catch (Throwable $e) {
             info($e);
-            // report($e);
         }
-        return "successfully sync customers";
+
     }
 
     /**

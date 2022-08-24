@@ -4,13 +4,14 @@ namespace App\Http\Controllers\Client;
 
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
+
 use App\Http\Controllers\Controller;
 use App\Repositories\Eloquents\CampaignRepository;
 
 class CampaignController extends Controller
 {
-    protected $campaignRepository;
     protected $campaign;
+    protected $campaignRepository;
 
     public function __construct(CampaignRepository $campaignRepository)
     {

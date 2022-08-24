@@ -11,7 +11,9 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Session;
+
 use App\Events\Database\CreatedModel;
+
 use App\Models\Customer;
 use App\Models\Store;
 
