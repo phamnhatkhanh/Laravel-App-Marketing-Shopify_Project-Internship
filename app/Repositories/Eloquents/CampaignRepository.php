@@ -106,7 +106,7 @@ class CampaignRepository implements CampaignRepositoryInterface
                 event(new CreatedModel($connect, $campaignProcess));
                 Schema::connection($this->campaignProcess->getConnection()->getName())->disableForeignKeyConstraints();
             } catch (\Throwable $th) {
-                throw $th;
+                info ($th);
             }
 
 
@@ -117,7 +117,7 @@ class CampaignRepository implements CampaignRepositoryInterface
             ], 200);
         } catch (Throwable $e) {
 
-            // dd($e);
+            info($e);
         }
     }
 

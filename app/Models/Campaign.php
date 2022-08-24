@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 use App\Models\Store;
-use App\Models\CampaignVariant;
+
 
 class Campaign extends Model
 {
@@ -46,15 +46,6 @@ class Campaign extends Model
         'button_text_color'
     ];
 
-    /**
-     * Get the campaigns campaign variant list.
-     *
-     * @return Illuminate\Database\Eloquent\Collection;
-     */
-    public function variants()
-    {
-    	return $this->hasMany(CampaignVariant::class);
-    }
 
     /**
      * Get store belongs to this campaign

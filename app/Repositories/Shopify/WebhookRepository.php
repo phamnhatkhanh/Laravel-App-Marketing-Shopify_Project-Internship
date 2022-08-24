@@ -16,9 +16,6 @@ use App\Jobs\Shopify\UninstallApp;
 
 class WebhookRepository
 {
-
-
-
     public function __construct(){
 
     }

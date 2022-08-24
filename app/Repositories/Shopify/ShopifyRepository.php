@@ -45,15 +45,15 @@ class ShopifyRepository implements ShopifyRepositoryInterface
      */
     public function login(Request $request)
     {
-        info("shopify login");
         if (isset($request["hmac"])) {
-            info("have hash mac ");
             if ($this->verifyHmacAppInstall($request)) {
-                $shop = $this->store->where("myshopify_domain", $request->shop)->first();
 
+                $shop = $this->store->where("myshopify_domain", $request->shop)->first();
+                
                 if (empty($shop)) {
-                    info("get acces token ");
                     $this->authen($request);
+                    info("login: first install app");
+                    $request['first_install_app'] = true;
                 }
 
                 $LoginController = new LoginController;
@@ -61,8 +61,6 @@ class ShopifyRepository implements ShopifyRepositoryInterface
             }
         } else {
             info("NO hmac Login");
-            //404
-            //else
             $apiKey = config('shopify.shopify_api_key');
 
             $scope = 'read_customers,write_customers';
@@ -77,8 +75,6 @@ class ShopifyRepository implements ShopifyRepositoryInterface
             $statusCode = $request->getStatusCode();
 
             if ($statusCode == 401){
-                // $redirect_uri = 'http://localhost:8000/api/auth/authen';
-                // $redirect_uri = 'https://firegroup-team2.herokuapp.com/login';
                 $redirect_uri = $hostLink . "/login";
 
                 info($redirect_uri);
@@ -164,7 +160,7 @@ class ShopifyRepository implements ShopifyRepositoryInterface
         //Đăng kí CustomerWebhooks thêm, xóa, sửa
         $this->registerCustomerWebhookService($shop, $accessToken, $getWebhook);
         info("registerCustomerWebhookService");
-        return "setup store sucess";
+        // return "setup store sucess";
     }
 
     public function checkLogin($shop, $access_token)
@@ -330,7 +326,7 @@ class ShopifyRepository implements ShopifyRepositoryInterface
                 })->onQueue('jobs')->dispatch();
             $batchID = $batch->id;
             info("--2 call job batch....");
-            $limit = 100;
+            $limit = 123;
 
             //Count number Customers
             $countCustomer = $this->countDataCustomer($shop, $accessToken);
