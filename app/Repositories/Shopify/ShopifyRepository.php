@@ -49,13 +49,13 @@ class ShopifyRepository implements ShopifyRepositoryInterface
             if ($this->verifyHmacAppInstall($request)) {
 
                 $shop = $this->store->where("myshopify_domain", $request->shop)->first();
-                
+
                 if (empty($shop)) {
                     $this->authen($request);
-                    info("login: first install app");
                     $request['first_install_app'] = true;
                 }
 
+                info("1...Shopify login");
                 $LoginController = new LoginController;
                 return $LoginController->login($request);
             }

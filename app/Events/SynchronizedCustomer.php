@@ -55,10 +55,15 @@ class SynchronizedCustomer implements ShouldBroadcast
     public function sendProcess(){
         info('SynchronizedCustomer: COMPOLETE SYNC CUSTOMER FROM SHOPIFY');
         $batch =  JobBatch::find($this->batchID);
-        $storeModelBuilder = setConnectDatabaseActived(new Store());
-        $store = $storeModelBuilder->where('id',$this->storeID)->first();
 
-        if(empty($store)){
+        // $storeModelBuilder = setConnectDatabaseActived(new Store());
+        // $store = $storeModelBuilder->where('id',$this->storeID)->first();
+
+        $customerModelBuilder = setConnectDatabaseActived(new Customer());
+        $customers = $customerModelBuilder->where('store_id',$this->storeID)->simplePaginate(15);
+
+
+        if(empty($customers->getCollection()->toArray())){
             return [
                 "status" => true,
                 "message" => "Success sync customer",
@@ -71,8 +76,8 @@ class SynchronizedCustomer implements ShouldBroadcast
             "status" => true,
             "message" => "Success sync customer",
             'processing'=> $batch->progress(),
-            "totat" => $store->customers()->count(),
-            "data" => $store->customers()->simplePaginate(15)
+            "totat" => $customers->getCollection()->count(),
+            "data" => $customers
         ];
     }
 

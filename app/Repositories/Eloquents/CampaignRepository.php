@@ -68,12 +68,14 @@ class CampaignRepository implements CampaignRepositoryInterface
      */
     public function saveCampaign(Request $request)
     {
-        // $storeID = "65147142383";
+
         $storeID = getStoreID();
         $request['store_id'] = $storeID;
 
         try {
+            Schema::connection($this->campaign->getConnection()->getName())->disableForeignKeyConstraints();
             $campaign = $this->campaign->create($request->all());
+            Schema::connection($this->campaign->getConnection()->getName())->disableForeignKeyConstraints();
             $request['campaign_id'] = $campaign->id;
             $connect = ($this->campaign->getConnection()->getName());
             event(new CreatedModel($connect, $campaign));
@@ -103,10 +105,10 @@ class CampaignRepository implements CampaignRepositoryInterface
                     "total_customers" => $total_customers,
                 ]);
                 $connect = ($this->campaignProcess->getConnection()->getName());
-                event(new CreatedModel($connect, $campaignProcess));
                 Schema::connection($this->campaignProcess->getConnection()->getName())->disableForeignKeyConstraints();
+                event(new CreatedModel($connect, $campaignProcess));
             } catch (\Throwable $th) {
-                info ($th);
+                info ("saveCampaign ".$th);
             }
 
 

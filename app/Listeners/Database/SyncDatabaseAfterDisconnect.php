@@ -33,6 +33,7 @@ class SyncDatabaseAfterDisconnect  implements ShouldQueue
      */
     public function handle($event)
     {
+        info("--SyncDatabaseAfterDisconnect ".$event->dbModelConnect);
         $listDatabaseModelConnect = DbStatus::where('model_name', '=', $event->tableModel)->get();
         $listSyncModelRow = ObserveModel::where('database',$event->dbModelConnect)->get();
         foreach ($listDatabaseModelConnect as $dbModel) {

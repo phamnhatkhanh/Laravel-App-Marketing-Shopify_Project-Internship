@@ -16,7 +16,6 @@ class StoreFactory extends Factory
     public function definition()
     {
         return [
-            // 'id' => 65147142383,
             'id' => self::$id++,
             'name_merchant'=>$this->faker->username,
             'email'=> $this->faker->email,
