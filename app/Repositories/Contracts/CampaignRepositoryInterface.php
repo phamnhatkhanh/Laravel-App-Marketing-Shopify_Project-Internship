@@ -21,15 +21,15 @@ interface CampaignRepositoryInterface
      * @param Request $request
      * @return mixed
      */
-    public function saveCampaign(UpdateCampaignRequest $request);
+    public function saveCampaign(Request $request);
 
     /**
      * Receive request from FrontEnd put in Job and send mail to the person receiving the request
      *
-     * @param UpdateCampaignRequest $request
+     * @param Request $request
      * @return mixed
      */
-    public function SendEmail(UpdateCampaignRequest $request);
+    public function SendEmail(Request $request);
 
 }
 

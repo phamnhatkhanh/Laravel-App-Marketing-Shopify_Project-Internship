@@ -74,8 +74,12 @@ if (!function_exists('getRandomModelId')) {
      * @return int
      */
 
-    function getRandomModelId(string $model){
+    function getRandomModelId(string $classModel){
         // get model count
+
+        $modelBuilder = setConnectDatabaseActived(new $classModel());
+        $model = $modelBuilder->getModel();
+
         $count = $model::query()->count();
         if($count === 0){
             // if model count is 0
@@ -88,6 +92,25 @@ if (!function_exists('getRandomModelId')) {
     }
 }
 
+if (!function_exists('getUniqueId')) {
+    /**
+     * * Get random id from list primary key ID model.
+     *
+     * @param $model
+     *
+     * @return int
+     */
+    function getUniqueId(string $classModel){
+
+        $modelBuilder = setConnectDatabaseActived(new $classModel());
+        $modelElo =  $modelBuilder->getModel();
+        $model = $modelElo->whereRaw('id = (select max(`id`) from '.$modelElo->getModel()->getTable().')')->first();
+
+
+        return is_null($model)? 1 : $model->id +1;
+    }
+}
+
 if (!function_exists('getListModels')) {
      /**
      * * Get list eloquent path in folder app/Models.
@@ -97,7 +120,7 @@ if (!function_exists('getListModels')) {
      * @return array
      */
 
-    function getListModels($path){
+     function  getListModels($path){
             $out = [];
             $results = scandir($path);
             foreach ($results as $result) {

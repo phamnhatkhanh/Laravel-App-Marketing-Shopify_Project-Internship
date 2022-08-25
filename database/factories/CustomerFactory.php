@@ -9,20 +9,20 @@ use App\Models\Customer;
 
 class CustomerFactory extends Factory
 {
+    private static $id = 1;
     /**
      * Define the model's default state.
      *
      * @return array
      */
-    private static $id = 6;
 
     public function definition()
     {
-        // $id =6;
-        // info("-- indes functino csutoem factoey ".$id);
+
         return [
             'id' => self::$id++,
-//             'store_id'=>getRandomModelId(Store::class),
+            // 'id' => getUniqueId(Customer::class),
+            // 'store_id'=>getRandomModelId(Store::class),
             'first_name'=>$this->faker->firstNameMale,
             'last_name'=>$this->faker->lastName,
             'email'=> $this->faker->email,
@@ -35,5 +35,8 @@ class CustomerFactory extends Factory
         ];
     }
 }
+
+
+
 
 

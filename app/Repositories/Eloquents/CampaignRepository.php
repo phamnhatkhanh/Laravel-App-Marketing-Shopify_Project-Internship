@@ -27,10 +27,7 @@ use App\Jobs\SendTestPreview;
 use App\Services\Campaigns\CampaignService;
 use App\Repositories\Contracts\CampaignRepositoryInterface;
 
-// use Tymon\JWTAuth\Exceptions\JWTException;
-// use Tymon\JWTAuth\Exceptions\TokenExpiredException;
-// use Tymon\JWTAuth\Exceptions\TokenInvalidException;
-// use Tymon\JWTAuth\Facades\JWTAuth;
+
 
 class CampaignRepository implements CampaignRepositoryInterface
 {
@@ -64,10 +61,10 @@ class CampaignRepository implements CampaignRepositoryInterface
     /**
      * Receive request from FrontEnd. Send mail for selected customers and use Pusher the display mail number of successes, failures
      *
-     * @param UpdateCampaignRequest $request
+     * @param Request $request
      * @return array
      */
-    public function saveCampaign(UpdateCampaignRequest $request)
+    public function saveCampaign(Request $request)
     {
 
         $storeID = getStoreID();
@@ -151,10 +148,10 @@ class CampaignRepository implements CampaignRepositoryInterface
     /**
      * Receive request from FrontEnd put in Job and send mail to the person receiving the request
      *
-     * @param UpdateCampaignRequest $request
+     * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function SendEmail(UpdateCampaignRequest $request)
+    public function SendEmail(Request $request)
     {
         info('SendTestMail Success');
         $storeID = getStoreID();

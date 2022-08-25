@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Schema;
 
+use App\Models\Store;
 use App\Models\Campaign;
 use App\Models\CampaignProcess;
 
@@ -21,9 +22,10 @@ class CampaignSeeder extends Seeder
     public function run()
     {
 
-        Campaign::factory()->times(5)->create()->each(function($campaign){
+        Campaign::factory()->times(5)->create([
+            'store_id'=>getRandomModelId(Store::class)
+        ])->each(function($campaign){
             $connect = ($campaign->getConnection()->getName());
-            info($connect);
             SyncDatabaseAfterCreatedModel($connect,$campaign);
 
             CampaignProcess::factory(1)->create([

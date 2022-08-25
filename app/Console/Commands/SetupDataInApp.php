@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Schema;
 use App\Models\Store;
 use App\Models\Customer;
 
-class DeleteCustomer extends Command
+class SetupDataInApp extends Command
 {
     /**
      * The name and signature of the console command.
@@ -34,7 +34,7 @@ class DeleteCustomer extends Command
         parent::__construct();
     }
     // private  $id = 1;
-    private static $id = 6;
+    private static $id;
     /**
      * Execute the console command.
      *
@@ -48,7 +48,7 @@ class DeleteCustomer extends Command
         $storeModelBuilder = setConnectDatabaseActived(new Store());
         $storeModel = $storeModelBuilder->getModel();
         $store = $storeModel->where('name_merchant', 'LIKE', $storeName.'%')->first();
-
+        info("1");
         if(!empty($store)){
 
             $action = $this->ask('What do you refresh the data for?: ');
@@ -57,17 +57,14 @@ class DeleteCustomer extends Command
             $customerModel = $customerModelBuilder->getModel();
 
             if(strtolower($action) == "find"){
-
                 $store->customers()->each(function($customer){
                     SyncDatabaseAfterDeletedModel($customer->getConnection()->getName(),$customer);
                 });
 
-                $storeID = $store->id;
-
+                self::$id = $customerModel->max('id');
                 Schema::connection($customerModel->getConnection()->getName())->disableForeignKeyConstraints();
                     $customerModel->factory()->times(200)->create([
-
-                        'store_id'=>$storeID
+                        'store_id'=>$store->id
                     ])->each(function($customer){
                         $customer->id = self::$id++;
                         SyncDatabaseAfterCreatedModel($customer->getConnection()->getName(),$customer);
