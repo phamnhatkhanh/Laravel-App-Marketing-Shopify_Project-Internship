@@ -5,6 +5,7 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 use App\Models\Store;
+use App\Models\Customer;
 
 class CustomerFactory extends Factory
 {
@@ -13,12 +14,14 @@ class CustomerFactory extends Factory
      *
      * @return array
      */
-    private static $id = 1;
+    private static $id = 6;
+
     public function definition()
     {
+        // $id =6;
+        // info("-- indes functino csutoem factoey ".$id);
         return [
             'id' => self::$id++,
-            'store_id'=> 65147142383,
             // 'store_id'=>getRandomModelId(Store::class),
             'first_name'=>$this->faker->firstNameMale,
             'last_name'=>$this->faker->lastName,

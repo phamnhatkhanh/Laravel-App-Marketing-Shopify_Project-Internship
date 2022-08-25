@@ -20,7 +20,7 @@ class SyncDatabase
      *
      * @var string
      */
-    public $dbConnectName;
+    public $dbModelConnect;
 
     /**
      * Get the last database connection name of the model before the model can't connect to the database

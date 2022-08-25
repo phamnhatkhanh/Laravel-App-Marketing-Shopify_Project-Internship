@@ -74,9 +74,13 @@ SHOPIFY_DOMAIN=khanhpham530112313.myshopify.com
 # SHOPIFY_DOMAIN=manh-store123.myshopify.com
 
 
+# KEY_APP_SHOPIFY=654f376a65553734fc2003c474fabc65
+# KEY_SECRET_APP_SHOPIFY=8db2f21a512004a3b6b8d878a44573f3
+
+
 STORE_DB_HOST=127.0.0.1
 STORE_DB_PORT=3000
-STORE_DB_DATABASE=app_marketing_stores
+STORE_DB_DATABASE=app_marketing_storesa
 STORE_DB_USERNAME=root
 STORE_DB_PASSWORD=
 
@@ -89,7 +93,7 @@ STORE_BACKUP_DB_PASSWORD=
 
 CAMPAIGN_DB_HOST=127.0.0.1
 CAMPAIGN_DB_PORT=3000
-CAMPAIGN_DB_DATABASE=app_marketing_campaigns
+CAMPAIGN_DB_DATABASE=app_marketing_campaignsa
 CAMPAIGN_DB_USERNAME=root
 CAMPAIGN_DB_PASSWORD=
 
@@ -102,7 +106,7 @@ CAMPAIGN_BACKUP_DB_PASSWORD=
 
 CAMPAIGN_PROCESSES_DB_HOST=127.0.0.1
 CAMPAIGN_PROCESSES_DB_PORT=3000
-CAMPAIGN_PROCESSES_DB_DATABASE=app_marketing_campaigns_processes
+CAMPAIGN_PROCESSES_DB_DATABASE=app_marketing_campaigns_processesa
 CAMPAIGN_PROCESSES_DB_USERNAME=root
 CAMPAIGN_PROCESSES_DB_PASSWORD=
 
@@ -115,7 +119,7 @@ CAMPAIGN_PROCESSES_BACKUP_DB_PASSWORD=
 
 CUSTOMER_DB_HOST=127.0.0.1
 CUSTOMER_DB_PORT=3000
-CUSTOMER_DB_DATABASE=app_marketing_customers
+CUSTOMER_DB_DATABASE=app_marketing_customersa
 CUSTOMER_DB_USERNAME=root
 CUSTOMER_DB_PASSWORD=
 
@@ -130,3 +134,17 @@ CUSTOMER_BACKUP_1_DB_PORT=3000
 CUSTOMER_BACKUP_1_DB_DATABASE=app_marketing_customers_backup_1
 CUSTOMER_BACKUP_1_DB_USERNAME=root
 CUSTOMER_BACKUP_1_DB_PASSWORD=
+
+
+186: EloquentUserProvider
+ public function createModel()
+    {
+        $class = '\\'.ltrim($this->model, '\\');
+        info("--createModel ".json_encode($class,true));
+        $modelBuilder = setConnectDatabaseActived(new $class);
+        $model = $modelBuilder->getModel();
+        return $model;
+        // $class = '\\'.ltrim($this->model, '\\');
+        // return (new $class);
+        // return setConnectDatabaseActived(new $class);
+    }

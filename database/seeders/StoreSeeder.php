@@ -15,9 +15,8 @@ class StoreSeeder extends Seeder
     private static $id = 1;
     public function run()
     {
-        $stores = Store::factory()->times(1)->create();
+        $stores = Store::factory()->times(5)->create();
         foreach ($stores as  $store) {
-            // $store->id = 65147142383;
             $store->id = self::$id++;
             Store::on('mysql_stores_backup')->create(($store->toArray()));
         }

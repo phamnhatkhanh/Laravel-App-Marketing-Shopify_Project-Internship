@@ -41,25 +41,31 @@ class LoginController extends Controller
 
     public function login(Request $request)
     {
-        info("LoginController: login");
-        $getStore = $request->toArray();
 
+        info("2...LoginController: login ".json_encode($request->toArray(),true));
+        $getStore = $request->toArray();
+info("2...LoginController: get info in request");
         $data = ([
             "password"=> $getStore['shop'],
             "myshopify_domain"=>$getStore['shop']
         ]);
 
+        info("2...LoginController: validation ");
         $validator = Validator::make($data, [
             'myshopify_domain' => 'required',
             'password' => '',
         ]);
-
+       info("2...done validetion ");
         if ($validator->fails()) {
+            info("3...LoginController: fails");
             return response()->json($validator->errors(), 422);
         }
+        info("2...check acctoken ");
         if (!$token = auth()->attempt($validator->validated())) {
+            info("4...LoginController: attempt");
             return response()->json(['error' => 'Unauthorized'], 401);
         }
+        info("5...LoginController: provide access token");
         $access_Token = $this->createNewToken($token);
 
 

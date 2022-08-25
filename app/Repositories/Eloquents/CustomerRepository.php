@@ -44,7 +44,7 @@ class CustomerRepository implements CustomerRepositoryInterface
     public function syncCutomerFromShopify(Request $request)
     {
 
-        // $storeID = "65147142383";
+        
         $storeID = getStoreID();
 
         $store = $this->store->where('id',  $storeID)->first();

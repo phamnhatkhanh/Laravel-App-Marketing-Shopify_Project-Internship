@@ -5,6 +5,7 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 use App\Models\Store;
+use App\Models\Campaign;
 
 class CampaignFactory extends Factory
 {
@@ -18,8 +19,7 @@ class CampaignFactory extends Factory
     {
         return [
             'id' => self::$id++,
-            'store_id'=>65147142383,
-            // 'store_id'=>getRandomModelId(Store::class),
+            'store_id'=>getRandomModelId(Store::class),
             'name'=>$this->faker->userName,
             'subject'=>$this->faker->sentence(3,true),
             'content'=> $this->faker->sentence(3,true),

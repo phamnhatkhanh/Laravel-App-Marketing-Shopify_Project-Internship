@@ -37,7 +37,7 @@ if (!function_exists('setConnectDatabaseActived')) {
                         $dbActivedModel = DbStatus::where('model_name',$tableModel)
                             ->where('status',"actived")->first();
                         if($dbActivedModel){ // normal sync
-                            info("--------sync db.......");
+                            info("--------sync db....... ".$dbModel->name);
                             DbStatus::where('name',$dbModel->name)->update([ 'status' => 'syncing']);
                             event(new SyncDatabase($dbModel->name, $tableModel));
                             continue;
@@ -47,7 +47,7 @@ if (!function_exists('setConnectDatabaseActived')) {
                             ->first();
                             $dbLastActiveModel->update([ "status" =>"sync_lasted_db" ]);
                             $model = $model::on($dbModel->name);
-                            info("--------sync db all disconnect");
+                            info("--------sync db all disconnect ".$dbModel->name);
                             event(new SyncDatabase($dbModel->name, $tableModel, $dbLastActiveModel->name));
                             continue;
                         }

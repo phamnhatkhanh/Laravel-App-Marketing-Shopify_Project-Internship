@@ -10,6 +10,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Schema;
 
 use App\Events\Database\CreatedModel;
 use App\Events\Database\UpdatedModel;
@@ -98,7 +99,10 @@ class SyncCumtomer implements ShouldQueue
 
                 if (empty($findCustomer)) {
                   try {
-                    $customerModel->create($data);
+
+                    Schema::connection($customerModel->getConnection()->getName())->disableForeignKeyConstraints();
+                        $customerModel->create($data);
+                    Schema::connection($customerModel->getConnection()->getName())->enableForeignKeyConstraints();
                     $customer = $customerModel->where("id",$data['id'])->first();
                     info("-SyncCumtomer Create Customer: ...  ". json_encode($customer, true));
                     $connect = ($customerModel->getConnection()->getName());
