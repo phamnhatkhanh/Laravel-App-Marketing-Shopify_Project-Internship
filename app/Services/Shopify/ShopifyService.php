@@ -130,7 +130,7 @@ class ShopifyService
      */
     public static function countDataCustomer($shop, $accessToken)
     {
-        // info("countDataCustomer ".$accessToken . " ".$shop);
+
         $client = new Client();
         $url = 'https://' . $shop . '/admin/api/2022-07/customers/count.json';
         $request = $client->request('get', $url, [
@@ -139,7 +139,7 @@ class ShopifyService
             ]
         ]);
         $countCustomer = (array)json_decode($request->getBody());
-        // info("soune ddone customer is: " .$countCustomer);
+   
         return $countCustomer;
     }
 

@@ -49,9 +49,10 @@ class CampaignService
         }
 
         if (!empty($image)) {
+            
             $img = $domBody->getElementsByTagName('img')[0];
             $img->setAttribute('src', config('shopify.ngrok') . '/uploads/' . $image);
-//             $img->setAttribute('src', asset('uploads/' . $image));
+
         }
 
         $bodyEmail = $domBody->saveHTML();

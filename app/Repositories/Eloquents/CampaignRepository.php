@@ -91,9 +91,9 @@ class CampaignRepository implements CampaignRepositoryInterface
             } else {
                 $total_customers = 0;
             }
-            try {
-                //code...
-                Schema::connection($this->campaignProcess->getConnection()->getName())->disableForeignKeyConstraints();
+
+
+            Schema::connection($this->campaignProcess->getConnection()->getName())->disableForeignKeyConstraints();
                 $campaignProcess = $this->campaignProcess->create([
                     "process" => "0",
                     "status" => "running",
@@ -103,12 +103,8 @@ class CampaignRepository implements CampaignRepositoryInterface
                     "total_customers" => $total_customers,
                 ]);
                 $connect = ($this->campaignProcess->getConnection()->getName());
-                Schema::connection($this->campaignProcess->getConnection()->getName())->disableForeignKeyConstraints();
-                event(new CreatedModel($connect, $campaignProcess));
-            } catch (\Throwable $th) {
-                info ("saveCampaign ".$th);
-            }
-
+            Schema::connection($this->campaignProcess->getConnection()->getName())->disableForeignKeyConstraints();
+            event(new CreatedModel($connect, $campaignProcess));
 
             $this->sendEmailPreview($request, $campaignProcess);
             return response([
@@ -177,11 +173,9 @@ class CampaignRepository implements CampaignRepositoryInterface
 
         $bodyEmail = $this->previewEmail($request, $array);
         $imageName = "";
-
         $subject = $this->subject($request->subject, $array);
-
         $sendEmail = $request->send_email;
-        info('Ready Job : ' . $store);
+
         dispatch(new SendTestPreview($bodyEmail, $subject, $imageName, $store, $sendEmail));
         info('SendTestMail Success');
 
@@ -218,32 +212,32 @@ class CampaignRepository implements CampaignRepositoryInterface
                 })->onQueue('jobs')->dispatch();
             $batchId = $batch->id;
 
-            info("inside sendEmailPreview: handel templete mail " . $batchId);
-
 
             if ($request->has("list_mail_customers")) {
-                info("SendMail: list mail");
-                info("SendMail: list mail");
+
                 $listCustomersId =  json_decode($request->list_mail_customers, true);
                 $listCustomers =  $this->customer->whereIn('id', $listCustomersId)->get();
+
             } elseif ($request->has("list_mail_customers_except")) {
-                info("SendMail: exception mail");
+
                 $listCustomersId =  $request->list_mail_customers_except;
                 $listCustomersId =  json_decode($request->list_mail_customers_except, true);
                 $listCustomers =  $this->customer->whereNotIn('id', $listCustomersId)->get();
+
             } elseif ($request->has("all_customer")) {
-                info("SendMail: send all email in store");
+
                 $listCustomers =  $this->customer->get();
+
             } else {
+
                 $listCustomers = [];
+
             }
 
-            info("inside sendEmailPreview: list customer send mail " . json_encode($listCustomers, true));
             $storeID = $campaignProcess->store_id;
-
             $store = $this->store->where('id', $storeID)->first();
+
             foreach ($listCustomers as  $value) {
-                info("inside sendEmailPreview");
 
                 $array = ([
                     [
@@ -260,19 +254,18 @@ class CampaignRepository implements CampaignRepositoryInterface
                     ],
                     [
                         "variant" => 'Shop_name',
-                        "value" => $store->domain
+                        "value" => $store->name_merchant
                     ],
                 ]);
 
                 $bodyEmail = $this->previewEmail($request, $array);
-
                 $imageName = "";
-
                 $subject = $this->subject($request->subject, $array);
 
                 $batch->add(new SendEmailPreview($value->email, $batchId, $campaignProcess, $bodyEmail, $subject, $imageName, $store));
+
             }
-            info("inside sendEmailPreview:group jobs");
+
         } catch (Throwable $e) {
             info($e);
         }
@@ -292,7 +285,9 @@ class CampaignRepository implements CampaignRepositoryInterface
     public function index(Request $request)
     {
         $storeID = getStoreID();
+
         if (isset($storeID)) {
+
             $totalPage = 0;
             $params = $request->except('_token');
             $data = $this->campaignProcess
@@ -307,10 +302,8 @@ class CampaignRepository implements CampaignRepositoryInterface
             $total = $this->campaignProcess
                 ->where("store_id", $storeID)
                 ->searchcampaign($params)->count();
-            info("total" . $total);
-
             $totalPage = (int)ceil($total / 15);
-            info("totalPage" . $totalPage);
+
         }
 
         return response([

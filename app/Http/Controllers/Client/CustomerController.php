@@ -46,6 +46,7 @@ class CustomerController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function exportCustomerCSV(Request $request){
+        info("Controller exportCustomerCSV");
         return $this->customerRepository->exportCustomerCSV($request);
 
     }

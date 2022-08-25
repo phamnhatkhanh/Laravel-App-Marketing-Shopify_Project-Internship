@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Models\Customer;
+use App\Helpers\Database\Factory;
+use Illuminate\Database\Eloquent\Factories\Sequence;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -17,27 +19,6 @@ Route::get('/', function () {
     return view('showNotification');
 });
 
-Route::get('/ha', function () {
-    return Customer::factory()->times(2)->create([
-        'id'=> getUniqueId(Customer::class),
-        'store_id'=>1]
-    );
-
-    return getUniqueId(Customer::class);
-    $customerModelBuilder = setConnectDatabaseActived(new Customer());
-        $customerModel = $customerModelBuilder->getModel();
-
-        $idMax = $customerModelBuilder->whereRaw('id = (select max(`id`) from '.$customerModelBuilder->getModel()->getTable().')')->first();
-
-        if(is_null($idMax)){
-            return 1;
-        }else{
-
-            return $idMax->id +1;
-        }
-
-        // info("id_customer " . $customerModel->max('id'));
-});
 
 
 

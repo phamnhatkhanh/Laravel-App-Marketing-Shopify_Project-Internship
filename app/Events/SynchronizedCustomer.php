@@ -56,12 +56,8 @@ class SynchronizedCustomer implements ShouldBroadcast
         info('SynchronizedCustomer: COMPOLETE SYNC CUSTOMER FROM SHOPIFY');
         $batch =  JobBatch::find($this->batchID);
 
-        // $storeModelBuilder = setConnectDatabaseActived(new Store());
-        // $store = $storeModelBuilder->where('id',$this->storeID)->first();
-
         $customerModelBuilder = setConnectDatabaseActived(new Customer());
         $customers = $customerModelBuilder->where('store_id',$this->storeID)->simplePaginate(15);
-
 
         if(empty($customers->getCollection()->toArray())){
             return [

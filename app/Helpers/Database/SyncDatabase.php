@@ -20,7 +20,7 @@ if (!function_exists('SyncDatabaseAfterCreatedModel')) {
      */
     function SyncDatabaseAfterCreatedModel($dbConnectName,$model){
 
-        info("--SyncDatabaseAfterCreatedModel: create model ".$model->getTable() .": ". json_encode($model,true));
+
         $listDatabaseModel = DbStatus::where('model_name', '=', $model->getTable())->get();
 
         $dataCreatedModel = $model->toArray();
@@ -32,7 +32,8 @@ if (!function_exists('SyncDatabaseAfterCreatedModel')) {
                 if($dbModel->name == $dbConnectName){continue;}
                 if(DB::connection($dbModel->name)->getPdo()){
                     Schema::connection($dbModel->name)->disableForeignKeyConstraints();
-                        $model::on($dbModel->name)->create($dataCreatedModel);
+                    $model::on($dbModel->name)->create($dataCreatedModel);
+                    info("--SyncDatabaseAfterCreatedModel: create model on ".$dbModel->name .": ". json_encode($model,true));
                     Schema::connection($dbModel->name)->enableForeignKeyConstraints();
                 }
 
