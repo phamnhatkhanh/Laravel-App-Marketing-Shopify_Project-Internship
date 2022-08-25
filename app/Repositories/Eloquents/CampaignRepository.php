@@ -64,10 +64,10 @@ class CampaignRepository implements CampaignRepositoryInterface
     /**
      * Receive request from FrontEnd. Send mail for selected customers and use Pusher the display mail number of successes, failures
      *
-     * @param Request $request
+     * @param UpdateCampaignRequest $request
      * @return array
      */
-    public function saveCampaign(Request $request)
+    public function saveCampaign(UpdateCampaignRequest $request)
     {
 
         $storeID = getStoreID();
@@ -179,7 +179,7 @@ class CampaignRepository implements CampaignRepositoryInterface
         ]);
 
         $bodyEmail = $this->previewEmail($request, $array);
-        $imageName = $this->imageNameTemp;
+        $imageName = "";
 
 
         $subject = $this->subject($request->subject, $array);
@@ -198,11 +198,10 @@ class CampaignRepository implements CampaignRepositoryInterface
     /**
      * Receive request from saveCampaign put in Job. Send mail for selected customers and use Pusher the display mail number of successes, failures
      *
-     * @param UpdateCampaignRequest $request
      * @param $campaignProcess
      * @return \Illuminate\Http\JsonResponse
      */
-    public function sendEmailPreview(UpdateCampaignRequest $request, $campaignProcess)
+    public function sendEmailPreview($request, $campaignProcess)
     {
         try {
             $batch = Bus::batch([])

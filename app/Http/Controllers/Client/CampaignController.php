@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Client;
 
+use App\Http\Requests\UpdateCampaignRequest;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -43,10 +44,10 @@ class CampaignController extends Controller
     /**
      * Receive request from FrontEnd. Send mail for selected customers and use Pusher the display mail number of successes, failures
      *
-     * @param Request $request
+     * @param UpdateCampaignRequest $request
      * @return array
      */
-    public function saveCampaign(Request $request){
+    public function saveCampaign(UpdateCampaignRequest $request){
 
         return $this->campaignRepository->saveCampaign($request);
     }
@@ -54,21 +55,11 @@ class CampaignController extends Controller
     /**
      * Receive request from FrontEnd put in Job and send mail to the person receiving the request
      *
-     * @param Request $request
+     * @param UpdateCampaignRequest $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function SendEmail(Request $request){
+    public function SendEmail(UpdateCampaignRequest $request){
         return $this->campaignRepository->sendEmail($request);
-    }
-
-    /**
-     * Receive request from saveCampaign put in Job. Send mail for selected customers and use Pusher the display mail number of successes, failures
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function sendEmailPreview(Request $request)
-    {
-        return $this->campaignRepository->sendEmailPreview($request);
     }
 
     /**
