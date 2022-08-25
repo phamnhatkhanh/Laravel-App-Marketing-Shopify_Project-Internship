@@ -52,7 +52,8 @@ class ExportFileToDrive extends Command
         $location = $locationExport.'customer_'.$dateExport;
         $fileName = $location.'.csv';
 
-        $getCustomer = Customer::get();
+        $customerModelBuilder = setConnectDatabaseActived(new Customer());
+        $getCustomer = $customerModelBuilder->get();
         CustomerService::exportCustomer($fileName, $getCustomer);
 
         $fileData = File::get($fileName);

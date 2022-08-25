@@ -22,9 +22,8 @@ class CampaignService
      */
     public static function previewEmail($request, $array)
     {
-
         $imageName = self::$imageNameTemp;
-        if (empty($imageName) && $request->hasFile('background_banner')){
+        if (empty($imageName) && $request->hasFile('background_banner')) {
             $name = time() . '.' . $request->background_banner->extension();
             $request->background_banner->move(public_path('uploads'), $name);
             self::$imageNameTemp = $name;
@@ -32,15 +31,17 @@ class CampaignService
         $image = self::$imageNameTemp;
 
         $bodyPreviewEmail = $request->preview_email;
+
         $cutBodyPreview = str_replace(array("\\",), '', $bodyPreviewEmail);
         $domBody = new HTML5DOMDocument();
-        $domBody->loadHTML($cutBodyPreview);
+        $domBody->loadHTML($cutBodyPreview, HTML5DOMDocument::ALLOW_DUPLICATE_IDS);
 
         $querySelectorSubject = $domBody->querySelectorAll('.tiptap_variant');
-        for ($i = 0; $i < count( $querySelectorSubject ); $i++){
+
+        for ($i = 0; $i < count($querySelectorSubject); $i++) {
             $nameVariant = $querySelectorSubject[$i]->attributes[2]->value;
             foreach ($array as $arr) {
-                if ($nameVariant == $arr['variant']){
+                if ($nameVariant == $arr['variant']) {
                     $querySelectorSubject[$i]->textContent = $arr['value'];
                     $querySelectorSubject[$i]->attributes[0]->value = "color: rgb(40, 41, 61); font-weight: 600; margin: 0px 3px;";
                 }
@@ -49,7 +50,7 @@ class CampaignService
 
         if (!empty($image)) {
             $img = $domBody->getElementsByTagName('img')[0];
-            $img->setAttribute('src',config('shopify.ngrok').'/uploads/' . $image);
+            $img->setAttribute('src', config('shopify.ngrok') . '/uploads/' . $image);
 //             $img->setAttribute('src', asset('uploads/' . $image));
         }
 
@@ -68,23 +69,32 @@ class CampaignService
     public static function subject($request, $array)
     {
         $domSubject = new HTML5DOMDocument();
-        $domSubject->loadHTML($request);
-        $querySelectorSubject = $domSubject->querySelector('p')->childNodes;
+        $domSubject->loadHTML($request, HTML5DOMDocument::ALLOW_DUPLICATE_IDS);
+
+        $querySelectorSubject = $domSubject->querySelectorAll('.tiptap_variant');
+
+        for ($i = 0; $i < count($querySelectorSubject); $i++) {
+            $nameVariant = $querySelectorSubject[$i]->attributes[2]->value;
+            foreach ($array as $arr) {
+                if ($nameVariant == $arr['variant']) {
+                    $querySelectorSubject[$i]->textContent = $arr['value'];
+                    $querySelectorSubject[$i]->attributes[0]->value = "color: rgb(40, 41, 61); font-weight: 600; margin: 0px 3px;";
+                }
+            }
+        }
+
+        $findValueSubject = $domSubject->querySelector('p')->childNodes;
 
         $arraySubject = [];
-        foreach ($querySelectorSubject as $item) {
-            if ($item->nodeName == '#text') {
-                array_push($arraySubject, $item->data);
+        foreach ($findValueSubject as $item) {
+            if ($item->childNodes[0] == null) {
+                array_push($arraySubject, '');
             } else {
-                $aa = $item->childNodes[0]->data;
-                array_push($arraySubject, $aa);
+                array_push($arraySubject, $item->childNodes[0]->data);
             }
         }
         $arrayJoinElements = implode(' ', $arraySubject);
 
-        foreach ($array as $arr) {
-            $arrayJoinElements = str_replace($arr['variant'], $arr['value'], $arrayJoinElements);
-        }
         return $arrayJoinElements;
     }
 

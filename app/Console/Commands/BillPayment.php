@@ -10,10 +10,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Models\Store;
 use App\Jobs\SendBill;
 use App\Services\SendBillSMS;
-// use Tymon\JWTAuth\Exceptions\JWTException;
-// use Tymon\JWTAuth\Exceptions\TokenExpiredException;
-// use Tymon\JWTAuth\Exceptions\TokenInvalidException;
-// use Tymon\JWTAuth\Facades\JWTAuth;
+
 
 class BillPayment extends Command
 {
@@ -48,12 +45,19 @@ class BillPayment extends Command
      */
     public function handle()
     {
-        $this->line('Bắt đầu gửi mail và gửi sms thông báo bill');
-        $storeID = getStoreID();
-        $store = Store::where('id', $storeID)->first();
-        dispatch(new SendBill($store));
+        $storeModelBuilder = setConnectDatabaseActived(new Store());
 
-        SendBillSMS::sendBillSMS($store);
+        $this->line('Bắt đầu gửi mail và gửi sms thông báo bill');
+
+
+        $listStore = $storeModelBuilder->get();
+        foreach ($listStore as $item){
+            if ($item->status == 'installed'){
+                dispatch(new SendBill($item));
+
+                SendBillSMS::sendBillSMS($item);
+            }
+        }
 
         $this->line('Kết thúc quá trình gửi sms và gửi mail');
 
