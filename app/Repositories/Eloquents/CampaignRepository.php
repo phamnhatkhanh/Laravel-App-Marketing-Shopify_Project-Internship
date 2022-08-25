@@ -27,10 +27,7 @@ use App\Jobs\SendTestPreview;
 use App\Services\Campaigns\CampaignService;
 use App\Repositories\Contracts\CampaignRepositoryInterface;
 
-// use Tymon\JWTAuth\Exceptions\JWTException;
-// use Tymon\JWTAuth\Exceptions\TokenExpiredException;
-// use Tymon\JWTAuth\Exceptions\TokenInvalidException;
-// use Tymon\JWTAuth\Facades\JWTAuth;
+
 
 class CampaignRepository implements CampaignRepositoryInterface
 {
@@ -154,7 +151,7 @@ class CampaignRepository implements CampaignRepositoryInterface
      * @param UpdateCampaignRequest $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function SendEmail(UpdateCampaignRequest $request)
+    public function SendEmail(Request $request)
     {
         info('SendTestMail Success');
         $storeID = getStoreID();
@@ -179,6 +176,7 @@ class CampaignRepository implements CampaignRepositoryInterface
         ]);
 
         $bodyEmail = $this->previewEmail($request, $array);
+        
         $imageName = $this->imageNameTemp;
 
 
@@ -202,7 +200,7 @@ class CampaignRepository implements CampaignRepositoryInterface
      * @param $campaignProcess
      * @return \Illuminate\Http\JsonResponse
      */
-    public function sendEmailPreview(UpdateCampaignRequest $request, $campaignProcess)
+    public function sendEmailPreview(Request $request, $campaignProcess)
     {
         try {
             $batch = Bus::batch([])
