@@ -47,8 +47,7 @@ class BillPayment extends Command
     {
         $storeModelBuilder = setConnectDatabaseActived(new Store());
 
-        $this->line('Bắt đầu gửi mail và gửi sms thông báo bill');
-
+        $this->line('Start process send mail and sms bill for merchant.');
 
         $listStore = $storeModelBuilder->get();
         foreach ($listStore as $item){
@@ -59,8 +58,7 @@ class BillPayment extends Command
             }
         }
 
-        $this->line('Kết thúc quá trình gửi sms và gửi mail');
+        $this->line('Done nofication bill for merchant.');
 
-        return;
     }
 }

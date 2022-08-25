@@ -103,11 +103,10 @@ if (!function_exists('getUniqueId')) {
     function getUniqueId(string $classModel){
 
         $modelBuilder = setConnectDatabaseActived(new $classModel());
-        $modelElo =  $modelBuilder->getModel();
-        $model = $modelElo->whereRaw('id = (select max(`id`) from '.$modelElo->getModel()->getTable().')')->first();
+        $modelEloquent =  $modelBuilder->getModel();
+        $model = $modelEloquent->whereRaw('id = (select max(`id`) from '.$modelEloquent->getModel()->getTable().')')->first();
 
-
-        return is_null($model)? 1 : $model->id +1;
+        return is_null($model)? 1 : $model->id;
     }
 }
 

@@ -6,23 +6,21 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 
 use App\Models\Store;
 use App\Models\Customer;
+use App\Helpers\Database\Factory as Khanh;
 
 class CustomerFactory extends Factory
 {
-    private static $id = 1;
+    private static $id=1;
     /**
      * Define the model's default state.
      *
      * @return array
      */
-
     public function definition()
     {
 
         return [
             'id' => self::$id++,
-            // 'id' => getUniqueId(Customer::class),
-            // 'store_id'=>getRandomModelId(Store::class),
             'first_name'=>$this->faker->firstNameMale,
             'last_name'=>$this->faker->lastName,
             'email'=> $this->faker->email,

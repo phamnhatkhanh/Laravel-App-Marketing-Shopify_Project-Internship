@@ -43,46 +43,58 @@ class SetupDataInApp extends Command
     public function handle()
     {
 
-        $storeName = $this->ask('Please choose store: ');
-
+        $storeName = $this->ask('Please enter name store');
         $storeModelBuilder = setConnectDatabaseActived(new Store());
         $storeModel = $storeModelBuilder->getModel();
         $store = $storeModel->where('name_merchant', 'LIKE', $storeName.'%')->first();
-        info("1");
+
         if(!empty($store)){
 
-            $action = $this->ask('What do you refresh the data for?: ');
+            $action = $this->ask('What do you refresh the data for ?');
+
 
             $customerModelBuilder = setConnectDatabaseActived(new Customer());
             $customerModel = $customerModelBuilder->getModel();
 
             if(strtolower($action) == "find"){
-                $store->customers()->each(function($customer){
+                $customers = $customerModel->where('store_id',$store->id)->get();
+                $customers->each(function($customer){
+
                     SyncDatabaseAfterDeletedModel($customer->getConnection()->getName(),$customer);
                 });
 
-                self::$id = $customerModel->max('id');
+                $idMaxCustomer = getUniqueId(Customer::class);
+
+                $number = $this->ask('How many customers do you need?');
                 Schema::connection($customerModel->getConnection()->getName())->disableForeignKeyConstraints();
-                    $customerModel->factory()->times(200)->create([
-                        'store_id'=>$store->id
-                    ])->each(function($customer){
-                        $customer->id = self::$id++;
+
+                    $customerModel->factory()->times($number)->make(['store_id' => $store->id])
+                    ->each(function($customer) use (&$idMaxCustomer,&$customerModel ){
+
+                        $idMaxCustomer++;
+                        $customer->id = $idMaxCustomer;
+                        $customerModel->create($customer->toArray());
+
                         SyncDatabaseAfterCreatedModel($customer->getConnection()->getName(),$customer);
                     });
+
                 Schema::connection($customerModel->getConnection()->getName())->enableForeignKeyConstraints();
 
                 $this->info("Delete data customer from shopify in database and seed new data customer.");
 
             }elseif(strtolower($action) == "sync"){
 
-                $store->customers()->each(function($customer){
+                $customers = $customerModel->where('store_id',$store->id)->get();
+                $customers ->each(function($customer){
                     SyncDatabaseAfterDeletedModel($customer->getConnection()->getName(),$customer);
                 });
+
                 $this->info("Delete all customer of store.");
 
-            }elseif(strtolower($action) == "test"){
+            }elseif(strtolower($action) == "uninstall"){
 
                 SyncDatabaseAfterDeletedModel($store->getConnection()->getName(),$store);
+
                 $this->info("Delete store and table relative store in database.");
 
             }else{

@@ -34,10 +34,9 @@
             "Database\\Seeders\\": "database/seeders/"
         },
         "files": [
-            "app/Helpers/JsonRespone/formatJson.php",
+            "app/Helpers/Routes/JwtHelper.php",
             "app/Helpers/Routes/RouteHelper.php",
             "app/Helpers/Database/Eloquent.php",
-            "app/Helpers/Routes/JwtHelper.php",
             "app/Helpers/Database/SyncDatabase.php"
 
         ]

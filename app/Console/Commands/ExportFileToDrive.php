@@ -44,9 +44,9 @@ class ExportFileToDrive extends Command
      */
     public function handle()
     {
-        $this->info('Bắt đầu Backup dữ liệu mỗi ngày');
+        $this->info('Start backup data CSV customer from server to GoogleDrive.');
 
-//        $storeID = GetStoreID();
+
         $locationExport = storage_path('app/backup/customers/');
         $dateExport = date('d-m-Y_H-i-s');
         $location = $locationExport.'customer_'.$dateExport;
@@ -62,7 +62,7 @@ class ExportFileToDrive extends Command
 
         unlink($fileName);
 
-        $this->info('Backup dữ liệu mỗi ngày thành công. File được lưu trữ ở SendEmailExport trên GoogleDrive');
+        $this->info('Finished process backup data.');
 
         return;
     }

@@ -70,7 +70,6 @@ class WebhookRepository
      * @return void
      */
     public function updateFromShopify($payload){
-        info("WebhookRepository: update customer from shopify");
         dispatch(new UpdateCustomer($payload));
     }
 

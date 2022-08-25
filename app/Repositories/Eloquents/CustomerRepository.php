@@ -4,25 +4,25 @@
 namespace App\Repositories\Eloquents;
 
 use Carbon\Carbon;
+
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Http\Request;
 use Illuminate\Bus\Batch;
 
 use App\Jobs\SendEmail;
+
 use App\Models\Customer;
 use App\Models\Store;
+
 use App\Events\Database\CreatedModel;
 use App\Events\Database\UpdatedModel;
 use App\Events\Database\DeletedModel;
 use App\Events\SynchronizedCustomer;
+
 use App\Services\Customers\CustomerService;
+
 use App\Repositories\Shopify\ShopifyRepository;
 use App\Repositories\Contracts\CustomerRepositoryInterface;
-// use Illuminate\Support\Facades\Auth;
-// use Tymon\JWTAuth\Exceptions\JWTException;
-// use Tymon\JWTAuth\Exceptions\TokenExpiredException;
-// use Tymon\JWTAuth\Exceptions\TokenInvalidException;
-// use Tymon\JWTAuth\Facades\JWTAuth;
 
 class CustomerRepository implements CustomerRepositoryInterface
 {
@@ -44,14 +44,11 @@ class CustomerRepository implements CustomerRepositoryInterface
     public function syncCutomerFromShopify(Request $request)
     {
 
-        
         $storeID = getStoreID();
 
         $store = $this->store->where('id',  $storeID)->first();
 
-
         $shopifyRepository = new ShopifyRepository();
-
 
         $shopifyRepository->syncCustomer($store->myshopify_domain, $store->access_token, $store);
 
@@ -69,8 +66,8 @@ class CustomerRepository implements CustomerRepositoryInterface
      */
     public function index(Request $request)
     {
-        $storeID = getStoreID();
 
+        $storeID = getStoreID();
         $store = $this->store->where('id', $storeID)->first();
 
         if (isset($store)) {
@@ -105,17 +102,14 @@ class CustomerRepository implements CustomerRepositoryInterface
                     ->date($params)
                     ->simplePaginate(15);
 
-
                 $totalSearchCustomer = $this->customer
                     ->where("store_id", $store->id)
                     ->searchcustomer($params)->count();
-                    info("---total_customers store in condition ".$totalSearchCustomer);
                 $totalPage = (int)ceil($totalSearchCustomer / 15);
 
             }
 
             $total = $this->customer->where("store_id", $store->id)->count();
-            info("---total_customers store ".$total);
             return response([
                 "total_customers" => $total,
                 "totalPage" => $totalPage ? $totalPage : 0,
@@ -147,35 +141,36 @@ class CustomerRepository implements CustomerRepositoryInterface
      */
     public function exportCustomerCSV(Request $request)
     {
-        $storeID = getStoreID();
 
-        info("Customer hash token: " . $storeID);
+        $storeID = getStoreID();
+        $store = $this->store->where('id', $storeID)->first();
 
         $locationExport = storage_path('app/backup/customers/');
         $dateExport = date('d-m-Y_H-i-s');
-
         $fileName = $locationExport . 'customer_'.$storeID.'_' . $dateExport . '.csv';
+
         if (!empty($request->list_customer || !empty($request->except_customer))) {
+
             if ($request->has('list_customer')) {
                 $listCustomers = $request->list_customer;
                 $users = $this->customer->whereIn('id', $listCustomers)->get();
+
             } elseif ($request->has('except_customer')) {
                 $except_customer = $request->except_customer;
                 $limit = $request->limit;
-                $users = $this->customer->whereNotIn('id', $except_customer)
-                    ->take($limit)
-                    ->get();
+                $users = $this->customer->whereNotIn('id', $except_customer)->take($limit)->get();
+
             } else {
-                $users = $this->customer->simplePaginate(15);
+                $users = $this->customer->get();
+
             }
 
             $this->exportCustomer($fileName, $users);
-
-            $store = $this->store->where('id', $storeID)->first();
             dispatch(new SendEmail($fileName, $store));
+
         } else {
-            $store = $this->store->where('id', $storeID)->first();
-            $users = $store->customers;
+
+            $users =  $this->customer->where('store_id',$storeID)->get();
 
             $this->exportCustomer($fileName, $users);
             dispatch(new SendEmail($fileName, $store));
@@ -191,7 +186,6 @@ class CustomerRepository implements CustomerRepositoryInterface
     public function store($request)
     {
         $request['id'] = $this->customer->max('id') + 1;
-        // dd($request['id'] );
         $request['created_at'] = Carbon::now()->format('Y-m-d H:i:s');
         $request['updated_at'] = Carbon::now()->format('Y-m-d H:i:s');
 
@@ -225,12 +219,14 @@ class CustomerRepository implements CustomerRepositoryInterface
 
     public function destroy($customerID)
     {
-        // dd("dleete function ".$customerID);
+
         $customer = $this->customer->where('id', $customerID)->first();
+
         if (!empty($customer)) {
-            // $customer->delete();
+
             $connect = ($this->customer->getConnection()->getName());
             event(new DeletedModel($connect, $customer));
+
             return $customer;
         }
     }
