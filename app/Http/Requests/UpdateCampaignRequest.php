@@ -28,7 +28,7 @@ class UpdateCampaignRequest extends FormRequest
             'subject' => 'required',
             'content' => 'required',
             'footer' => 'required|max:200',
-            'background_banner' => 'required|image|mimes:jpeg,png,jpg,gif|max:5120',
+            'background_banner' => 'image|mimes:jpeg,png,jpg,gif|max:5120',
         ];
     }
 
