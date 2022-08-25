@@ -28,7 +28,7 @@ class UpdateCampaignRequest extends FormRequest
             'subject' => 'required',
             'content' => 'required',
             'footer' => 'required|max:200',
-            'background_banner' => 'image|mimes:jpeg,png,jpg,gif|max:5120',
+            'background_banner' => 'max:5120',
         ];
     }
 
@@ -41,8 +41,6 @@ class UpdateCampaignRequest extends FormRequest
             'content.required' => 'Campaign content cannot be empty.',
             'footer.required' => 'Campaign footer cannot be empty.',
             'footer.max' => 'Campaign footer cannot exceed 255 characters.',
-            'background_banner.image' => 'Must be an image.',
-            'background_banner.mimes' => 'Must be the format: jpeg, png, jpg, gif.',
             'background_banner.max' => 'Campaign image cannot exceed 5MB.',
         ];
     }

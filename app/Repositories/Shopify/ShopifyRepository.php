@@ -360,8 +360,12 @@ class ShopifyRepository implements ShopifyRepositoryInterface
                 $arrCustomers[] =  $customers;
                 // $batch->add(new SyncCumtomer($batchID, $storeID, $customers));
             }
-            foreach ($arrCustomers as $customers) {
-                $batch->add(new SyncCumtomer($batchID, $storeID, $customers));
+            if(is_null($arrCustomers)){
+                $batch->add(new SyncCumtomer($batchID, $storeID, $arrCustomers));
+            }else{
+                foreach ($arrCustomers as $customers) {
+                    $batch->add(new SyncCumtomer($batchID, $storeID, $customers));
+                }
             }
             // $batch;
 
