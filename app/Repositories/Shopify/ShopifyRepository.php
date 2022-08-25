@@ -326,7 +326,7 @@ class ShopifyRepository implements ShopifyRepositoryInterface
                 })->onQueue('jobs')->dispatch();
             $batchID = $batch->id;
             info("--2 call job batch....");
-            $limit = 123;
+            $limit = 200;
 
             //Count number Customers
             $countCustomer = $this->countDataCustomer($shop, $accessToken);
@@ -360,10 +360,14 @@ class ShopifyRepository implements ShopifyRepositoryInterface
                 $arrCustomers[] =  $customers;
                 // $batch->add(new SyncCumtomer($batchID, $storeID, $customers));
             }
-            foreach ($arrCustomers as $customers) {
-                $batch->add(new SyncCumtomer($batchID, $storeID, $customers));
+            if(is_null($arrCustomers)){
+                info("null list custoemr");
+                $batch->add(new SyncCumtomer($batchID, $storeID, $arrCustomers));
+            }else{
+                foreach ($arrCustomers as $customers) {
+                    $batch->add(new SyncCumtomer($batchID, $storeID, $customers));
+                }
             }
-            // $batch;
 
             info("/.......syncCustomer: done sycn customer");
         } catch (Throwable $e) {

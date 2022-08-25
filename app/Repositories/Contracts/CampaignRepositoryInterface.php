@@ -10,7 +10,7 @@ interface CampaignRepositoryInterface
     /**
      * Search Campaign by Store
      *
-     * @param Request $request
+     * @param UpdateCampaignRequest $request
      * @return mixed
      */
     public function index(Request $request);
@@ -26,19 +26,11 @@ interface CampaignRepositoryInterface
     /**
      * Receive request from FrontEnd put in Job and send mail to the person receiving the request
      *
-     * @param UpdateCampaignRequest $request
+     * @param Request $request
      * @return mixed
      */
-    public function SendEmail(UpdateCampaignRequest $request);
+    public function SendEmail(Request $request);
 
-    /**
-     * Receive request from saveCampaign put in Job. Send mail for selected customers and use Pusher the display mail number of successes, failures
-     *
-     * @param UpdateCampaignRequest $request
-     * @param Illuminate\Database\Eloquent\Model $campaignProcess
-     * @return mixed
-     */
-    public function sendEmailPreview(UpdateCampaignRequest $request, $campaignProcess);
 }
 
 
