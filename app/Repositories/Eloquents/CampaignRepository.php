@@ -171,13 +171,12 @@ class CampaignRepository implements CampaignRepositoryInterface
             ],
             [
                 "variant" => 'Shop_name',
-                "value" => $store->domain
+                "value" => $store->name_merchant
             ],
         ]);
 
         $bodyEmail = $this->previewEmail($request, $array);
         $imageName = "";
-
 
         $subject = $this->subject($request->subject, $array);
 
@@ -200,6 +199,7 @@ class CampaignRepository implements CampaignRepositoryInterface
      */
     public function sendEmailPreview($request, $campaignProcess)
     {
+
         try {
             $batch = Bus::batch([])
                 ->then(function (Batch $batch) {
@@ -264,9 +264,9 @@ class CampaignRepository implements CampaignRepositoryInterface
                     ],
                 ]);
 
-
                 $bodyEmail = $this->previewEmail($request, $array);
-                $imageName = $this->imageNameTemp;
+
+                $imageName = "";
 
                 $subject = $this->subject($request->subject, $array);
 

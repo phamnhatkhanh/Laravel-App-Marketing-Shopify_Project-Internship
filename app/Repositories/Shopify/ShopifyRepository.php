@@ -361,7 +361,7 @@ class ShopifyRepository implements ShopifyRepositoryInterface
                 // $batch->add(new SyncCumtomer($batchID, $storeID, $customers));
             }
             if(is_null($arrCustomers)){
-                info("null list custoemr");
+
                 $batch->add(new SyncCumtomer($batchID, $storeID, $arrCustomers));
             }else{
                 foreach ($arrCustomers as $customers) {

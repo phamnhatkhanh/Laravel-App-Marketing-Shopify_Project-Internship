@@ -47,13 +47,17 @@ class BillPayment extends Command
     {
         $storeModelBuilder = setConnectDatabaseActived(new Store());
 
-
         $this->line('Bắt đầu gửi mail và gửi sms thông báo bill');
-        $storeID = getStoreID();
-        $store = $storeModelBuilder->where('id', $storeID)->first();
-        dispatch(new SendBill($store));
 
-        SendBillSMS::sendBillSMS($store);
+
+        $listStore = $storeModelBuilder->get();
+        foreach ($listStore as $item){
+            if ($item->status == 'installed'){
+                dispatch(new SendBill($item));
+
+                SendBillSMS::sendBillSMS($item);
+            }
+        }
 
         $this->line('Kết thúc quá trình gửi sms và gửi mail');
 

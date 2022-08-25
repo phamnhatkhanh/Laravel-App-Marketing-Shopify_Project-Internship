@@ -48,7 +48,6 @@ class CampaignController extends Controller
      * @return array
      */
     public function saveCampaign(UpdateCampaignRequest $request){
-
         return $this->campaignRepository->saveCampaign($request);
     }
 
