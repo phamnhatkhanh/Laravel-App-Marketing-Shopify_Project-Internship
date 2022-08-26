@@ -42,17 +42,11 @@ class UninstallApp implements ShouldQueue
         $storeModel = setConnectDatabaseActived(new Store());
         $store = $storeModel->getModel();
 
-        $status = 'uninstalled';
-        data_set($store, '*.status', $status);
-        $data = [
-            'status' => $status,
-        ];
-
         $findStore = $store->where('id', $this->payload['id'])->first();
-        if (!empty($findStore)){
-            $findStore->update($data);
+        if (!empty($findStore)) {
+            $findStore->delete();
             $connect = ($findStore->getConnection()->getName());
-            SyncDatabaseAfterUpdatedModel($connect,$findStore);
+            SyncDatabaseAfterDeletedModel($connect, $findStore);
         }
     }
 }

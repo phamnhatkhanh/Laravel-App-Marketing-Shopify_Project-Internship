@@ -10,8 +10,9 @@ use Illuminate\Http\Client\Request;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Session;
+
 
 use App\Events\Database\CreatedModel;
 
@@ -42,16 +43,14 @@ class CreateCustomer implements ShouldQueue
      *
      * @return void
      */
-    public function __construct($dataCustomer,$myShopifyDomain)
+    public function __construct($dataCustomer, $myShopifyDomain)
     {
         $this->dataCustomer = $dataCustomer;
         $this->myShopifyDomain = $myShopifyDomain;
     }
 
     /**
-
      * Create customer when get data customer from shopify and sync data in the database model cluster.
-
      *
      * @return void
      */
@@ -92,7 +91,7 @@ class CreateCustomer implements ShouldQueue
         $customer = $customerModel->where("id",$dataCustomer['id'])->first();
         info("Create Customer: ...  ". json_encode($customer, true));
         $connect = $customerModel->getConnection()->getName();
-        SyncDatabaseAfterCreatedModel($connect,$customer);
+        SyncDatabaseAfterCreatedModel($connect, $customer);
 
     }
 }

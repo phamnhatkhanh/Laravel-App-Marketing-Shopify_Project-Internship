@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Shopify;
 
 
+use App\Jobs\Shopify\UninstallApp;
 use Illuminate\Http\Request;
 
 use App\Http\Controllers\Controller;
@@ -62,5 +63,14 @@ class WebhookController extends Controller
         $this->webHookRepository->deleteFromShopify($payload);
     }
 
+    /**
+     * Receive uninstall App Webhook from Shopify put in Job
+     *
+     * @param string $payload
+     * @return void
+     */
+    public function uninstallAppFromShopify($payload){
+        $this->webHookRepository->uninstallAppFromShopify($payload);
+    }
 }
 

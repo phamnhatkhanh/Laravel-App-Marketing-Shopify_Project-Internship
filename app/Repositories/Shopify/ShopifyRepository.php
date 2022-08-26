@@ -328,7 +328,7 @@ class ShopifyRepository implements ShopifyRepositoryInterface
             $batchID = $batch->id;
 
             info("--2 call job batch....");
-            $limit = 20;
+            $limit = 150;
 
             //Count number Customers
             $countCustomer = $this->countDataCustomer($shop, $accessToken);
