@@ -313,7 +313,7 @@ class ShopifyRepository implements ShopifyRepositoryInterface
     public function syncCustomer($shop, $accessToken, $store)
     {
 
-        info("--function: syncCustomer in shopify repository");
+        info("--function: syncCustomer in shopify repository ".$store->id);
         try {
             $storeID = $store->id;
 
@@ -324,9 +324,11 @@ class ShopifyRepository implements ShopifyRepositoryInterface
                     info("-call event: SynchronizedCustomer");
                     event(new SynchronizedCustomer($batch->id,$storeID));
                 })->onQueue('jobs')->dispatch();
+
             $batchID = $batch->id;
+
             info("--2 call job batch....");
-            $limit = 10;
+            $limit = 20;
 
             //Count number Customers
             $countCustomer = $this->countDataCustomer($shop, $accessToken);
@@ -341,6 +343,7 @@ class ShopifyRepository implements ShopifyRepositoryInterface
             ];
 
             $arrCustomers = [];
+
             for ($i = 0; $i < $numberRequest; $i++) {
                 $client = new Client();
                 $url = 'https://' . $shop . '/admin/api/2022-07/customers.json';
@@ -358,20 +361,23 @@ class ShopifyRepository implements ShopifyRepositoryInterface
                 $responseCustomer = (array)json_decode($request->getBody(), true);
                 $customers = !empty($responseCustomer['customers']) ? $responseCustomer['customers'] : [];
                 $arrCustomers[] =  $customers;
-                // $batch->add(new SyncCumtomer($batchID, $storeID, $customers));
+
             }
             if(is_null($arrCustomers)){
 
                 $batch->add(new SyncCumtomer($batchID, $storeID, $arrCustomers));
             }else{
+
                 foreach ($arrCustomers as $customers) {
+
                     $batch->add(new SyncCumtomer($batchID, $storeID, $customers));
                 }
+
             }
 
-            info("/.......syncCustomer: done sycn customer");
+            info(".......syncCustomer: done sycn customer");
         } catch (Throwable $e) {
-            throw($e);
+            info($e);
         }
 
     }
