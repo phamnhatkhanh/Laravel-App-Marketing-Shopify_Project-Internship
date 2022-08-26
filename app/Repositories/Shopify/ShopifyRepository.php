@@ -363,16 +363,18 @@ class ShopifyRepository implements ShopifyRepositoryInterface
                 $arrCustomers[] =  $customers;
 
             }
-            if(is_null($arrCustomers)){
 
-                $batch->add(new SyncCumtomer($batchID, $storeID, $arrCustomers));
+
+            if(empty($arrCustomers)){
+
+                $batch->add(new SyncCumtomer($batchID, $storeID, []));
+
+
             }else{
 
                 foreach ($arrCustomers as $customers) {
-
                     $batch->add(new SyncCumtomer($batchID, $storeID, $customers));
                 }
-
             }
 
             info(".......syncCustomer: done sycn customer");

@@ -45,10 +45,11 @@ class WebhookRepository
             case 'customers/delete':
                 //Delete data Product
                 $this->deleteFromShopify($payload);
-
+                break;
             case 'app/uninstalled':
                 //Unistall App
                 $this->uninstallAppFromShopify($payload);
+                 break;
         }
     }
 
