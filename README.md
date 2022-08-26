@@ -4,7 +4,7 @@
 - VsCode, Postman, Phpmyadmin, 
 
 ## Setup environment
--  Xampp(apache,mysql,php,phpmyadmin)
+- Xampp(apache,mysql,php,phpmyadmin)
 - PHP version 8.1.6
 - Laravel version 8x
 - Mysql version 10.4.21-MariaDB
@@ -18,5 +18,5 @@
 - Project:
     - php artisan setupDB
 
-## API Users 
-- https://documenter.getpostman.com/view/17649648/VUqmvedN
+## API Project
+- API document: https://documenter.getpostman.com/view/17649648/VUqmvedN
