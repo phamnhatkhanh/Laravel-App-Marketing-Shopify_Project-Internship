@@ -193,7 +193,6 @@ class CampaignRepository implements CampaignRepositoryInterface
      */
     public function sendEmailPreview($request, $campaignProcess)
     {
-
         try {
             $batch = Bus::batch([])
                 ->then(function (Batch $batch) {

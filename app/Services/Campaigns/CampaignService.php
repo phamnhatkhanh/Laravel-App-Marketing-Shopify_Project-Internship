@@ -49,10 +49,8 @@ class CampaignService
         }
 
         if (!empty($image)) {
-            
             $img = $domBody->getElementsByTagName('img')[0];
             $img->setAttribute('src', config('shopify.ngrok') . '/uploads/' . $image);
-
         }
 
         $bodyEmail = $domBody->saveHTML();
@@ -89,7 +87,7 @@ class CampaignService
         $arraySubject = [];
         foreach ($findValueSubject as $item) {
             if ($item->childNodes[0] == null) {
-                array_push($arraySubject, '');
+                array_push($arraySubject, $item->data);
             } else {
                 array_push($arraySubject, $item->childNodes[0]->data);
             }
