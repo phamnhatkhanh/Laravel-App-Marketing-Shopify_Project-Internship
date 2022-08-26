@@ -88,7 +88,10 @@ class CreateDataCustomer implements ShouldQueue
             if (empty($findCustomer)) {
 
                 try {
-                    $customerModel->create($data);
+                    Schema::connection($customerModel->getConnection()->getName())->disableForeignKeyConstraints();
+                        $customerModel->create($data);
+                    Schema::connection($customerModel->getConnection()->getName())->enableForeignKeyConstraints();
+
                     $customer = $customerModel->where("id", $data['id'])->first();
                     info("Create Customer: ...  " . json_encode($customer, true));
                     $connect = ($customerModel->getConnection()->getName());

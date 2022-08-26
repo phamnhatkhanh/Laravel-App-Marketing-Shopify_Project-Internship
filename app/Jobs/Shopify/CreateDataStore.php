@@ -95,11 +95,11 @@ class CreateDataStore implements ShouldQueue
         $findStore = $storeModel->where('id', $data['id'])->first();
         if (empty($findStore)) {
             try {
-                //code...
+
                 info('Save information Shop: '.$getData['id']);
                 $storeModel->create($data);
                 $store_elo =  $storeModel->where("id",$data['id'])->first();
-                // $storeModel->save();
+           
                 info("store .....".  json_encode($storeModel,true));
                 info("store .....".  json_encode($store_elo,true));
                 $connect = ($store_elo->getConnection()->getName());

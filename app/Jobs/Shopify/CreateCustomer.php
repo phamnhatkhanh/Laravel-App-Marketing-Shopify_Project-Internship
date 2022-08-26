@@ -11,6 +11,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Schema;
 
 use App\Events\Database\CreatedModel;
 
@@ -84,7 +85,10 @@ class CreateCustomer implements ShouldQueue
             'updated_at' => $updated_at,
         ];
 
-        $customerModel->create($data);
+        Schema::connection($customerModel->getConnection()->getName())->disableForeignKeyConstraints();
+            $customerModel->create($data);
+        Schema::connection($customerModel->getConnection()->getName())->enableForeignKeyConstraints();
+
         $customer = $customerModel->where("id",$dataCustomer['id'])->first();
         info("Create Customer: ...  ". json_encode($customer, true));
         $connect = $customerModel->getConnection()->getName();
