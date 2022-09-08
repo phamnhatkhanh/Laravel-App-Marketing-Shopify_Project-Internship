@@ -10,7 +10,7 @@
 - Mysql version 10.4.21-MariaDB
 
 ## Setup Project:
-- composer install
+- composer install --ignore-platform-reqs
 - composer dump-autoload
 
 ## Setup databases
