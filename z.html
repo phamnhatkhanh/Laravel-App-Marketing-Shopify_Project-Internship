@@ -1,4 +1,50 @@
-<div class="task">
-    -sync: customer.
-    - data larg: 1000.
-</div>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+
+
+    setTimeout(function () {
+
+      let listCurr = document.getElementsByClassName("transcy-money");
+      let symbolCrr = listCurr[0].innerText[0];
+      let symbolCrrEnd = listCurr[0].innerText.slice(-3)
+      if (parseInt(symbolCrr)) {
+        symbolCrr = "";
+        console.log("have curr front");
+
+      }
+      if (parseInt(symbolCrrEnd)) {
+        symbolCrrEnd = "";
+
+
+      }
+
+      let findDecimalPoint = listCurr[0].innerText.lastIndexOf('.');
+      if (findDecimalPoint !== -1) {
+
+
+        for (let index = 0; index < listCurr.length; index++) {
+          let checkCrrNeedFormat = listCurr[index].innerText.slice(listCurr[index].innerText.lastIndexOf('.') + 1, listCurr[index].innerText.lastIndexOf('.') + 4);
+          if (checkCrrNeedFormat.replace(/[^a-zA-Z0-9]/g, '').length > 2) {
+
+            listCurr[index].innerText = symbolCrr + listCurr[index].innerText.replaceAll(symbolCrrEnd, '').replaceAll(symbolCrr,
+              '').replace(/\s/g,
+                '').slice(0, -1) + ' ' + symbolCrrEnd;
+          };
+        }
+
+
+      } else {
+        findDecimalPoint = listCurr[0].innerText.lastIndexOf(',');
+        for (let index = 0; index < listCurr.length; index++) {
+          let checkCrrNeedFormat = listCurr[index].innerText.slice(listCurr[index].innerText.lastIndexOf(',') + 1, listCurr[index].innerText.lastIndexOf(',') + 4);
+          if (checkCrrNeedFormat.replace(/[^a-zA-Z0-9]/g, '').length > 2) {
+            listCurr[index].innerText = symbolCrr + listCurr[index].innerText.replaceAll(symbolCrrEnd, '').replaceAll(symbolCrr,
+              '').replace(/\s/g, '').slice(0, -1) + ' ' + symbolCrrEnd;
+          };
+        }
+
+      }
+    }, 500);
+  });
+
+</script>

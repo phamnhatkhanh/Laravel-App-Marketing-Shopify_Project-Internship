@@ -55,7 +55,7 @@ class SetupDatabase extends Command
 
         foreach ($listPathModels as $pathModel) {
             $model = new $pathModel();
-            $connectModelDefault = getConnectModelDefalut($model);
+            $connectModelDefault = $model->getConnection()->getName();
             if ($connectModelDefault != "mysql") {
                 $getListDriver =  DbStatus::where(function ($query) use ($connectModelDefault) {
                     $query->where('name', 'like', $connectModelDefault . '%')

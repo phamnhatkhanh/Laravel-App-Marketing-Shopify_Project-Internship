@@ -15,10 +15,7 @@ if (!function_exists('includeRouteFiles')) {
         $it = new \RecursiveIteratorIterator($dirIterator);
 
         while ($it->valid()){
-            if(!$it->isDot()
-                && $it->isFile()
-                && $it->isReadable()
-                && $it->current()->getExtension() === 'php')
+            if(!$it->isDot()&& $it->isFile()&& $it->isReadable()&& $it->current()->getExtension() === 'php')
             {
                 require $it->key();
             }

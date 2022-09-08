@@ -126,7 +126,7 @@ if (!function_exists('getListModels')) {
                 if ($result === '.' or $result === '..') continue;
                 $filename = $path . '/' . $result;
                 if (is_dir($filename)) {
-                    $out = array_merge($out, getModels($filename));
+                    $out = array_merge($out, getListModels($filename));
                 }else{
                     $model  = str_replace(app_path(),"App",substr($filename,0,-4));
                     $model  = str_replace("/","\\",$model );

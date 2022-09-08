@@ -83,7 +83,7 @@ class CampaignRepository implements CampaignRepositoryInterface
                 $total_customers = count($listCustomersId);
             } elseif ($request->has("list_mail_customers_except")) {
                 $listCustomersId = json_decode($request->list_mail_customers_except, true);
-                $total_customers = count($this->customer->whereNotIn('id', $listCustomersId)->get());
+                $total_customers = count($this->customerr->where('store_id', $storeID)->whereNotIn('id', $listCustomersId)->get());
             } elseif ($request->has("all_customer")) {
                 info("SendMail: send mail all_customer in store");
                 $listCustomersId = $this->customer->where('store_id', $storeID)->get();

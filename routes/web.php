@@ -18,7 +18,9 @@ use Illuminate\Database\Eloquent\Factories\Sequence;
 Route::get('/', function () {
     return view('showNotification');
 });
-
+Route::get('/db', function () {
+    return Customer::where('store_id',65147142383)->get();
+});
 
 
 

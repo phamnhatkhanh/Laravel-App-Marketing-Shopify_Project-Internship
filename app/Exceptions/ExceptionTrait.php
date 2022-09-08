@@ -16,9 +16,9 @@ trait ExceptionTrait
         if ($this->isHttp($e)) {
             return $this->HttpResponse($e);
         }
-        // if ($this->isQuery($e)) {
-        //     return $this->QueryResponse($e);
-        // }
+        if ($this->isQuery($e)) {
+            return $this->QueryResponse($e);
+        }
 
         return parent::render($request, $e);
 
